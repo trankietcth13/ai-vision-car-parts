@@ -1,0 +1,10 @@
+# Engine Bay Vision web app. Tested with Python 3.11.
+# Install PyTorch first for your hardware (CPU or CUDA), see README.md, then: pip install -r requirements.txt
+ultralytics==8.4.75
+gradio==6.5.1
+fastapi>=0.115
+uvicorn>=0.29
+python-multipart>=0.0.9
+opencv-python-headless>=4.10
+numpy>=1.26,<3
+pyyaml>=6.0
