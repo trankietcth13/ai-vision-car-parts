@@ -1,0 +1,48 @@
+# E1 (docs/plans/small_component_detection_research_2026-09-29.md): kd_hyperparams_p5.yaml + FGD scale mask.
+# Only change vs p5: distillation.fgd.scale_aware = true (each GT box weighs the same in the feature loss).
+# p5 KD config (2026-09-29): v6 recipe unchanged + save_period 5 so student checkpoints can be averaged
+# (average_checkpoints.py --strip-kd). Teacher is passed on the command line (p5_reg avg5).
+# v6 KD config: same distillation weights as v4 (KD was consistently +1..3 mask mAP);
+# training adds anti-overfitting augmentation (copy_paste, mixup, rotation) and a cosine LR schedule.
+distillation:
+  teacher: runs/segment/teacher_yolo11m_seg/weights/best.pt
+  feature_loss: fgd
+  alpha_feature: 1.0
+  fgd:
+    alpha_fg: 1.0
+    alpha_bg: 0.5
+    lambda_attn: 0.5
+    lambda_global: 0.5
+    temperature: 0.5
+    use_global: true
+    scale_aware: true
+  beta_cls: 1.0
+  temperature_cls: 2.0
+  cls_bg_weight: 0.05
+  gamma_loc: 1.0
+  temperature_ld: 10.0
+  warmup_adapter_epochs: 1
+  unlabeled:
+    dir: null
+    weight: 0.5
+    batch: 8
+    every: 1
+training:
+  epochs: 100
+  batch: 16
+  imgsz: 640
+  optimizer: auto
+  lr0: 0.01
+  lrf: 0.01
+  weight_decay: 0.0005
+  warmup_epochs: 3
+  close_mosaic: 10
+  amp: true
+  workers: 8
+  seed: 0
+  patience: 100
+  cos_lr: true
+  copy_paste: 0.3
+  mixup: 0.1
+  degrees: 5.0
+  save_period: 5

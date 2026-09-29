@@ -62,6 +62,7 @@ DEFAULT_KD_CFG: Dict[str, Any] = {
         "lambda_global": 0.5,
         "temperature": 0.5,
         "use_global": True,
+        "scale_aware": False,  # FGD scale mask (1/area per box); experiment E1, small-object gap
     },
     "warmup_adapter_epochs": 1,  # epochs where only adapters/GcBlocks train (student frozen)
     "unlabeled": {"dir": None, "weight": 0.5, "batch": 8, "every": 1},
@@ -265,7 +266,8 @@ class KDCriterion:
 
         # 1) Feature distillation with GT-box foreground / background masks.
         masks = build_box_masks(
-            batch["bboxes"], batch["batch_idx"], bs, [f.shape[-2:] for f in t_feats[: len(self.levels)]], self.device
+            batch["bboxes"], batch["batch_idx"], bs, [f.shape[-2:] for f in t_feats[: len(self.levels)]], self.device,
+            scale_aware=bool((self.cfg.get("fgd") or {}).get("scale_aware", False)),
         )
         proj, tdict = self.project_student(s_feats, t_feats)
         kd[0] = self.feat_criterion(proj, tdict, masks)
@@ -278,7 +280,7 @@ class KDCriterion:
         # 2) Logit distillation (binary KL, sigmoid heads) weighted inside GT boxes.
         t_nc = tp["scores"].shape[1]
         if t_nc == self.nc and self.weights[1] > 0:
-            fg_anchor = torch.cat([m.flatten(1) for m in masks.values()], dim=1)  # [B, A]
+            fg_anchor = torch.cat([(m > 0).float().flatten(1) for m in masks.values()], dim=1)  # [B, A], binary
             w = fg_anchor + float(self.cfg["cls_bg_weight"]) * (1.0 - fg_anchor)
             kd[1] = self.cls_kd(p["scores"], tp["scores"], w)
         elif t_nc != self.nc:

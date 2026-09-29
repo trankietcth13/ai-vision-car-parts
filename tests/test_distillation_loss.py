@@ -123,3 +123,39 @@ class TestLocalizationLosses(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestScaleAwareMasks(unittest.TestCase):
+    def _boxes(self):
+        # image 0: one large box and one tiny box (smaller than a P5 cell); image 1: one medium box
+        b = torch.tensor([[0.5, 0.5, 0.6, 0.6], [0.105, 0.105, 0.01, 0.01], [0.3, 0.3, 0.2, 0.2]])
+        return b, torch.tensor([0, 0, 1])
+
+    def test_binary_default_unchanged(self):
+        b, idx = self._boxes()
+        m = build_box_masks(b, idx, 2, [(80, 80), (20, 20)], torch.device("cpu"))
+        self.assertTrue(set(m["P3"].unique().tolist()) <= {0.0, 1.0})
+        # the tiny box covers no P4 cell centre in the binary mask (the reason for E1)
+        self.assertEqual(float(m["P4"][0, 0, 1:3, 1:3].sum()), 0.0)
+
+    def test_each_box_sums_to_one_and_tiny_box_gets_a_cell(self):
+        b, idx = self._boxes()
+        m = build_box_masks(b, idx, 2, [(80, 80), (20, 20)], torch.device("cpu"), scale_aware=True)
+        for lvl in ("P3", "P4"):
+            self.assertAlmostEqual(float(m[lvl][1].sum()), 1.0, places=4)  # single box image
+            self.assertAlmostEqual(float(m[lvl][0].sum()), 2.0, places=4)  # two disjoint boxes
+        self.assertGreater(float(m["P4"][0, 0, 1:3, 1:3].sum()), 0.0)
+
+    def test_fgd_weights_boxes_equally(self):
+        # student differs from teacher only inside the tiny box: binary mask dilutes it by the large box area,
+        # the scale mask gives it the weight of a whole box
+        b, idx = self._boxes()
+        t = torch.randn(2, 8, 20, 20)
+        s = t.clone()
+        s[0, :, 1:3, 1:3] += 3.0
+        fgd = FocalAndGlobalDistillationLoss(alpha_bg=0.0, lambda_attn=0.0, lambda_global=0.0)
+        mb = build_box_masks(b, idx, 2, [(20, 20)], torch.device("cpu"))
+        ms = build_box_masks(b, idx, 2, [(20, 20)], torch.device("cpu"), scale_aware=True)
+        lb = fgd({"P3": s}, {"P3": t}, mb)
+        ls = fgd({"P3": s}, {"P3": t}, ms)
+        self.assertGreater(float(ls), float(lb))

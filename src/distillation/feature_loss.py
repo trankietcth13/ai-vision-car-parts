@@ -167,8 +167,10 @@ class FocalAndGlobalDistillationLoss(nn.Module):
             loss_bg = diff.new_zeros(())
             feat_loss = self.alpha_fg * loss_fg
         else:
+            # mask is binary (area-normalised fg) or FGD scale weights 1/area per box (box-normalised fg,
+            # build_box_masks(scale_aware=True)); background is every cell outside all boxes either way
             fg = mask
-            bg = 1.0 - mask
+            bg = 1.0 - (mask > 0).float()
             loss_fg = (diff * fg).sum() / (fg.sum() * c + 1e-6)
             loss_bg = (diff * bg).sum() / (bg.sum() * c + 1e-6)
             feat_loss = self.alpha_fg * loss_fg + self.alpha_bg * loss_bg
@@ -246,8 +248,9 @@ def build_box_masks(
     batch_size: int,
     sizes_hw,
     device: torch.device,
+    scale_aware: bool = False,
 ) -> Dict[str, torch.Tensor]:
-    """Rasterize normalized GT boxes into binary foreground masks, one per pyramid level.
+    """Rasterize normalized GT boxes into foreground masks, one per pyramid level.
 
     Args:
         bboxes_xywh_norm: [N, 4] boxes in normalized xywh (Ultralytics batch format).
@@ -255,9 +258,13 @@ def build_box_masks(
         batch_size: number of images in the batch.
         sizes_hw: iterable of (h, w) feature sizes, ordered P3, P4, P5, ...
         device: target device.
+        scale_aware: FGD scale mask. Every cell of a box weighs 1 / (number of cells of that box), so each
+            box contributes equally to the foreground loss whatever its size (the binary mask lets large
+            parts dominate); overlapping boxes keep the larger weight (the smaller box). A box that covers
+            no cell centre at a level still gets the cell containing its centre.
 
     Returns:
-        {"P3": [B,1,h3,w3], "P4": ..., ...} float masks with 1 inside any GT box.
+        {"P3": [B,1,h3,w3], "P4": ..., ...} float masks: 1 inside any GT box, or the scale weights.
     """
     out: Dict[str, torch.Tensor] = {}
     n = bboxes_xywh_norm.shape[0]
@@ -277,7 +284,17 @@ def build_box_masks(
             in_y = (ys[None, :] >= y1[:, None]) & (ys[None, :] <= y2[:, None])  # [N, h]
             in_x = (xs[None, :] >= x1[:, None]) & (xs[None, :] <= x2[:, None])  # [N, w]
             m = (in_y[:, :, None] & in_x[:, None, :]).float()  # [N, h, w]
-            mask.index_add_(0, bidx, m)
-            mask.clamp_(max=1.0)
+            if scale_aware:
+                empty = m.flatten(1).sum(1) == 0
+                if empty.any():
+                    cy = (((y1 + y2) / 2) * h).long().clamp(0, h - 1)
+                    cx = (((x1 + x2) / 2) * w).long().clamp(0, w - 1)
+                    idx = empty.nonzero(as_tuple=True)[0]
+                    m[idx, cy[idx], cx[idx]] = 1.0
+                m = m / m.flatten(1).sum(1).clamp(min=1.0)[:, None, None]
+                mask.index_reduce_(0, bidx, m, "amax", include_self=True)
+            else:
+                mask.index_add_(0, bidx, m)
+                mask.clamp_(max=1.0)
         out[lvl] = mask.unsqueeze(1)
     return out
