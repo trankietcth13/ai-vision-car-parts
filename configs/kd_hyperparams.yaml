@@ -1,0 +1,56 @@
+# Knowledge Distillation hyper-parameters
+# Teacher: large Ultralytics YOLO-seg (e.g. yolo11m-seg trained on the same data)
+# Student: small Ultralytics YOLO-seg (yolov8n/s-seg, yolo11n/s-seg, yolo26n/s-seg)
+#
+# L_total = L_task + alpha_feature * L_feat + beta_cls * L_cls + gamma_loc * L_loc
+
+distillation:
+  teacher: runs/segment/teacher_yolo11m_seg/weights/best.pt
+
+  # Feature distillation on neck P3/P4/P5 through 1x1 Conv+BN adapters
+  feature_loss: fgd            # fgd | mse
+  alpha_feature: 1.0
+  fgd:
+    alpha_fg: 1.0              # foreground (inside GT boxes) weight
+    alpha_bg: 0.5              # background weight
+    lambda_attn: 0.5           # spatial + channel attention L1
+    lambda_global: 0.5         # GcBlock global relation MSE
+    temperature: 0.5           # attention softmax temperature
+    use_global: true
+
+  # Logit distillation: per-class binary KL on sigmoid heads (YOLO is multi-label)
+  beta_cls: 1.0
+  temperature_cls: 2.0
+  cls_bg_weight: 0.05          # anchors outside GT boxes still get a small weight
+
+  # Localization distillation
+  #   reg_max > 1 on both models -> LD (KL on DFL bin distributions, T = temperature_ld)
+  #   otherwise (YOLO26, reg_max = 1) -> 1 - CIoU between decoded boxes
+  gamma_loc: 1.0
+  temperature_ld: 10.0
+
+  # Stage 1: only adapters / GcBlocks train while the (pretrained) student is frozen.
+  warmup_adapter_epochs: 1
+
+  # Optional feature-only KD on unlabeled images from the same domain.
+  unlabeled:
+    dir: null                  # e.g. data/unlabeled_exterior
+    weight: 0.5
+    batch: 8
+    every: 1
+
+# Ultralytics training arguments (any valid `yolo train` argument may go here)
+training:
+  epochs: 50
+  batch: 16
+  imgsz: 640
+  optimizer: auto
+  lr0: 0.01
+  lrf: 0.01
+  weight_decay: 0.0005
+  warmup_epochs: 3
+  close_mosaic: 10
+  amp: true
+  workers: 0                   # Windows: keep 0 to avoid WinError 1455
+  seed: 0
+  patience: 100

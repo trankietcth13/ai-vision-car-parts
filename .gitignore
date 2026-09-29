@@ -1,0 +1,70 @@
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+Note.md
+/configs/hardware_dgx.yaml
+*.pem
+*.key
+
+# Python caches and environments
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+*.egg-info/
+build/
+dist/
+
+# IDE and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local datasets and annotation workspaces
+/data/
+/dataset/
+/datasets/
+keep_labels_*.json
+/artifacts/qa_images/
+/apps/engine_bay_web/examples/
+
+# Generated artifacts, training runs, caches and archives
+/artifacts/
+/archive/
+/.benchmarks/
+/runs/
+/qa_results/
+/qa_images/
+/weights/
+/.claude/
+*.cache
+*.log
+*.7z
+
+# Model and deployment binaries
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+*.plan
+*.trt
+*.safetensors
+
+# Generated reports (keep report source code and Markdown documentation)
+/docs/reports/*.pdf
+/docs/reports/fig/
+/docs/reports/perclass.json
+
+# Crawler outputs
+/tools/image_database_crawler/output/

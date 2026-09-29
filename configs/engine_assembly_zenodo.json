@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "datasets": [
+    {
+      "id": "engine_assembly_zenodo",
+      "name": "Engine Assembly Dataset",
+      "group": "starter",
+      "scope": "195 real images with bounding boxes, keypoints and polygons; scripts can generate about 280,000 augmented images",
+      "handler": "zenodo",
+      "record_id": "7669593",
+      "include_extensionless_images": true,
+      "expected_size_bytes": 746558786,
+      "source_page": "https://doi.org/10.5281/zenodo.7669593",
+      "license": "CC BY 4.0 according to the Zenodo record metadata",
+      "terms_note": "Industrial engine assembly rather than a normal under-hood vehicle view. Treat augmented descendants as the same group as their original image when splitting to prevent leakage.",
+      "citation": "Sharma, Gaurang; Pieters, Roel; Angleraud, Alexandre (2023), Engine Assembly Dataset, Zenodo, doi:10.5281/zenodo.7669593",
+      "classes": [
+        "PushRod",
+        "Bolt",
+        "RockerArmObject",
+        "BoltHoles",
+        "Engine",
+        "RockerArm",
+        "Small_PushRodHoles",
+        "Big_PushRodHoles"
+      ]
+    }
+  ]
+}

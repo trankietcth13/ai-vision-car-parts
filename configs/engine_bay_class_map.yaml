@@ -1,0 +1,68 @@
+# Canonical 20-class ontology used by configs/data_engine_bay.yaml.
+# Do not remap an unknown/ambiguous source label automatically.
+canonical_names:
+  0: battery
+  1: battery_terminal
+  2: fuse_relay_box
+  3: coolant_reservoir
+  4: radiator_cap
+  5: brake_fluid_reservoir
+  6: washer_fluid_reservoir
+  7: engine_cover
+  8: oil_filler_cap
+  9: oil_dipstick
+  10: air_filter_box
+  11: air_intake_duct
+  12: maf_sensor
+  13: throttle_body
+  14: alternator
+  15: ignition_coil
+  16: radiator_hose_upper
+  17: serpentine_belt
+  18: ecu_module
+  19: multimeter_diagnostic_tool
+
+source_maps:
+  engine_bay_parts_roboflow:
+    Battery: battery
+    Air Filter: air_filter_box
+    Air Filter Cover: air_filter_box
+    Alternator: alternator
+    Brake Fluid: brake_fluid_reservoir
+    Cold Air Intake: air_intake_duct
+    Engine Coolant Reservoir: coolant_reservoir
+    Engine Cover: engine_cover
+    Engine Oil Dip Stick: oil_dipstick
+    Engine Oil Fill Cap: oil_filler_cap
+    Fuse Box: fuse_relay_box
+    Radiator Cap: radiator_cap
+    Secondary Coolant Reservoir: coolant_reservoir
+    Windshield Wiper Fluid: washer_fluid_reservoir
+  arabeitak_toyota_corolla:
+    Air Filter: air_filter_box
+    Battery: battery
+    Coolant Reservoir: coolant_reservoir
+    Engine Cover: engine_cover
+    New Coolant Reservoir: coolant_reservoir
+    Windshield Fluid: washer_fluid_reservoir
+
+# These labels need a new canonical class or manual review. They are deliberately
+# excluded from source_maps so a conversion job cannot silently corrupt labels.
+review_required:
+  engine_bay_parts_roboflow:
+    - ABS Unit
+    - ATF Oil Reservoir
+    - Cabin Air Filter Housing
+    - Clutch Fluid Reservoir
+    - Electric Motor
+    - Intercooler Coolant Reservoir
+    - Inverter Coolant Reservoir
+    - Oil Filter
+    - Oil Filter Housing
+    - Power Steering Reservoir
+    - Radiator
+    - Transmission Oil Dip Stick
+    - "numeric labels 0 through 25"
+  arabeitak_toyota_corolla:
+    - Engine
+    - Reservoir Cap

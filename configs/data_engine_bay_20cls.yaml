@@ -1,0 +1,56 @@
+# Dataset Configuration for Vehicle Engine Bay Component Detection & Segmentation
+# Standard YOLO Segmentation Format
+
+path: ./data/car_parts_dataset  # dataset root dir
+train: images/train            # train images (relative to 'path')
+val: images/val                # val images (relative to 'path')
+test: images/test              # test images (optional)
+
+# Number of classes
+nc: 20
+
+# Class Names (Ontology tailored for Under-hood / Engine Bay Inspection)
+names:
+  0: battery
+  1: battery_terminal
+  2: fuse_relay_box
+  3: coolant_reservoir
+  4: radiator_cap
+  5: brake_fluid_reservoir
+  6: washer_fluid_reservoir
+  7: engine_cover
+  8: oil_filler_cap
+  9: oil_dipstick
+  10: air_filter_box
+  11: air_intake_duct
+  12: maf_sensor
+  13: throttle_body
+  14: alternator
+  15: ignition_coil
+  16: radiator_hose_upper
+  17: serpentine_belt
+  18: ecu_module
+  19: multimeter_diagnostic_tool
+
+# Prompts for Grounding DINO + SAM 2 Auto-labeling & VLM Zero-Shot Detection
+prompts:
+  battery: "car 12V battery . vehicle automotive battery"
+  battery_terminal: "car battery positive negative terminal clamp"
+  fuse_relay_box: "engine bay fuse box . electrical relay box with black plastic lid"
+  coolant_reservoir: "coolant overflow tank . coolant expansion reservoir bottle"
+  radiator_cap: "radiator pressure cap . coolant cap"
+  brake_fluid_reservoir: "brake fluid master cylinder reservoir . translucent brake fluid container"
+  washer_fluid_reservoir: "windshield washer fluid bottle with blue cap"
+  engine_cover: "plastic engine vanity cover . valve cover"
+  oil_filler_cap: "engine oil cap with oil icon . oil filler cap"
+  oil_dipstick: "yellow oil dipstick handle . orange engine oil level indicator"
+  air_filter_box: "engine air cleaner box . rectangular black air filter housing"
+  air_intake_duct: "black ribbed air intake hose . intake tube pipe"
+  maf_sensor: "mass air flow sensor on intake duct . MAF sensor connector"
+  throttle_body: "engine throttle body with butterfly valve"
+  alternator: "automotive alternator . serpentine belt driven generator"
+  ignition_coil: "engine ignition coil pack on top of spark plug"
+  radiator_hose_upper: "large upper radiator rubber coolant hose"
+  serpentine_belt: "engine serpentine accessory drive belt"
+  ecu_module: "engine control unit . ECU computer module with wire harness"
+  multimeter_diagnostic_tool: "digital multimeter measuring device with test probes and LCD screen"

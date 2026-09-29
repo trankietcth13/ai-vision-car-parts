@@ -1,0 +1,12 @@
+# Copy to configs/hardware_dgx.yaml and replace placeholders locally.
+dgx:
+  host: "dgx-host"
+  user: "admin"
+  ssh_port: 22
+  endpoints:
+    vllm_api_base: "http://dgx-host:8000/v1"
+    vllm_model: "qwen3-vl-30b"
+    automotive_detection_url: "http://dgx-host:8080"
+    automotive_detect_endpoint: "http://dgx-host:8080/detect"
+  remote_dir: "/srv/distillation_workspace"
+  python_env: "python3"

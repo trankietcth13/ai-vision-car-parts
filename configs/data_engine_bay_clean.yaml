@@ -1,0 +1,42 @@
+path: ../data/engine_bay_clean
+train: images/train
+val: images/val
+test: images/test
+nc: 36
+names:
+  0: battery
+  1: battery_terminal
+  2: fuse_relay_box
+  3: coolant_reservoir
+  4: radiator_cap
+  5: brake_fluid_reservoir
+  6: washer_fluid_reservoir
+  7: engine_cover
+  8: oil_filler_cap
+  9: oil_dipstick
+  10: air_filter_box
+  11: air_intake_duct
+  12: maf_sensor
+  13: throttle_body
+  14: alternator
+  15: ignition_coil
+  16: radiator_hose_upper
+  17: serpentine_belt
+  18: ecu_module
+  19: multimeter_diagnostic_tool
+  20: radiator
+  21: radiator_cooling_fan
+  22: radiator_hose_lower
+  23: intake_manifold
+  24: abs_modulator_unit
+  25: brake_booster
+  26: power_steering_reservoir
+  27: transmission_oil_dipstick
+  28: ac_compressor
+  29: exhaust_manifold_heat_shield
+  30: turbocharger
+  31: intercooler_piping
+  32: strut_tower_brace
+  33: hood_latch_mechanism
+  34: windshield_wiper_motor
+  35: oil_filter

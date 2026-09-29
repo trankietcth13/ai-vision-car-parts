@@ -1,0 +1,34 @@
+# Dataset Configuration for Vehicle Exterior Components (drbimmer Car damages/parts)
+# Standard YOLO Segmentation Format
+
+path: e:/Research/GEN AI/AI Vision/Distillation/data/exterior_parts_split
+train: images/train
+val: images/val
+test: images/test
+
+# Number of classes
+nc: 21
+
+# Class Names (Ontology derived from Supervisely drbimmer dataset)
+names:
+  0: front-bumper
+  1: back-bumper
+  2: hood
+  3: headlight
+  4: tail-light
+  5: front-door
+  6: back-door
+  7: fender
+  8: quarter-panel
+  9: rocker-panel
+  10: mirror
+  11: grille
+  12: windshield
+  13: back-windshield
+  14: front-window
+  15: back-window
+  16: roof
+  17: front-wheel
+  18: back-wheel
+  19: trunk
+  20: license-plate

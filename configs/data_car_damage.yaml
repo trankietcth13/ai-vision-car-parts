@@ -1,0 +1,21 @@
+# Dataset Configuration for Vehicle Body Damage Segmentation
+# Standard YOLO Segmentation Format
+
+path: e:/Research/GEN AI/AI Vision/Distillation/data/damage_split
+train: images/train
+val: images/val
+test: images/test
+
+# Number of damage classes
+nc: 8
+
+# Class Names
+names:
+  0: scratch
+  1: dent
+  2: broken_part
+  3: paint_chip
+  4: missing_part
+  5: flaking
+  6: corrosion
+  7: cracked

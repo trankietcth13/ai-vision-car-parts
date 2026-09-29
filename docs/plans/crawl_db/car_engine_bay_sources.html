@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Car Engine Bay Dataset Sources | AI Vision Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card-hover: rgba(28, 38, 60, 0.9);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(56, 189, 248, 0.3);
+      --accent-cyan: #38bdf8;
+      --accent-blue: #3b82f6;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HEADER & HERO */
+    header {
+      padding: 50px 0 30px;
+      position: relative;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .badge-pill::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 880px;
+      margin-bottom: 36px;
+    }
+
+    /* STATS BAR */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-glow);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-number.cyan { color: var(--accent-cyan); }
+    .stat-number.emerald { color: var(--accent-emerald); }
+    .stat-number.amber { color: var(--accent-amber); }
+    .stat-number.purple { color: var(--accent-purple); }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* CONTROLS BAR */
+    .controls-panel {
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 16px 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-input-wrapper svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px 12px 46px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    }
+
+    .action-btn.primary:hover {
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* FILTER TABS */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .filter-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .filter-tab.active {
+      color: #fff;
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    /* GRID & CARDS */
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title .badge {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .source-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .source-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-card:hover {
+      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    .source-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title-group h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .card-region {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quality-rating {
+      display: flex;
+      gap: 2px;
+      color: #facc15;
+      font-size: 0.85rem;
+      background: rgba(250, 204, 21, 0.1);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(250, 204, 21, 0.2);
+    }
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .tag.easy {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-emerald);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .tag.medium {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--accent-amber);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .tag.hard {
+      background: rgba(244, 63, 94, 0.12);
+      color: var(--accent-rose);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .tag.feature {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-cyan);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      gap: 12px;
+    }
+
+    .specs-count {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .link-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #fff;
+    }
+
+    /* TOAST ALERT */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--accent-cyan);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MAIN NAVIGATION TABS */
+    .main-nav-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      background: rgba(18, 24, 38, 0.85);
+      padding: 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15);
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PIPELINE FLOW CARDS */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 24px 0 32px;
+    }
+
+    .pipeline-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 22px;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .pipeline-step:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-cyan);
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .step-badge.emerald {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-emerald);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .step-badge.purple {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--accent-purple);
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+
+    .step-badge.amber {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-amber);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* INTERACTIVE CALCULATOR */
+    .calc-box {
+      background: linear-gradient(135deg, rgba(18, 24, 38, 0.95), rgba(15, 23, 42, 0.85));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .calc-slider-wrap {
+      margin: 18px 0;
+    }
+
+    .calc-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.1);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .calc-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .calc-results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .calc-result-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .calc-result-card.highlight {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .calc-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 4px;
+    }
+
+    /* COMPONENT MATRIX TABLE */
+    .data-table-wrap {
+      overflow-x: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      margin: 20px 0 32px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .data-table th {
+      background: rgba(255,255,255,0.04);
+      padding: 14px 16px;
+      color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .data-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .ap-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .ap-critical {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .ap-warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .ap-good {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    /* CODE BLOCKS */
+    .code-box {
+      background: #060911;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 18px 0;
+    }
+
+    .code-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .code-box pre {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.1rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .search-row { flex-direction: column; }
+      .main-nav-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="badge-pill">Automotive AI Vision &bull; Dataset Curation</div>
+      <h1>Toàn Bộ Nguồn Dữ Liệu Car Engine Bay Toàn Cầu</h1>
+      <p class="hero-subtitle">
+        Bản tổng hợp các sàn đấu giá xe, chợ ô tô cũ quốc tế, sàn xe cứu hộ kiểm định thực tế, cổng kỹ thuật Garage DIY và các bộ dữ liệu mở phục vụ huấn luyện mô hình Object Detection / Instance Segmentation (YOLO11, SAM2, Qwen-VL).
+      </p>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number cyan" id="stat-total">44</div>
+          <div class="stat-label">Nền tảng, Sàn xe & Garage</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number emerald">8</div>
+          <div class="stat-label">Danh mục phân loại chuyên sâu</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number amber">150,000+</div>
+          <div class="stat-label">Mẫu khoang máy tiềm năng</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number purple">20 Lớp</div>
+          <div class="stat-label">Linh kiện theo chuẩn huấn luyện</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN NAVIGATION TABS -->
+    <nav class="main-nav-bar">
+      <button class="nav-btn active" id="btn-view-sources" onclick="switchMainView('sources')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        44 Nguồn Sàn Xe & Garage
+      </button>
+      <button class="nav-btn" id="btn-view-prefilter" onclick="switchMainView('prefilter')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Kiến Trúc Local Model Pre-Check (In-Memory)
+      </button>
+      <button class="nav-btn" id="btn-view-garage" onclick="switchMainView('garage')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Chiến Lược Khai Thác Garage & DIY (20 Classes)
+      </button>
+      <button class="nav-btn" id="btn-view-roadmap" onclick="switchMainView('roadmap')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Lộ Trình Triển Khai & KPIs
+      </button>
+    </nav>
+
+    <!-- VIEW 1: SOURCES DATABASE -->
+    <div id="view-sources" class="tab-view active">
+      <!-- STICKY CONTROLS -->
+      <div class="controls-panel">
+        <div class="search-row">
+          <div class="search-input-wrapper">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Tìm theo tên sàn, garage, linh kiện (battery, alternator, dipstick), quốc gia, kỹ thuật cào...">
+          </div>
+          <button class="action-btn" onclick="exportData('csv')">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Xuất CSV
+          </button>
+          <button class="action-btn" onclick="exportData('json')">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+            Xuất JSON
+          </button>
+          <button class="action-btn primary" onclick="copyAllUrls()">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            Copy tất cả URL
+          </button>
+        </div>
+
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-cat="all">Tất cả (44)</button>
+          <button class="filter-tab" data-cat="garage">Garage & DIY Tech (12)</button>
+          <button class="filter-tab" data-cat="auction">Đấu giá & Siêu nét (5)</button>
+          <button class="filter-tab" data-cat="jdm">Nhật Bản & JDM (5)</button>
+          <button class="filter-tab" data-cat="na">Bắc Mỹ (5)</button>
+          <button class="filter-tab" data-cat="eu">Châu Âu (5)</button>
+          <button class="filter-tab" data-cat="sea">ĐNÁ & Việt Nam (6)</button>
+          <button class="filter-tab" data-cat="salvage">Xe Cứu Hộ / Bụi bặm (2)</button>
+          <button class="filter-tab" data-cat="ai_dataset">Tập Dữ Liệu AI Đã Gán Nhãn (4)</button>
+        </div>
+      </div>
+
+      <!-- CARDS CONTAINER -->
+      <div id="sourcesContainer"></div>
+    </div>
+
+    <!-- VIEW 2: PRE-FILTER & QC ARCHITECTURE -->
+    <div id="view-prefilter" class="tab-view">
+      <div class="calc-box">
+        <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; color: #fff;">
+          ⚡ Kiến Trúc Pre-Crawl In-Memory Screening: Lọc Trong RAM Bằng Local Model
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+          Khi cào từ các sàn xe, <strong>85% – 90% số ảnh là ngoại thất, nội thất hoặc bánh xe</strong>. Bằng cách stream trực tiếp ảnh thumbnail siêu nhỏ (5–15KB) qua bộ nhớ RAM <code style="color:var(--accent-cyan);">io.BytesIO</code> và phân loại bằng Local Model (CLIP / YOLO-cls), hệ thống loại bỏ triệt để ảnh rác trước khi tải ảnh Full-Resolution, <strong>tiết kiệm hơn 90% băng thông và tránh hao mòn ổ đĩa SSD</strong>.
+        </p>
+
+        <!-- PIPELINE STEPS -->
+        <div class="pipeline-grid">
+          <div class="pipeline-step">
+            <div class="step-badge">1</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Listing Harvester</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted);">
+              Playwright / Requests quét trang chi tiết xe, lấy Hãng, Dòng xe, Năm sản xuất và mảng URL ảnh thumbnail (150–300px).
+            </p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge emerald">2</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">RAM Stream (0 Disk I/O)</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted);">
+              Tải thumbnail 10KB trực tiếp vào bộ đệm RAM qua <code style="color:var(--accent-emerald);">io.BytesIO</code>. Tuyệt đối không ghi file rác lên đĩa SSD.
+            </p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge purple">3</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Local Model Inference</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted);">
+              Đưa tensor qua <strong>CLIP ViT-B/32</strong> hoặc <strong>YOLOv8n-cls</strong>. Tốc độ suy luận chỉ 2–5ms/ảnh GPU hoặc 20ms CPU.
+            </p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge amber">4</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Decision Gate (P &ge; 0.80)</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted);">
+              Nếu P &ge; 0.80 ➔ Đưa link ảnh gốc 2K/4K vào hàng đợi tải.<br/>Nếu P &lt; 0.80 ➔ Xóa tensor giải phóng RAM, bỏ qua 90% ảnh rác.
+            </p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge">5</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Full-Res QC & Dedup</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted);">
+              Tải ảnh Full-Res, lọc mờ qua <code style="color:var(--accent-cyan);">Laplacian Var &ge; 100</code>, khử trùng góc qua <code style="color:var(--accent-cyan);">pHash (D_H &gt; 4)</code>.
+            </p>
+          </div>
+        </div>
+
+        <!-- SIMULATOR -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-top: 16px;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            Bộ Mô Phỏng Tiết Kiệm Băng Thông & Tốc Độ Cào (Bandwidth & Cost Savings Calculator)
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 18px;">
+            Kéo thanh trượt để xem hệ thống tiết kiệm được bao nhiêu Terabyte và thời gian khi cào tập dữ liệu lớn:
+          </p>
+
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px;">
+                <span>Số lượng xe dự kiến cào:</span>
+                <span id="calc-car-count-display" style="color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 1.1rem;">10,000 xe</span>
+              </div>
+              <input type="range" id="calcSlider" class="calc-slider" min="1000" max="30000" step="1000" value="10000" oninput="updateSavingsCalc()">
+            </div>
+            <div style="width: 200px;">
+              <label style="display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted);">Số ảnh TB/xe:</label>
+              <select id="calcPhotosPerCar" class="search-input" style="padding: 8px 12px; font-size: 0.9rem;" onchange="updateSavingsCalc()">
+                <option value="30">30 ảnh/xe</option>
+                <option value="40" selected>40 ảnh/xe</option>
+                <option value="50">50 ảnh/xe</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calc-results-grid">
+            <div class="calc-result-card">
+              <div class="calc-val" id="res-trad-bw" style="color: var(--accent-rose);">1.40 TB</div>
+              <div style="font-size: 0.82rem; color: var(--text-dim);">Tải truyền thống (Không lọc)</div>
+            </div>
+            <div class="calc-result-card">
+              <div class="calc-val" id="res-filter-bw" style="color: var(--accent-cyan);">144.8 GB</div>
+              <div style="font-size: 0.82rem; color: var(--text-dim);">Tải qua In-Memory Filter</div>
+            </div>
+            <div class="calc-result-card highlight">
+              <div class="calc-val" id="res-saved-bw" style="color: var(--accent-emerald);">1.26 TB (89.7%)</div>
+              <div style="font-size: 0.82rem; color: var(--text-dim);">Băng thông & Bộ nhớ tiết kiệm</div>
+            </div>
+            <div class="calc-result-card">
+              <div class="calc-val" id="res-time-saved" style="color: var(--accent-amber);">~4.5 giờ vs 44 giờ</div>
+              <div style="font-size: 0.82rem; color: var(--text-dim);">Thời gian crawl rút ngắn</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODEL COMPARISON TABLE -->
+        <div style="margin-top: 32px;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 14px;">
+            So Sánh 3 Phương Án Local Model Pre-Check
+          </h3>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mô hình</th>
+                  <th>Tốc độ / Ảnh</th>
+                  <th>Kích thước Model</th>
+                  <th>Độ chính xác</th>
+                  <th>Ưu điểm cốt lõi</th>
+                  <th>Đề xuất sử dụng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color: var(--accent-cyan);">CLIP ViT-B/32</strong></td>
+                  <td><span class="ap-badge ap-good">5 - 10 ms (GPU)</span></td>
+                  <td>~350 MB</td>
+                  <td><strong>96.5%</strong></td>
+                  <td>Zero-shot không cần huấn luyện trước, chỉ cần prompt đối sánh text</td>
+                  <td><span class="tag easy">Khuyên dùng khởi đầu</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--accent-emerald);">YOLOv8n-cls / MobileNetV4</strong></td>
+                  <td><span class="ap-badge ap-good">1 - 3 ms (GPU)</span></td>
+                  <td>~6 - 15 MB</td>
+                  <td><strong>98.5%</strong></td>
+                  <td>Siêu nhẹ, có thể export ONNX Runtime chạy trên CPU 8-15ms</td>
+                  <td><span class="tag feature">Tối ưu tốc độ cực đại</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--accent-purple);">Moondream2 / Qwen2-VL-2B</strong></td>
+                  <td><span class="ap-badge ap-warning">150 - 300 ms</span></td>
+                  <td>~1.8 - 4 GB</td>
+                  <td><strong>99.0%</strong></td>
+                  <td>VLM hiểu ngữ cảnh, có thể đọc chữ trên nhãn cảnh báo nắp máy</td>
+                  <td><span class="tag medium">Kiểm định phụ ca khó</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CODE SNIPPET -->
+        <div style="margin-top: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">
+              Mã Nguồn Mẫu: Pre-Crawl In-Memory Stream (<code style="color:var(--accent-cyan);">pre_filter.py</code>)
+            </h3>
+            <button class="action-btn" onclick="copyCode('code-prefilter')">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+              Copy Script
+            </button>
+          </div>
+          <div class="code-box">
+            <div class="code-box-header">
+              <span>scripts/data_pipeline/crawlers/core/pre_filter.py</span>
+              <span>Python 3.11 &bull; PyTorch &bull; CLIP</span>
+            </div>
+            <pre id="code-prefilter"><code>import io
+import requests
+import torch
+from PIL import Image
+import cv2
+import numpy as np
+
+# Tải ảnh thumbnail trực tiếp vào RAM (không ghi đĩa SSD)
+def is_engine_bay_in_memory(thumb_url, clip_model, clip_processor, threshold=0.80):
+    try:
+        resp = requests.get(thumb_url, timeout=3)
+        if resp.status_code != 200:
+            return False
+        # Đọc byte stream vào RAM bằng io.BytesIO
+        img = Image.open(io.BytesIO(resp.content)).convert("RGB")
+    except Exception:
+        return False
+
+    prompts = [
+        "a car engine bay under the open hood showing engine components",
+        "car exterior, dashboard, seats, wheels, documentation"
+    ]
+    inputs = clip_processor(text=prompts, images=img, return_tensors="pt", padding=True)
+    with torch.no_grad():
+        outputs = clip_model(**inputs)
+        probs = outputs.logits_per_image.softmax(dim=1)[0]
+    
+    # Chỉ tải Full-Res nếu xác suất khoang máy >= 0.80
+    return float(probs[0]) >= threshold</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: GARAGE & DIY STRATEGY -->
+    <div id="view-garage" class="tab-view">
+      <div class="calc-box">
+        <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; color: #fff;">
+          🔧 Chiến Lược Khai Thác Nguồn Garage, Cổng Kỹ Thuật DIY & Detailing Studios
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+          Các sàn bán xe chỉ chụp nắp capo tổng quát góc xa. Trong khi đó, các lớp linh kiện bị điểm thấp nhất ở bản v7 (như <strong style="color:var(--accent-rose);">coolant_reservoir 0.01</strong>, <strong style="color:var(--accent-rose);">radiator_hose 0.02</strong>, <strong style="color:var(--accent-amber);">ecu_module 0.20</strong>) đòi hỏi góc chụp cận cảnh, tháo lắp chi tiết từ các cổng kỹ thuật và garage thực tế.
+        </p>
+
+        <!-- AP FIX MATRIX -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Ma Trận Bổ Khuyết 20 Lớp Linh Kiện Từ Các Nguồn Garage Chuyên Dụng
+        </h3>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Lớp Linh Kiện (Class)</th>
+                <th>AP Hiện Tại (v7)</th>
+                <th>Tình trạng</th>
+                <th>Nguyên nhân thiếu hụt</th>
+                <th>Nguồn Garage Cung Cấp Cứu Cánh</th>
+                <th>Chiến Lược Khai Thác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: #fff;">coolant_reservoir</strong></td>
+                <td><span class="ap-badge ap-critical">0.01</span></td>
+                <td><span class="tag hard">Báo Động Đỏ</span></td>
+                <td>Bình màu trắng đục, nằm khuất góc, thường bị che bởi ống</td>
+                <td><strong style="color: var(--accent-cyan);">CarCareKiosk</strong>, Hà Thành Garage, Chicago Auto Pros</td>
+                <td>Cào mục <code style="color:var(--accent-cyan);">coolant/check_level</code> trên CarCareKiosk (chỉ thẳng vào bình)</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">radiator_hose</strong></td>
+                <td><span class="ap-badge ap-critical">0.02</span></td>
+                <td><span class="tag hard">Báo Động Đỏ</span></td>
+                <td>Ống cao su đen uốn lượn chìm trong khối máy tối màu</td>
+                <td><strong style="color: var(--accent-cyan);">Pelican Parts</strong>, FCP Euro, CarCareKiosk</td>
+                <td>Trích xuất bài viết thay thế ống làm mát (upper/lower radiator hose)</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">ecu_module</strong></td>
+                <td><span class="ap-badge ap-critical">0.20</span></td>
+                <td><span class="tag hard">Báo Động Đỏ</span></td>
+                <td>Hộp kín màu đen hoặc nhôm, có giắc cắm nhiều chân</td>
+                <td><strong style="color: var(--accent-cyan);">Dr Bimmer</strong>, Diễn đàn OTO-HUI, Pelican Parts</td>
+                <td>Bài viết tháo kiểm tra điện tử động cơ, hộp ECU đặt cạnh hốc ắc quy</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">oil_dipstick</strong></td>
+                <td><span class="ap-badge ap-warning">0.38</span></td>
+                <td><span class="tag medium">Cần Cải Thiện</span></td>
+                <td>Kích thước quá nhỏ (tay cầm tròn màu vàng/cam), dễ bị nhầm</td>
+                <td><strong style="color: var(--accent-cyan);">CarCareKiosk</strong>, iFixit Car Guides, SBT Japan</td>
+                <td>Cào mục <code style="color:var(--accent-cyan);">oil/check_oil_level</code> (có vòng tròn khoanh tay rút dầu)</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">alternator</strong></td>
+                <td><span class="ap-badge ap-warning">0.42</span></td>
+                <td><span class="tag medium">Cần Cải Thiện</span></td>
+                <td>Nằm dưới sâu bên hông máy, chỉ lộ cuộn dây đồng và puly</td>
+                <td><strong style="color: var(--accent-cyan);">Pelican Parts</strong>, FCP Euro, BimmerWorld</td>
+                <td>Ảnh hướng dẫn thay chổi than, puly và dây curoa máy phát điện</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">battery & terminals</strong></td>
+                <td><span class="ap-badge ap-good">0.71</span></td>
+                <td><span class="tag easy">Ổn Định</span></td>
+                <td>Hình khối chữ nhật rõ ràng nhưng hay nhầm cọc âm/dương</td>
+                <td><strong style="color: var(--accent-cyan);">iFixit Car</strong>, CarCareKiosk, DPRO VN</td>
+                <td>Lấy nhãn marker đánh dấu cọc cực màu đỏ (+) và đen (-) từ iFixit API</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">fuse_relay_box</strong></td>
+                <td><span class="ap-badge ap-good">0.68</span></td>
+                <td><span class="tag easy">Ổn Định</span></td>
+                <td>Hộp nhựa nắp đen có ký hiệu sơ đồ cầu chì</td>
+                <td><strong style="color: var(--accent-cyan);">CarCareKiosk</strong>, Bonbanh, Bring a Trailer</td>
+                <td>Cào mục <code style="color:var(--accent-cyan);">fuse/engine</code> trên CarCareKiosk</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #fff;">brake_fluid_reservoir</strong></td>
+                <td><span class="ap-badge ap-good">0.65</span></td>
+                <td><span class="tag easy">Ổn Định</span></td>
+                <td>Bình dầu phanh nắp vàng đặt sát vách ngăn cabin (firewall)</td>
+                <td><strong style="color: var(--accent-cyan);">CarCareKiosk</strong>, Cars & Bids, Be Forward</td>
+                <td>Cào mục <code style="color:var(--accent-cyan);">brake_fluid/check_fluid_level</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DETAILING VALUE SECTION -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-top: 24px;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-amber); margin-bottom: 8px;">
+            ✨ Giá Trị Đột Phá Của Cặp Ảnh Trước / Sau (Before & After) Từ Xưởng Detailing
+          </h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+            Khi train mô hình chỉ bằng ảnh xe showroom, mô hình sẽ bị thiên lệch vào các bề mặt <strong>nhựa đen bóng láng và kim loại sạch</strong>. Đến khi triển khai thực tế trên xe khách hàng bảo dưỡng:
+          </p>
+          <ul style="margin: 12px 0 16px 24px; color: var(--text-main); font-size: 0.88rem; line-height: 1.7;">
+            <li><strong>Ảnh Trước (Before - AMMO NYC / Hà Thành Garage)</strong>: Bám bụi đất đỏ, vết ố dầu loang, mạng nhện, rỉ sét ốc vít. Giúp mô hình học được <em>tính bất biến với độ bẩn (Dirt Invariance)</em>.</li>
+            <li><strong>Ảnh Sau (After - Chicago Auto Pros / DPRO VN)</strong>: Đã xử lý bắn đá khô (Dry Ice) hoặc xịt dung dịch dưỡng bóng nhựa. Giúp mô hình không bị nhầm lẫn giữa ánh sáng phản chiếu chói lóa và biên dạng vật thể.</li>
+          </ul>
+        </div>
+
+        <!-- CODE SNIPPET CARCAREKIOSK -->
+        <div style="margin-top: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">
+              Mã Cào CarCareKiosk Theo Danh Mục Linh Kiện (<code style="color:var(--accent-cyan);">carcarekiosk_spider.py</code>)
+            </h3>
+            <button class="action-btn" onclick="copyCode('code-carcare')">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+              Copy Script
+            </button>
+          </div>
+          <div class="code-box">
+            <div class="code-box-header">
+              <span>scripts/data_pipeline/crawlers/spiders/carcarekiosk_spider.py</span>
+              <span>Python 3.11 &bull; BeautifulSoup &bull; Auto-labeling Ready</span>
+            </div>
+            <pre id="code-carcare"><code>COMPONENTS_ROUTING = {
+    "coolant_reservoir": "coolant/check_level",
+    "oil_dipstick": "oil/check_oil_level",
+    "battery": "battery/replace_battery",
+    "fuse_relay_box": "fuse/engine",
+    "brake_fluid_reservoir": "brake_fluid/check_fluid_level",
+    "air_filter_box": "air_filter_engine/replace"
+}
+
+def harvest_carcarekiosk_component(year, make, model, component_name):
+    route = COMPONENTS_ROUTING[component_name]
+    url = f"https://www.carcarekiosk.com/video/{year}_{make}_{model}/{route}"
+    # Trích xuất video poster và frame HD có sẵn mũi tên chỉ thẳng vào linh kiện
+    # Tự động gán metadata class_name = component_name</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: EXECUTION ROADMAP & KPIS -->
+    <div id="view-roadmap" class="tab-view">
+      <div class="calc-box">
+        <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; color: #fff;">
+          📅 Lộ Trình Triển Khai 4 Tuần & Bảng Chỉ Số Mục Tiêu (Target KPIs)
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+          Lộ trình thu thập, gán nhãn bán tự động bằng SAM 2 + Qwen-VL và nạp dữ liệu vào tập huấn luyện <code style="color:var(--accent-cyan);">engine_bay_train_v9</code> nhằm nâng mask mAP50-95 trên xe mới từ <strong>0.249 lên &ge; 0.40</strong>.
+        </p>
+
+        <!-- TIMELINE CARDS -->
+        <div class="pipeline-grid">
+          <div class="pipeline-step">
+            <div class="step-badge">W1</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Tuần 1: Setup & Cào Sàn Đấu Giá</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
+              - Cài đặt SQLite <code style="color:var(--accent-cyan);">crawler_registry.db</code><br/>
+              - Chạy Pre-filter trên Bring a Trailer & Cars & Bids<br/>
+              - Bóc tách 3.000 ảnh component từ CarCareKiosk
+            </p>
+            <span class="tag easy">Đầu ra: 4.500 ảnh chuẩn</span>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge emerald">W2</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Tuần 2: Sàn JDM & Cổng Kỹ Thuật</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
+              - Cào Be Forward Japan & SBT Japan (Toyota, Honda)<br/>
+              - Kéo bài viết kỹ thuật Pelican Parts & FCP Euro<br/>
+              - Gọi iFixit API lấy ảnh có marker linh kiện
+            </p>
+            <span class="tag easy">Đầu ra: 3.500 ảnh chuẩn</span>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge purple">W3</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Tuần 3: Thị Trường Việt Nam & Bụi</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
+              - Cào Bonbanh, Chợ Tốt Xe, Carsome Đông Nam Á<br/>
+              - Quét album Hà Thành Garage, DPRO, OTO-HUI<br/>
+              - Bổ sung 800 ảnh xe cứu hộ Copart/IAAI
+            </p>
+            <span class="tag feature">Đầu ra: 3.000 ảnh xe VN</span>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-badge amber">W4</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px;">Tuần 4: Auto-Label SAM2 & Train v9</h4>
+            <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
+              - Chạy SAM 2 sinh mask polygon từ gợi ý box<br/>
+              - Cân bằng quota 20 lớp linh kiện trong YAML<br/>
+              - Khởi chạy Knowledge Distillation v9
+            </p>
+            <span class="tag medium">Mục tiêu: Đạt Test mAP &ge; 0.40</span>
+          </div>
+        </div>
+
+        <!-- KPI TABLE -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 28px 0 12px;">
+          Bảng Chỉ Số Kiểm Định Thành Công (Benchmark Target)
+        </h3>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Chỉ số đánh giá</th>
+                <th>Hiện trạng (Bản v7)</th>
+                <th>Mục tiêu sau khi nạp dữ liệu cào</th>
+                <th>Đánh giá tác động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Số lượng xe độc lập trong tập Train</strong></td>
+                <td><span class="ap-badge ap-critical">19 xe</span></td>
+                <td><span class="ap-badge ap-good"><strong>150 – 250 xe</strong></span></td>
+                <td>Tăng gấp 8 – 13 lần, triệt tiêu hoàn toàn overfitting xe</td>
+              </tr>
+              <tr>
+                <td><strong>Tổng số ảnh khoang máy chuẩn</strong></td>
+                <td>1.059 ảnh</td>
+                <td><strong>5.000 – 8.000 ảnh</strong></td>
+                <td>Mỗi xe có 3-6 góc nhìn chuẩn, đa dạng ánh sáng</td>
+              </tr>
+              <tr>
+                <td><strong>Khoảng cách mAP giữa Train và Test</strong></td>
+                <td><span class="ap-badge ap-critical">0.47 (0.72 vs 0.25)</span></td>
+                <td><span class="ap-badge ap-good"><strong>&lt; 0.18</strong></span></td>
+                <td>Thu hẹp khoảng cách tổng quát hóa mô hình</td>
+              </tr>
+              <tr>
+                <td><strong>Mask mAP50 trên xe mới (Test unseen)</strong></td>
+                <td>0.440</td>
+                <td><span class="ap-badge ap-good"><strong>&ge; 0.68 – 0.75</strong></span></td>
+                <td>Nhận diện chính xác trên 70% trường hợp thực tế</td>
+              </tr>
+              <tr>
+                <td><strong>Mask mAP50-95 trên xe mới (Test unseen)</strong></td>
+                <td>0.249</td>
+                <td><span class="ap-badge ap-good"><strong>&ge; 0.38 – 0.45</strong></span></td>
+                <td>Đạt chuẩn triển khai hệ thống Vision AI công nghiệp</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 20px; font-size: 0.88rem; color: var(--text-dim); text-align: right;">
+          Thư mục lưu trữ bộ dữ liệu hoàn chỉnh: <code style="color:var(--accent-cyan);">H:\AI_Datasets\engine_bays_crawled\</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>&copy; 2026 AI Vision Research &bull; Dataset Curation Framework for Engine Bay Instance Segmentation.</p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">Thông báo</div>
+
+  <script>
+    const datasetSources = [
+      // 1. GARAGE, DIY REPAIR & DETAILING STUDIOS (NEWLY ADDED)
+      {
+        id: "carcarekiosk",
+        name: "CarCareKiosk",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://www.carcarekiosk.com/",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Rất Dễ (Cấu trúc URL sạch)",
+        desc: "KHO SỐ 1 VỀ LINH KIỆN ĐỘNG CƠ: Phân cấp theo Năm ➔ Hãng ➔ Dòng xe ➔ Linh kiện (Battery, Coolant, Dipstick, Brake Fluid, Fuses, Air Filter). Hơn 50.000 bài hướng dẫn có sẵn ảnh chụp và video nắp capo mở chỉ thẳng vào vị trí từng linh kiện.",
+        tags: ["50,000+ Guide", "Chỉ rõ vị trí linh kiện", "Battery, Dipstick, Coolant", "Tất cả dòng xe"],
+        estImages: "100,000+ ảnh component",
+        cdnInfo: "Ảnh thumbnail và video frame lưu trên CloudFront, URL map trực tiếp theo tên linh kiện."
+      },
+      {
+        id: "pelicanparts",
+        name: "Pelican Parts (Tech Articles)",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ & Châu Âu",
+        url: "https://www.pelicanparts.com/techarticles/",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ (Bài viết tĩnh)",
+        desc: "Thư viện kỹ thuật của garage chuyên xe châu Âu (Porsche, BMW, Mercedes, Mini, Audi, VW). Hàng chục nghìn ảnh nắp capo mở, chụp chi tiết máy phát (alternator), mobin (ignition coil), cổ hút, ống làm mát trên/dưới.",
+        tags: ["Xe Đức (BMW, Porsche, Benz)", "Tháo lắp máy phát, mobin", "Macro linh kiện", "Top-down view"],
+        estImages: "40,000+ ảnh chi tiết",
+        cdnInfo: "Ảnh lưu trữ thư mục `techarticles/`, cấu trúc HTML bài viết rất chuẩn và đồng bộ."
+      },
+      {
+        id: "ifixit_car",
+        name: "iFixit Car Maintenance",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Toàn cầu",
+        url: "https://www.ifixit.com/Device/Car",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: API Mở (CC License)",
+        desc: "Hướng dẫn bảo dưỡng ô tô cộng đồng giấy phép Creative Commons. Ảnh chụp macro độ nét cao có sẵn vòng tròn khoanh vùng (bounding annotation) chính xác các cọc bình, bu-lông, ống tản nhiệt, bình nước rửa kính.",
+        tags: ["Giấy phép Creative Commons", "Có sẵn vòng khoanh linh kiện", "API JSON chính thức"],
+        estImages: "15,000+ ảnh có chú thích",
+        cdnInfo: "iFixit có REST API công khai `https://www.ifixit.com/api/2.0/guides`."
+      },
+      {
+        id: "fcpeuro",
+        name: "FCP Euro DIY Blog",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://www.fcpeuro.com/blog",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Garage chuyên bảo dưỡng dòng xe châu Âu. Toàn bộ ảnh sửa chữa được chụp bằng máy ảnh chuyên nghiệp góc rộng và macro trong khoang máy, màu sắc trung thực dưới ánh đèn xưởng.",
+        tags: ["Chuyên xe châu Âu", "Ảnh xưởng chuyên nghiệp", "Bình nước mát & Ống dẫn"],
+        estImages: "12,000+ ảnh",
+        cdnInfo: "Blog CMS chuẩn, ảnh link trực tiếp chất lượng cao."
+      },
+      {
+        id: "bimmerworld_ecs",
+        name: "BimmerWorld & ECS Tuning",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://www.bimmerworld.com/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Chuyên sâu phụ tùng và độ động cơ BMW/VAG. Hàng nghìn file PDF và bài viết 'Install Guides' chụp khoang máy từ trên xuống (top-down view) để hướng dẫn tháo lắp phụ tùng thay thế.",
+        tags: ["BMW & VAG chuyên sâu", "Install Guides", "Top-down view"],
+        estImages: "8,000+ ảnh",
+        cdnInfo: "Ảnh trong bài hướng dẫn và tài liệu PDF đính kèm."
+      },
+      {
+        id: "ammo_nyc",
+        name: "AMMO NYC (Larry Kosilla)",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://www.ammonyc.com/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Video Frames / Gallery",
+        desc: "KHO ẢNH BỤI BẶM CỰC HẠN: Nổi tiếng nhất thế giới về cứu hộ khoang máy bỏ hoang lâu năm (Barn-find). Ảnh khoang máy có đủ loại vết bẩn, rỉ sét, chuột cắn dây điện, phục hồi từ dơ bẩn sang sạch bóng.",
+        tags: ["Khoang máy bẩn cực hạn", "Chuột cắn, rỉ sét, dầu mỡ", "Cặp Before/After"],
+        estImages: "5,000+ ảnh & video frames",
+        cdnInfo: "Website thư viện ảnh và kênh YouTube 4K có thể trích xuất frame."
+      },
+      {
+        id: "chicago_autopros",
+        name: "Chicago Auto Pros",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://www.chicagoautopros.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Chuyên vệ sinh khoang máy bằng đá khô (Dry Ice Blasting) và hơi nước nóng. Thư viện ảnh cận cảnh bề mặt kim loại khối máy, ống cao su và chi tiết nhựa sau khi xử lý sạch sẽ.",
+        tags: ["Bắn đá khô khoang máy", "Bề mặt kim loại sạch", "Cận cảnh chi tiết nhựa"],
+        estImages: "4,000+ ảnh",
+        cdnInfo: "Gallery ảnh dịch vụ trên website."
+      },
+      {
+        id: "hathanh_garage",
+        name: "Hà Thành Garage",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Việt Nam (Hà Nội & Miền Bắc)",
+        url: "https://hathanhgarage.vn/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Rất Dễ (HTML)",
+        desc: "Chuỗi garage lớn tại Việt Nam. Mục 'Dịch vụ ➔ Vệ sinh khoang máy' có hàng trăm album ảnh chụp thực tế khoang máy xe khách hàng Việt Nam (Vios, CX-5, Accent, SantaFe) trước và sau bảo dưỡng.",
+        tags: ["Xe thực tế tại Việt Nam", "Vios, CX-5, Accent, Ranger", "Ảnh chụp tại xưởng VN"],
+        estImages: "2,500+ ảnh xe VN",
+        cdnInfo: "Ảnh JPG trực tiếp trên hosting của website."
+      },
+      {
+        id: "dpro_vietnam",
+        name: "DPRO Vietnam",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Việt Nam",
+        url: "https://dpro.vn/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Hệ thống chăm sóc xe hơi chuẩn Nhật Bản tại VN. Rất nhiều ảnh chụp nắp capo mở của xe Toyota, Mazda, Honda vệ sinh bằng hơi nước nóng, chụp bằng điện thoại tại xưởng.",
+        tags: ["Detailing hơi nước nóng", "Xe Toyota, Mazda, Honda", "Ảnh đời thực"],
+        estImages: "2,000+ ảnh",
+        cdnInfo: "Website Wordpress, dễ cào bằng BeautifulSoup/Playwright."
+      },
+      {
+        id: "otohui",
+        name: "Diễn đàn OTO-HUI",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Việt Nam",
+        url: "https://oto-hui.com/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Diễn đàn (Forum)",
+        desc: "DIỄN ĐÀN KỸ SƯ Ô TÔ LỚN NHẤT VN: Hàng chục nghìn bài đăng 'bắt bệnh', tháo rã máy, đại tu khoang động cơ kèm ảnh chụp điện thoại của thợ garage tại hiện trường xưởng máy, có cả dụng cụ đo multimeter.",
+        tags: ["Thợ garage VN chụp", "Đại tu máy, bổ máy", "Có đồng hồ đo multimeter"],
+        estImages: "20,000+ ảnh thực tế xưởng",
+        cdnInfo: "Ảnh đính kèm trong các bài viết box kỹ thuật sửa chữa."
+      },
+      {
+        id: "dr_bimmer",
+        name: "Dr Bimmer (BMW Specialist)",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Việt Nam (TP.HCM & HN)",
+        url: "https://drbimmer.vn/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Garage chuyên sâu các dòng BMW tại Việt Nam. Thư viện ảnh sửa chữa động cơ N20, B48, B58 và hệ thống điện/hộp ECU cực kỳ đồ sộ.",
+        tags: ["Chuyên BMW tại VN", "Động cơ N20, B48, B58", "Hộp ECU & Cầu chì"],
+        estImages: "1,500+ ảnh",
+        cdnInfo: "Fanpage & Website gallery."
+      },
+      {
+        id: "bisimoto_ams",
+        name: "Bisimoto & AMS Performance",
+        category: "garage",
+        categoryName: "Garage & DIY Tech Portals",
+        region: "Mỹ",
+        url: "https://bisimoto.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Garage chuyên độ máy, turbo và hoán đổi động cơ (engine swap). Cung cấp các góc máy phơi lộ toàn bộ cụm nạp, cụm xả và két làm mát liên hoàn (intercooler).",
+        tags: ["Độ máy & Engine Swap", "Phơi lộ toàn bộ linh kiện", "Turbo & Intercooler"],
+        estImages: "3,000+ ảnh",
+        cdnInfo: "Ảnh website & blog kỹ thuật độ xe."
+      },
+
+      // 2. AUCTIONS & ENTHUSIAST
+      {
+        id: "bat",
+        name: "Bring a Trailer (BaT)",
+        category: "auction",
+        categoryName: "Đấu giá & Siêu nét",
+        region: "Mỹ & Toàn cầu",
+        url: "https://bringatrailer.com/",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ (CDN S3)",
+        desc: "Kho vàng số 1 thế giới. Mỗi xe có 15-30 ảnh nắp capo mở phân loại riêng mục 'Engine & Mechanical', độ phân giải 2K-4K, đủ mọi góc chụp từ trên xuống, chéo trái, phải và cận cảnh linh kiện.",
+        tags: ["Chất lượng 4K", "Phân loại Engine riêng", "Đủ mọi hãng xe", "Cực kỳ đa dạng"],
+        estImages: "50,000+ xe",
+        cdnInfo: "Ảnh lưu trên AWS S3, cấu trúc URL sạch, dễ bóc tách bằng selector."
+      },
+      {
+        id: "carsandbids",
+        name: "Cars & Bids",
+        category: "auction",
+        categoryName: "Đấu giá & Siêu nét",
+        region: "Bắc Mỹ",
+        url: "https://carsandbids.com/",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Sàn chuyên xe hiện đại (từ 1990 - nay) của Doug DeMuro. Tab 'Engine' riêng biệt chụp cận cảnh từng linh kiện: ắc quy, bình nước mát, cổ hút, nắp dầu phanh.",
+        tags: ["Xe từ 1990-nay", "Checklist chuẩn", "Ảnh sắc nét", "Góc nhìn thợ máy"],
+        estImages: "25,000+ xe",
+        cdnInfo: "CDN Fastly/CloudFront, API trả danh sách ảnh JSON trực tiếp."
+      },
+      {
+        id: "collectingcars",
+        name: "Collecting Cars",
+        category: "auction",
+        categoryName: "Đấu giá & Siêu nét",
+        region: "Anh, EU, Úc",
+        url: "https://collectingcars.com/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Sàn đấu giá xe hàng đầu châu Âu. Ảnh kiểm định xe theo checklist nghiêm ngặt, khoang động cơ được làm sạch và chiếu sáng studio sắc nét.",
+        tags: ["Xe châu Âu", "Ảnh Studio", "Chụp đa góc", "Porsche, BMW, Audi"],
+        estImages: "18,000+ xe",
+        cdnInfo: "Cấu trúc ảnh webp/jpg phân cấp theo slug xe."
+      },
+      {
+        id: "themarket",
+        name: "The Market by Bonhams",
+        category: "auction",
+        categoryName: "Đấu giá & Siêu nét",
+        region: "Châu Âu & Anh",
+        url: "https://themarket.bonhams.com/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Thuộc nhà đấu giá danh tiếng Bonhams. Ảnh khoang máy kiểm định độ phân giải rất cao, zoom được cận cảnh cả số khung và các đầu jack cắm.",
+        tags: ["Kiểm định Bonhams", "Zoom cận cảnh", "Máy dầu & Máy xăng"],
+        estImages: "10,000+ xe",
+        cdnInfo: "CDN lưu trữ ảnh gốc không nén giảm chất lượng."
+      },
+      {
+        id: "pcarmarket",
+        name: "PCARMARKET",
+        category: "auction",
+        categoryName: "Đấu giá & Siêu nét",
+        region: "Mỹ",
+        url: "https://pcarmarket.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Chuyên xe thể thao, xe hiệu năng cao và xe độ. Rất nhiều động cơ turbo, intercooler và hệ thống nạp khí đặc thù.",
+        tags: ["Xe thể thao", "Engine bay độ", "Khoang máy phức tạp"],
+        estImages: "8,000+ xe",
+        cdnInfo: "HTML truyền thống, ảnh link trực tiếp."
+      },
+
+      // 3. JAPAN & JDM EXPORT
+      {
+        id: "beforward",
+        name: "Be Forward Japan",
+        category: "jdm",
+        categoryName: "Nhật Bản & JDM",
+        region: "Nhật Bản → Toàn cầu",
+        url: "https://www.beforward.jp/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Rất Dễ (CDN mở)",
+        desc: "Sàn xuất khẩu xe cũ lớn nhất Nhật với hơn 200.000 xe. Mỗi tin đăng luôn có 3-6 ảnh nắp capo mở chụp góc thẳng và cận cảnh nhãn máy. Rất hợp các dòng xe phổ thông châu Á.",
+        tags: ["Kho 200,000+ xe", "Toyota, Honda, Mazda", "CDN mở hoàn toàn", "Phổ thông châu Á"],
+        estImages: "200,000+ xe",
+        cdnInfo: "Ảnh đánh số thứ tự từ 1-30, ảnh số 15-25 luôn là khoang máy."
+      },
+      {
+        id: "sbtjapan",
+        name: "SBT Japan",
+        category: "jdm",
+        categoryName: "Nhật Bản & JDM",
+        region: "Nhật Bản → Toàn cầu",
+        url: "https://www.sbtjapan.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Rất Dễ",
+        desc: "Sàn xuất khẩu xe thứ hai của Nhật Bản. Checklist kiểm tra xe trước khi xuất bến luôn bao gồm ảnh chụp toàn cảnh khoang động cơ dưới ánh sáng tự nhiên.",
+        tags: ["Kiểm định xuất khẩu", "Ánh sáng tự nhiên", "Đa dạng xe Nhật"],
+        estImages: "100,000+ xe",
+        cdnInfo: "Cấu trúc URL ảnh trực tiếp, không chặn bot IP."
+      },
+      {
+        id: "goonet",
+        name: "Goo-net Exchange",
+        category: "jdm",
+        categoryName: "Nhật Bản & JDM",
+        region: "Nhật Bản",
+        url: "https://www.goo-net-exchange.com/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Cổng thông tin xe cũ lớn nhất Nhật Bản phiên bản quốc tế. Có chứng thư giám định xe (Goo Inspection) đính kèm ảnh khoang máy nguyên bản.",
+        tags: ["Goo Inspection", "Ảnh chi tiết", "Động cơ zin"],
+        estImages: "150,000+ xe",
+        cdnInfo: "Ảnh CDN Akamai, cần User-Agent hợp lệ."
+      },
+      {
+        id: "carsensor",
+        name: "Car Sensor (Recruit)",
+        category: "jdm",
+        categoryName: "Nhật Bản & JDM",
+        region: "Nhật Bản nội địa",
+        url: "https://www.carsensor.net/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Mạng lưới xe nội địa Nhật của tập đoàn Recruit. Số lượng xe khổng lồ, bao gồm xe Kei-car, SUV và sedan gia đình.",
+        tags: ["Kei-car", "Nội địa Nhật", "Khối máy nhỏ gọn"],
+        estImages: "300,000+ xe",
+        cdnInfo: "Nội dung tiếng Nhật, ảnh được tối ưu hóa tải nhanh."
+      },
+      {
+        id: "tcv",
+        name: "TCV (TradeCarView)",
+        category: "jdm",
+        categoryName: "Nhật Bản & JDM",
+        region: "Nhật Bản",
+        url: "https://tc-v.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Thị trường B2B xuất khẩu xe cũ. Ảnh chụp thật tại bãi đỗ xe cảng biển, góc chụp chân thực không qua chỉnh sửa màu sắc.",
+        tags: ["Bãi cảng xuất khẩu", "Ảnh mộc", "Động cơ thực tế"],
+        estImages: "80,000+ xe",
+        cdnInfo: "Cấu trúc ảnh trực quan, dễ tải tự động."
+      },
+
+      // 4. NORTH AMERICA
+      {
+        id: "carvana",
+        name: "Carvana",
+        category: "na",
+        categoryName: "Bắc Mỹ",
+        region: "Mỹ",
+        url: "https://www.carvana.com/",
+        rating: 5,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (Tour 360°)",
+        desc: "ĐẶC BIỆT: Buồng chụp 360 độ tự động hóa. Có chế độ xem 360° khoang máy xoay quanh nắp capo, có thể bóc tách 24-36 frame liên tục của cùng 1 xe từ nhiều góc.",
+        tags: ["360° Engine Tour", "Đa góc mượt mà", "Chuẩn hóa góc chụp", "Xe đời mới"],
+        estImages: "40,000+ xe xoay 360",
+        cdnInfo: "Dữ liệu dạng 360 tile spritesheets, trích xuất frame bằng script."
+      },
+      {
+        id: "autotrader_us",
+        name: "AutoTrader US",
+        category: "na",
+        categoryName: "Bắc Mỹ",
+        region: "Mỹ",
+        url: "https://www.autotrader.com/",
+        rating: 4,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (Akamai/PerimeterX)",
+        desc: "Sàn xe cũ lâu đời nhất nước Mỹ. Hàng triệu tin đăng từ đại lý lớn (Certified Pre-Owned), luôn có ảnh chụp khoang máy sạch sẽ trước khi bàn giao.",
+        tags: ["Hàng triệu xe", "Certified Pre-Owned", "Bán tải & SUV"],
+        estImages: "1,000,000+ xe",
+        cdnInfo: "Bảo vệ nghiêm ngặt bằng PerimeterX, cần crawl qua proxy hoặc Playwright Chrome."
+      },
+      {
+        id: "cars_com",
+        name: "Cars.com",
+        category: "na",
+        categoryName: "Bắc Mỹ",
+        region: "Mỹ",
+        url: "https://www.cars.com/",
+        rating: 4,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (Cloudflare)",
+        desc: "Nguồn ảnh xe đa dạng bậc nhất từ hàng nghìn showroom trên toàn nước Mỹ, từ xe bán tải Ford F-150 đến sedan Toyota Camry.",
+        tags: ["Showroom chuẩn", "Xe phổ thông Mỹ", "Chụp ban ngày"],
+        estImages: "800,000+ xe",
+        cdnInfo: "Chặn bot bằng Cloudflare, cần headless browser có anti-detect."
+      },
+      {
+        id: "cargurus",
+        name: "CarGurus",
+        category: "na",
+        categoryName: "Bắc Mỹ",
+        region: "Mỹ, Canada, UK",
+        url: "https://www.cargurus.com/",
+        rating: 4,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (Bot Blocker)",
+        desc: "Sàn xe có lượng traffic hàng đầu nước Mỹ. Rất nhiều đại lý tải lên 40-60 ảnh/xe bao gồm cả chi tiết bình ắc quy, lọc gió và két nước.",
+        tags: ["Album 50+ ảnh/xe", "Độ phủ lớn", "Canada & UK"],
+        estImages: "500,000+ xe",
+        cdnInfo: "Hệ thống bảo vệ bot chặt chẽ."
+      },
+      {
+        id: "hemmings",
+        name: "Hemmings",
+        category: "na",
+        categoryName: "Bắc Mỹ",
+        region: "Mỹ",
+        url: "https://www.hemmings.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Nổi tiếng với xe cơ bắp Mỹ (Muscle Car) và xe cổ. Khoang động cơ các dòng xe này thường rất thoáng, linh kiện cơ khí lộ rõ, thích hợp học hình dạng cấu kiện.",
+        tags: ["Muscle Car", "Khoang máy thoáng", "Linh kiện cơ khí"],
+        estImages: "20,000+ xe",
+        cdnInfo: "CDN công khai, dễ scrape."
+      },
+
+      // 5. EUROPE
+      {
+        id: "mobile_de",
+        name: "Mobile.de",
+        category: "eu",
+        categoryName: "Châu Âu",
+        region: "Đức & Toàn EU",
+        url: "https://www.mobile.de/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Chợ xe lớn nhất châu Âu với ~1.5 triệu tin đăng. Salon xe tại Đức luôn có tiêu chuẩn dọn rửa khoang máy và chụp ảnh nắp capo mở chuyên nghiệp.",
+        tags: ["1.5 Triệu xe", "Xe Đức (BMW, Benz, Audi)", "Động cơ Diesel & Xăng"],
+        estImages: "1,500,000+ xe",
+        cdnInfo: "CDN eBay Classifieds Group, cấu trúc ảnh chuẩn."
+      },
+      {
+        id: "autoscout24",
+        name: "AutoScout24",
+        category: "eu",
+        categoryName: "Châu Âu",
+        region: "Châu Âu (Đức, Ý, Pháp, Bỉ)",
+        url: "https://www.autoscout24.com/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Phủ sóng khắp Tây Âu. Cực kỳ phong phú về các dòng xe máy nhỏ, xe hatchback đô thị (VW Golf, Renault Clio, Fiat 500) với cách bố trí khoang máy chật hẹp.",
+        tags: ["Khoang máy chật", "Hatchback châu Âu", "Tây Âu"],
+        estImages: "1,200,000+ xe",
+        cdnInfo: "Yêu cầu header hợp lệ để tải CDN."
+      },
+      {
+        id: "autotrader_uk",
+        name: "AutoTrader UK",
+        category: "eu",
+        categoryName: "Châu Âu",
+        region: "Anh Quốc",
+        url: "https://www.autotrader.co.uk/",
+        rating: 4,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (Akamai)",
+        desc: "Sàn xe số 1 tại Anh. Điểm độc đáo: Xe tay lái nghịch (RHD) với vị trí bình dầu phanh và ắc quy có thể bố trí đối xứng so với xe tay lái thuận (LHD), giúp model tránh thiên vị không gian.",
+        tags: ["Xe tay lái nghịch (RHD)", "Đối xứng khoang máy", "Anh Quốc"],
+        estImages: "450,000+ xe",
+        cdnInfo: "Bảo vệ bởi Akamai Bot Manager."
+      },
+      {
+        id: "pistonheads",
+        name: "PistonHeads",
+        category: "eu",
+        categoryName: "Châu Âu",
+        region: "Anh Quốc",
+        url: "https://www.pistonheads.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ",
+        desc: "Cộng đồng người mê xe tại Anh. Tin đăng bán xe luôn có ảnh nắp capo mở chụp rất kỹ từng chi tiết nạp gió và ống tản nhiệt.",
+        tags: ["Người mê xe chụp", "Góc chụp kỹ", "Thể thao & Cổ điển"],
+        estImages: "15,000+ xe",
+        cdnInfo: "HTML thân thiện, dễ lấy link ảnh."
+      },
+      {
+        id: "leboncoin",
+        name: "Leboncoin (Voitures)",
+        category: "eu",
+        categoryName: "Châu Âu",
+        region: "Pháp",
+        url: "https://www.leboncoin.fr/c/voitures",
+        rating: 4,
+        difficulty: "hard",
+        diffLabel: "Crawl: Khó (DataDome)",
+        desc: "Chợ rao vặt số 1 nước Pháp. Người dùng cá nhân tự chụp bằng điện thoại tại sân nhà, tạo ra dữ liệu thực tế không qua chỉnh sửa, rất giống điều kiện khách hàng.",
+        tags: ["Ảnh thực tế điện thoại", "Xe Pháp (Peugeot, Renault)", "Không chỉnh sửa"],
+        estImages: "700,000+ xe",
+        cdnInfo: "Bảo vệ bởi DataDome."
+      },
+
+      // 6. SOUTHEAST ASIA & VIETNAM
+      {
+        id: "carsome",
+        name: "Carsome",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Malaysia, Indo, Thái",
+        url: "https://www.carsome.my/",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: Dễ (Báo cáo 175 điểm)",
+        desc: "Quy trình kiểm định 175 điểm bắt buộc chụp ảnh toàn bộ khoang máy, cọc bình ắc quy, bình dầu phanh, nắp két nước, dây curoa để đính kèm báo cáo kiểm định.",
+        tags: ["Báo cáo 175 điểm", "Chụp cận từng bình", "Xe Đông Nam Á", "Vios, City, Accent"],
+        estImages: "30,000+ xe",
+        cdnInfo: "API kiểm định trả về danh sách ảnh inspect dạng JSON mở."
+      },
+      {
+        id: "carro",
+        name: "Carro",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Singapore, Malaysia, Thái",
+        url: "https://carro.co/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Nền tảng mua bán xe công nghệ hàng đầu ĐNÁ. Báo cáo kiểm định 160 điểm có hình ảnh khoang máy độ nét cao.",
+        tags: ["160-Point Inspection", "Singapore & Malaysia", "Xe phổ thông"],
+        estImages: "20,000+ xe",
+        cdnInfo: "Hình ảnh tải qua CDN Cloudflare."
+      },
+      {
+        id: "bonbanh",
+        name: "Bonbanh.com",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Việt Nam",
+        url: "https://bonbanh.com/",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Crawl: Rất Dễ",
+        desc: "Nơi tập trung hầu hết salon xe cũ tại Hà Nội, TP.HCM, Đà Nẵng. Salon luôn chụp 2-5 ảnh khoang máy để cam kết 'máy móc nguyên bản, keo chỉ zin'.",
+        tags: ["Thị trường Việt Nam", "Salon xe cũ VN", "Vios, CX-5, Ranger, Accent"],
+        estImages: "40,000+ tin đăng",
+        cdnInfo: "HTML thuần, ảnh định dạng JPG link trực tiếp không mã hóa."
+      },
+      {
+        id: "otocomvn",
+        name: "Oto.com.vn",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Việt Nam",
+        url: "https://oto.com.vn/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Dễ-TB",
+        desc: "Cổng thông tin mua bán xe hàng đầu Việt Nam. Rất nhiều tin đăng có hình chụp khoang động cơ đầy đủ ánh sáng.",
+        tags: ["Cổng xe lớn VN", "Đầy đủ hãng xe VN", "Dữ liệu sát thực tế"],
+        estImages: "50,000+ tin đăng",
+        cdnInfo: "CDN ảnh lưu trữ phân tán, dễ tải tự động."
+      },
+      {
+        id: "chotot",
+        name: "Chợ Tốt Xe",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Việt Nam",
+        url: "https://xe.chotot.com/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình (API)",
+        desc: "Nguồn ảnh người dùng cá nhân chụp bằng smartphone tại bãi gửi xe, ánh sáng tự nhiên, góc chụp nghiêng lệch - cực kỳ quý giá cho bài toán generalization trên xe mới.",
+        tags: ["Ảnh smartphone", "Ánh sáng thực tế ngoài trời", "Bám bụi đời thường"],
+        estImages: "60,000+ tin xe",
+        cdnInfo: "Có endpoint API mobile công khai trả về danh sách ảnh."
+      },
+      {
+        id: "mudah",
+        name: "Mudah.my Auto",
+        category: "sea",
+        categoryName: "ĐNÁ & Việt Nam",
+        region: "Malaysia",
+        url: "https://www.mudah.my/",
+        rating: 4,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Chợ xe lớn nhất Malaysia với sự xuất hiện của các thương hiệu nội địa Đông Nam Á như Proton, Perodua cùng các dòng xe Nhật phổ thông.",
+        tags: ["Proton & Perodua", "Xe ĐNÁ", "Ảnh người dùng"],
+        estImages: "30,000+ xe",
+        cdnInfo: "Cấu trúc danh mục rõ ràng."
+      },
+
+      // 7. SALVAGE & FIELD INSPECTIONS
+      {
+        id: "copart",
+        name: "Copart",
+        category: "salvage",
+        categoryName: "Xe Cứu Hộ / Bụi bặm",
+        region: "Mỹ & Toàn cầu",
+        url: "https://www.copart.com/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Sàn đấu giá xe bảo hiểm lớn nhất thế giới. Ảnh chụp ngoài trời dưới nắng gắt hoặc bóng râm, khoang máy dính bụi bẩn và không rửa hóa chất bóng loáng — dữ liệu vàng để chống overfitting.",
+        tags: ["Khoang máy bụi bặm", "Nắng ngoài trời", "Chống overfitting", "Xe va quẹt nhẹ"],
+        estImages: "250,000+ xe",
+        cdnInfo: "CDN ảnh Copart có thể tải trực tiếp theo ID lô xe (Lot Number)."
+      },
+      {
+        id: "iaai",
+        name: "IAAI (Insurance Auto Auctions)",
+        category: "salvage",
+        categoryName: "Xe Cứu Hộ / Bụi bặm",
+        region: "Mỹ",
+        url: "https://www.iaai.com/",
+        rating: 5,
+        difficulty: "medium",
+        diffLabel: "Crawl: Trung bình",
+        desc: "Tương tự Copart, chuyên đấu giá xe bảo hiểm. Mỗi xe có ảnh nắp capo mở nhìn rõ bình ắc quy, hộp cầu chì, két làm mát và ống dẫn.",
+        tags: ["Độ phân giải cao", "Cận cảnh linh kiện", "Bảo hiểm thẩm định"],
+        estImages: "180,000+ xe",
+        cdnInfo: "Ảnh 360 viewer và ảnh tĩnh độ nét cao."
+      },
+
+      // 8. READY-TO-USE AI DATASETS
+      {
+        id: "rf_engine_parts",
+        name: "Roboflow: Engine Bay Parts",
+        category: "ai_dataset",
+        categoryName: "Tập Dữ Liệu AI Đã Gán Nhãn",
+        region: "Toàn cầu (Open ML)",
+        url: "https://universe.roboflow.com/stephens-workspace-gjyrj/engine-bay-parts",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Download: Sẵn sàng (API Key)",
+        desc: "Bộ dữ liệu 2.380 ảnh khoang động cơ có sẵn 52 nhãn linh kiện (Battery, Brake Fluid, Coolant, Alternator, Fuse Box...). Đã có sẵn script tải trong configs/engine_bay_datasets.json của dự án.",
+        tags: ["Đã gán nhãn YOLO", "2,380 ảnh", "Giấy phép MIT", "Có sẵn script dự án"],
+        estImages: "2,380 ảnh",
+        cdnInfo: "Tải qua Roboflow API với định dạng YOLOv8 / COCO."
+      },
+      {
+        id: "kaggle_yolo",
+        name: "Kaggle: Engine Bay YOLO",
+        category: "ai_dataset",
+        categoryName: "Tập Dữ Liệu AI Đã Gán Nhãn",
+        region: "Kaggle Community",
+        url: "https://www.kaggle.com/datasets/khaledchawa/car-engine-bay-images-with-yolo-annotations",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Download: Sẵn sàng (Kaggle)",
+        desc: "Tập hợp hơn 1.200 ảnh khoang máy ô tô chụp thực tế kèm file nhãn bounding box chuẩn YOLO format (.txt).",
+        tags: ["Nhãn YOLO txt", "1,200+ ảnh", "Tải trực tiếp"],
+        estImages: "1,200 ảnh",
+        cdnInfo: "Tải qua lệnh 'kaggle datasets download'."
+      },
+      {
+        id: "hf_arabeitak",
+        name: "Hugging Face: Toyota Corolla Parts",
+        category: "ai_dataset",
+        categoryName: "Tập Dữ Liệu AI Đã Gán Nhãn",
+        region: "Hugging Face",
+        url: "https://huggingface.co/datasets/stevenalbert10/Toyota-Corolla-Car-Parts",
+        rating: 4,
+        difficulty: "easy",
+        diffLabel: "Download: Apache-2.0",
+        desc: "Bộ 1.353 ảnh phân loại linh kiện khoang máy Toyota Corolla 2015 (Battery, Coolant Reservoir, Air Filter, Engine Cover...). Đã dùng 40 ảnh cho v7.",
+        tags: ["Toyota Corolla", "1,353 ảnh", "Apache-2.0", "Cận cảnh linh kiện"],
+        estImages: "1,353 ảnh",
+        cdnInfo: "Tải qua thư viện 'datasets' của Hugging Face."
+      },
+      {
+        id: "wikimedia_hoods",
+        name: "Wikimedia: Automobiles with Open Hoods",
+        category: "ai_dataset",
+        categoryName: "Tập Dữ Liệu AI Đã Gán Nhãn",
+        region: "Toàn cầu (Public Domain)",
+        url: "https://commons.wikimedia.org/wiki/Category:Automobiles_with_open_hoods",
+        rating: 5,
+        difficulty: "easy",
+        diffLabel: "Crawl: API Mở (Không cấm IP)",
+        desc: "Hơn 1.680 ảnh khoang máy độ phân giải Full HD / 4K thuộc 19 danh mục hãng xe (Audi, BMW, Ford, Honda, Toyota...). Hiện đã tải 120 ảnh về H:\\AI_Datasets\\01.",
+        tags: ["1,680+ ảnh", "Giấy phép CC / CC0", "API không khóa IP", "120 ảnh đã tải"],
+        estImages: "1,680+ ảnh",
+        cdnInfo: "Truy vấn trực tiếp qua MediaWiki API không cần API key."
+      }
+    ];
+
+    // RENDER CARDS
+    const container = document.getElementById('sourcesContainer');
+    const searchInput = document.getElementById('searchInput');
+    const filterTabs = document.querySelectorAll('.filter-tab');
+
+    function renderCards(items) {
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+            <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-bottom: 12px; opacity: 0.5;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p style="font-size: 1.1rem; font-weight: 600;">Không tìm thấy nền tảng phù hợp với từ khóa.</p>
+            <p style="font-size: 0.9rem;">Thử tìm với tên linh kiện (battery, dipstick), tên garage, sàn xe hoặc bấm 'Tất cả'.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Group by category
+      const categories = [
+        { id: "garage", title: "1. Garage Kỹ Thuật, Cổng DIY & Xưởng Detailing Chuyên Nghiệp" },
+        { id: "auction", title: "2. Sàn Đấu Giá Chuyên Nghiệp & Xe Lướt Siêu Nét" },
+        { id: "jdm", title: "3. Sàn Xe Nhật Bản & Xuất Khẩu JDM" },
+        { id: "na", title: "4. Sàn Xe Cũ Bắc Mỹ (Mỹ & Canada)" },
+        { id: "eu", title: "5. Sàn Xe Cũ Châu Âu (Đức, Anh, Pháp)" },
+        { id: "sea", title: "6. Sàn Xe Đông Nam Á & Việt Nam (Sát thực tế nhất)" },
+        { id: "salvage", title: "7. Sàn Xe Cứu Hộ & Kiểm Định Bụi Bặm (Chống Overfitting)" },
+        { id: "ai_dataset", title: "8. Tập Dữ Liệu AI Đã Gán Nhãn & Thư Viện Mở" }
+      ];
+
+      let html = '';
+
+      categories.forEach(cat => {
+        const catItems = items.filter(i => i.category === cat.id);
+        if (catItems.length === 0) return;
+
+        html += `
+          <div class="section-title">
+            <h2>
+              <span>${cat.title}</span>
+              <span class="badge">${catItems.length} nguồn</span>
+            </h2>
+          </div>
+          <div class="cards-grid">
+        `;
+
+        catItems.forEach(item => {
+          const stars = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
+          const diffClass = item.difficulty;
+
+          const tagsHtml = item.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+          html += `
+            <div class="source-card">
+              <div>
+                <div class="card-header">
+                  <div class="card-title-group">
+                    <h3>${item.name}</h3>
+                    <div class="card-region">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      ${item.region}
+                    </div>
+                  </div>
+                  <div class="quality-rating" title="Độ phân giải và chất lượng ảnh khoang máy">
+                    ${stars}
+                  </div>
+                </div>
+
+                <p class="card-desc">${item.desc}</p>
+
+                <div class="card-tags">
+                  <span class="tag ${diffClass}">${item.diffLabel}</span>
+                  ${tagsHtml}
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <span class="specs-count">${item.estImages}</span>
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="link-btn">
+                  Truy cập
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // FILTER LOGIC
+    let currentCategory = 'all';
+    let currentQuery = '';
+
+    function applyFilters() {
+      const q = currentQuery.toLowerCase().trim();
+      const filtered = datasetSources.filter(item => {
+        const matchCategory = (currentCategory === 'all' || item.category === currentCategory);
+        const matchQuery = !q || (
+          item.name.toLowerCase().includes(q) ||
+          item.region.toLowerCase().includes(q) ||
+          item.desc.toLowerCase().includes(q) ||
+          item.cdnInfo.toLowerCase().includes(q) ||
+          item.tags.some(t => t.toLowerCase().includes(q))
+        );
+        return matchCategory && matchQuery;
+      });
+      renderCards(filtered);
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      currentQuery = e.target.value;
+      applyFilters();
+    });
+
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentCategory = tab.dataset.cat;
+        applyFilters();
+      });
+    });
+
+    // TOAST NOTIFICATION
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // COPY ALL URLS
+    function copyAllUrls() {
+      const urls = datasetSources.map(i => `${i.name} - ${i.url}`).join('\n');
+      navigator.clipboard.writeText(urls).then(() => {
+        showToast('Đã copy danh sách 44 link sàn xe & garage vào clipboard!');
+      });
+    }
+
+    // EXPORT DATA
+    function exportData(format) {
+      if (format === 'json') {
+        const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datasetSources, null, 2));
+        const a = document.createElement('a');
+        a.setAttribute("href", jsonStr);
+        a.setAttribute("download", "car_engine_bay_sources.json");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Đã xuất file car_engine_bay_sources.json!');
+      } else if (format === 'csv') {
+        let csv = "ID,Name,Category,Region,URL,Rating,Difficulty,Estimated_Images,Description\n";
+        datasetSources.forEach(i => {
+          csv += `"${i.id}","${i.name}","${i.categoryName}","${i.region}","${i.url}",${i.rating},"${i.diffLabel}","${i.estImages}","${i.desc.replace(/"/g, '""')}"\n`;
+        });
+        const csvStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        const a = document.createElement('a');
+        a.setAttribute("href", csvStr);
+        a.setAttribute("download", "car_engine_bay_sources.csv");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Đã xuất file car_engine_bay_sources.csv!');
+      }
+    }
+
+    // MAIN VIEW SWITCHER
+    function switchMainView(viewName) {
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const targetView = document.getElementById('view-' + viewName);
+      const targetBtn = document.getElementById('btn-view-' + viewName);
+      if (targetView) targetView.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+      window.scrollTo({ top: 380, behavior: 'smooth' });
+    }
+
+    // SAVINGS CALCULATOR LOGIC
+    function updateSavingsCalc() {
+      const slider = document.getElementById('calcSlider');
+      const select = document.getElementById('calcPhotosPerCar');
+      if (!slider || !select) return;
+
+      const carCount = parseInt(slider.value);
+      const photosPerCar = parseInt(select.value);
+      document.getElementById('calc-car-count-display').textContent = carCount.toLocaleString() + ' xe';
+
+      const totalPhotos = carCount * photosPerCar;
+      const avgFullResMb = 3.5; // 3.5MB / ảnh gốc 2K
+      const avgThumbKb = 12; // 12KB / thumbnail
+
+      // Truyền thống: Tải toàn bộ ảnh full-res
+      const tradBwGb = (totalPhotos * avgFullResMb) / 1024;
+      const tradBwTb = tradBwGb / 1024;
+
+      // In-Memory: Tải thumbnail vào RAM + chỉ tải 12% ảnh khoang máy chuẩn
+      const engineBayRatio = 0.12;
+      const verifiedPhotos = totalPhotos * engineBayRatio;
+      const thumbBwGb = (totalPhotos * avgThumbKb) / (1024 * 1024);
+      const fullResBwGb = (verifiedPhotos * avgFullResMb) / 1024;
+      const totalFilteredBwGb = thumbBwGb + fullResBwGb;
+      const savedBwGb = tradBwGb - totalFilteredBwGb;
+      const savedPercent = ((savedBwGb / tradBwGb) * 100).toFixed(1);
+
+      // Ước tính thời gian
+      const tradHours = (totalPhotos / 10 / 3600 * 4).toFixed(1);
+      const filterHours = (totalPhotos / 50 / 3600 + verifiedPhotos / 10 / 3600).toFixed(1);
+
+      document.getElementById('res-trad-bw').textContent = tradBwTb >= 1 ? tradBwTb.toFixed(2) + ' TB' : tradBwGb.toFixed(0) + ' GB';
+      document.getElementById('res-filter-bw').textContent = totalFilteredBwGb >= 1024 ? (totalFilteredBwGb/1024).toFixed(2) + ' TB' : totalFilteredBwGb.toFixed(1) + ' GB';
+      document.getElementById('res-saved-bw').textContent = (savedBwGb >= 1024 ? (savedBwGb/1024).toFixed(2) + ' TB' : savedBwGb.toFixed(0) + ' GB') + ` (${savedPercent}%)`;
+      document.getElementById('res-time-saved').textContent = `~${filterHours} giờ vs ${tradHours} giờ`;
+    }
+
+    // COPY CODE SNIPPET
+    function copyCode(elementId) {
+      const codeEl = document.getElementById(elementId);
+      if (codeEl) {
+        navigator.clipboard.writeText(codeEl.innerText).then(() => {
+          showToast('Đã copy đoạn mã vào clipboard!');
+        });
+      }
+    }
+
+    // INITIAL RENDER
+    renderCards(datasetSources);
+    updateSavingsCalc();
+  </script>
+</body>
+</html>

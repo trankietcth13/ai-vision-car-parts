@@ -1,0 +1,28 @@
+# Generated labels live here after running data_pipeline/qwen_grounding_annotator.py.
+# labels/ uses four-corner rectangular polygons so it is compatible with YOLO segmentation.
+path: ./data/engine_bay_labeled
+train: images/train
+val: images/val
+test: images/test
+nc: 20
+names:
+  0: battery
+  1: battery_terminal
+  2: fuse_relay_box
+  3: coolant_reservoir
+  4: radiator_cap
+  5: brake_fluid_reservoir
+  6: washer_fluid_reservoir
+  7: engine_cover
+  8: oil_filler_cap
+  9: oil_dipstick
+  10: air_filter_box
+  11: air_intake_duct
+  12: maf_sensor
+  13: throttle_body
+  14: alternator
+  15: ignition_coil
+  16: radiator_hose_upper
+  17: serpentine_belt
+  18: ecu_module
+  19: multimeter_diagnostic_tool

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhật ký phiên bản model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF2F1; --panel:#F8FAF9; --ink:#14221F; --muted:#586966; --line:#C9D4D1; --grid:#DCE4E2;
+  --teacher:#0B7A71; --student:#C77A00; --base:#7C8B88; --loss:#C2410C; --good:#1E7A3C; --warn:#A15C00;
+  --teacher-soft:#CFE9E5; --student-soft:#F6E4C2;
+  --display:"Chakra Petch","Bahnschrift","Segoe UI",sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono","Cascadia Mono",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1716; --panel:#162220; --ink:#E4ECEA; --muted:#93A6A2; --line:#2C3D3A; --grid:#22312E;
+    --teacher:#3CC2B4; --student:#F2A93B; --base:#8C9C99; --loss:#F2784B; --good:#5CC983; --warn:#E3A24A;
+    --teacher-soft:#143A36; --student-soft:#3B2A10; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1716; --panel:#162220; --ink:#E4ECEA; --muted:#93A6A2; --line:#2C3D3A; --grid:#22312E;
+  --teacher:#3CC2B4; --student:#F2A93B; --base:#8C9C99; --loss:#F2784B; --good:#5CC983; --warn:#E3A24A;
+  --teacher-soft:#143A36; --student-soft:#3B2A10; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);padding-inline:clamp(16px,4vw,48px);padding-block:32px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:48px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.5vw,44px);line-height:1.08}
+h2{font-size:clamp(21px,2.8vw,27px)}
+h3{font-size:17px}
+p{margin:0;max-width:70ch}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:17px;color:var(--muted)}
+header,section{display:grid;gap:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.card .k{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card .v{font:700 28px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.card .d{font-size:13px;color:var(--muted)}
+.card.t .v{color:var(--teacher)} .card.s .v{color:var(--student)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+td .ver{font:700 15px var(--display)}
+td .date{display:block;font:400 12px var(--mono);color:var(--muted)}
+.pill{display:inline-block;font:600 11px var(--mono);padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.up{color:var(--good)} .pill.down{color:var(--loss)} .pill.flat{color:var(--muted)} .pill.ref{color:var(--teacher)}
+ul.ch{margin:0;padding-left:18px;display:grid;gap:3px}
+.best td{background:color-mix(in srgb,var(--student-soft) 55%,transparent)}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:640px;height:auto}
+.axis text,.lbl{fill:var(--muted);font:400 11px var(--mono)}
+.val{fill:var(--ink);font:600 11px var(--mono)}
+.gridl{stroke:var(--grid)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--muted)}
+.callout{border-left:3px solid var(--warn);padding:6px 0 6px 14px;display:grid;gap:6px}
+ol.lessons{margin:0;padding-left:20px;display:grid;gap:8px;max-width:80ch}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Engine bay distillation · báo cáo phiên bản · 29/09/2026</span>
+  <h1>Model nhận diện khoang máy qua từng phiên bản</h1>
+  <p class="lede">Mỗi phiên bản thay đổi gì, và thay đổi đó được bao nhiêu điểm trên cùng một tập test: 125 ảnh đã review của 3 xe model chưa từng thấy (Request_ID_13, 23, 29). Chỉ số chính là mask mAP50-95; mask mAP50 và test case theo ảnh đi kèm.</p>
+  <div class="cards">
+    <div class="card s"><span class="k">Student tốt nhất trên xe mới</span><span class="v">0,302</span><span class="d">kd_n_p5t seed 0, trung bình 5 checkpoint · mask mAP50 0,514 · 58/100 ảnh đạt. Trung bình 2 seed 0,286.</span></div>
+    <div class="card t"><span class="k">Teacher tốt nhất trên xe mới</span><span class="v">0,354</span><span class="d">p5_reg, trung bình 5 checkpoint · mask mAP50 0,577</span></div>
+    <div class="card"><span class="k">Tiến bộ của student từ v4</span><span class="v">+0,093</span><span class="d">0,209 → 0,302 mask mAP50-95 (+44%). Test case ở ngưỡng 0,25: 47 (v6) → 58 ảnh đạt / 100.</span></div>
+    <div class="card"><span class="k">Model cuối (28 xe)</span><span class="v">kd_n_full</span><span class="d">Train trên 1.081 ảnh của cả 28 xe. Trên chính các ảnh đó: 1.017/1.081 ảnh đạt, recall 0,94. Số CV cho ảnh chưa thấy có tối nay.</span></div>
+  </div>
+</header>
+
+<section>
+  <span class="eyebrow">Benchmark trên cùng tập test</span>
+  <h2>Điểm của teacher và student qua các phiên bản</h2>
+  <div class="legend"><span><i style="background:var(--teacher)"></i>Teacher yolo11l-seg</span><span><i style="background:var(--student)"></i>Student KD yolo11n-seg (trung bình seed)</span><span><i style="background:var(--base)"></i>Student train một mình</span><span><i style="background:transparent;border:2px dashed var(--loss)"></i>Mục tiêu student 0,30</span></div>
+  <div class="chart"><svg id="bench" viewBox="0 0 900 330" role="img" aria-label="mask mAP50-95 trên test theo phiên bản"></svg></div>
+  <p class="note">v4 và v5 dùng nhãn test trước khi Codex sửa, nên chênh lệch với v6 trở đi một phần đến từ nhãn test. Từ v6, mọi con số đo trên cùng một bộ nhãn test. Teacher v4 và v5 train ở 1024 px, teacher từ v6 ở 640 px.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Nhật ký thay đổi</span>
+  <h2>Mỗi phiên bản làm gì</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Phiên bản</th><th>Thay đổi</th><th class="n">Teacher<br>mAP50-95</th><th class="n">Student KD<br>mAP50-95</th><th class="n">Student<br>mAP50</th><th class="n">Train một mình</th><th class="n">Test case<br>đạt/100</th><th>Kết luận</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ver">v1–v3</span><span class="date">26–27/09</span></td><td><ul class="ch"><li>Nhãn hộp từ Qwen3-VL, SAM2 vẽ mask, chưa review</li><li>Teacher yolo11m/l-seg, chỉ đo trên val 3 xe</li></ul></td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td>Không so được: chưa có tập test chuẩn. Phát hiện nhãn máy là nút thắt.</td></tr>
+      <tr><td><span class="ver">v4</span><span class="date">27/09</span></td><td><ul class="ch"><li>324 ảnh train review bằng skill chuyên gia</li><li>Val/test 100% review; phần còn lại là nhãn giả của teacher v2</li><li>Teacher 1024 px</li></ul></td><td class="n">0,233</td><td class="n">0,209</td><td class="n">0,382</td><td class="n">0,198</td><td class="n">–</td><td><span class="pill ref">mốc đầu</span> KD hơn train một mình 1,1 điểm</td></tr>
+      <tr><td><span class="ver">v5</span><span class="date">28/09 sáng</span></td><td><ul class="ch"><li>Codex sửa 101 nhãn, 166 ảnh khó được lặp lại</li><li>Val mở rộng từ 3 lên 6 xe</li><li>Teacher 60 epoch, patience 20</li></ul></td><td class="n">0,219</td><td class="n">0,193</td><td class="n">0,344</td><td class="n">0,165</td><td class="n">–</td><td><span class="pill down">−1,6</span> Teacher dừng sớm ở epoch 34. Bài học: không rút ngắn lịch train.</td></tr>
+      <tr><td><span class="ver">v6</span><span class="date">28/09</span></td><td><ul class="ch"><li>Teacher 640 px, cos LR, copy-paste 0,3, mixup 0,1, xoay 5°</li><li>Repeat-factor sampling cho lớp hiếm</li><li>566 ảnh gán lại nhãn giả bằng teacher v4; bỏ oil_filter</li></ul></td><td class="n">0,259</td><td class="n">0,245</td><td class="n">0,423</td><td class="n">0,218</td><td class="n">47</td><td><span class="pill up">+5,2</span> KD hơn train một mình 2,7 điểm</td></tr>
+      <tr><td><span class="ver">v7</span><span class="date">28/09</span></td><td><ul class="ch"><li>+175 ảnh ngoài đã review (Wikimedia, Toyota Corolla), chỉ đưa vào train</li></ul></td><td class="n">0,258</td><td class="n">0,249</td><td class="n">0,441</td><td class="n">–</td><td class="n">47</td><td><span class="pill flat">+0,4</span> Ảnh khác kiểu chụp giúp rất ít</td></tr>
+      <tr><td><span class="ver">v8</span><span class="date">28/09 tối</span></td><td><ul class="ch"><li>344 nhãn giả thay bằng nhãn hybrid đã review (DeepSeek → SAM2 → chuyên gia)</li><li>Số đối tượng 953 → 1.007; dầu phanh, cổ hút, que thăm dầu tăng mạnh</li></ul></td><td class="n">0,290</td><td class="n">0,264</td><td class="n">0,466</td><td class="n">–</td><td class="n">48</td><td><span class="pill up">+1,5</span> Đạt điều kiện giai đoạn 1. Nhãn sạch giúp cả teacher (+3,2)</td></tr>
+      <tr><td><span class="ver">Giai đoạn 5</span><span class="date">29/09 đêm</span></td><td><ul class="ch"><li>Thử từng thay đổi trên teacher v8: freeze 10 lớp, SGD, regularization</li><li>Trung bình trọng số 5 checkpoint tốt nhất</li></ul></td><td class="n">0,354</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td><span class="pill up">+6,4 teacher</span> Trung bình checkpoint là cải tiến lớn nhất</td></tr>
+      <tr class="best"><td><span class="ver">kd_n_p5t</span><span class="date">29/09 sáng</span></td><td><ul class="ch"><li>Dữ liệu v8, teacher mới (regularization + trung bình checkpoint)</li><li>Student lưu checkpoint mỗi 5 epoch, lấy trung bình 5 cái tốt nhất</li></ul></td><td class="n">0,354</td><td class="n">0,286</td><td class="n">0,491</td><td class="n">–</td><td class="n">58</td><td><span class="pill up">+2,2</span> Seed 0 vượt mục tiêu 0,30 (0,302); seed 1 đạt 0,270</td></tr>
+      <tr><td><span class="ver">full (v10)</span><span class="date">29/09 14:20</span></td><td><ul class="ch"><li>1.081 ảnh, cả 28 xe; mọi nhãn đã review và kiểm chứng độc lập</li><li>Loại 30 ảnh gầm xe, bổ sung 23 nhãn, gom 13 ảnh trùng</li><li>Công thức kd_n_p5t, trung bình 5 checkpoint cuối</li></ul></td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td>Không còn xe nào để test: đã thấy cả 28 xe. Đánh giá bằng CV (mục tiêu A)</td></tr>
+      <tr><td><span class="ver">v9</span><span class="date">đang xếp hàng</span></td><td><ul class="ch"><li>v8 + nhãn giai đoạn 2 trên xe train (29 ảnh mới, 62 nhãn thay)</li><li>Công thức mới, giữ riêng 3 xe test</li></ul></td><td class="n">…</td><td class="n">…</td><td class="n">…</td><td class="n">–</td><td class="n">…</td><td>Số đo trên xe mới của công thức mới, dự kiến sáng 30/09</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">Student KD: trung bình 2 seed từ v6 trở đi (v4, v5 một seed). kd_n_p5t: trung bình 2 seed của bản đã lấy trung bình checkpoint. mAP50 của student theo cùng quy ước.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Giai đoạn 5 chi tiết</span>
+  <h2>Thí nghiệm tinh chỉnh teacher, từng thay đổi một</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Thay đổi so với teacher v8</th><th class="n">Checkpoint tốt nhất</th><th class="n">Trung bình 5 checkpoint</th><th class="n">mAP50 (trung bình)</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td>Không đổi (teacher v8)</td><td class="n">0,290</td><td class="n">–</td><td class="n">0,479</td><td>Mốc so sánh</td></tr>
+      <tr><td>Freeze backbone 10 lớp</td><td class="n">0,310</td><td class="n">0,338</td><td class="n">0,557</td><td>Giữ đặc trưng pretrain, bớt overfit</td></tr>
+      <tr><td>SGD, lr0 0,01 (thay AdamW tự chọn)</td><td class="n">0,285</td><td class="n">0,319</td><td class="n">0,510</td><td>Tự nó không giúp</td></tr>
+      <tr class="best"><td>Weight decay 0,001, scale 0,7, perspective</td><td class="n">0,290</td><td class="n">0,354</td><td class="n">0,577</td><td>Được chọn cho công thức mới</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Model cuối cho mục tiêu A</span>
+  <h2>kd_n_full: train trên cả 28 xe</h2>
+  <p>Model triển khai cho mục tiêu A: nhận diện trên các xe và ảnh của <code>dataset</code>. Nó học từ mọi ảnh có nhãn chuẩn nên không còn tập test theo xe; số trên xe mới vẫn lấy từ kd_n_p5t và v9.</p>
+  <div class="cards">
+    <div class="card s"><span class="k">Ảnh đạt · 1.081 ảnh dataset</span><span class="v">94,1%</span><span class="d">1.017 ảnh đạt (tìm ≥ 50% linh kiện và ≥ 50% phát hiện đúng), ngưỡng 0,25</span></div>
+    <div class="card s"><span class="k">Recall linh kiện</span><span class="v">0,941</span><span class="d">3.421 / 3.635 linh kiện tìm đúng (mask IoU ≥ 0,5)</span></div>
+    <div class="card"><span class="k">Precision</span><span class="v">0,751</span><span class="d">1.135 phát hiện thừa ở ngưỡng chung 0,25. Ngưỡng riêng từng lớp từ CV sẽ giảm con số này.</span></div>
+    <div class="card"><span class="k">mAP trên fold 0 (đã học)</span><span class="v">0,94</span><span class="d">mask mAP50; mAP50-95 0,72. Teacher: 0,99 / 0,85.</span></div>
+  </div>
+  <div class="callout"><p><b>Cách đọc các số trên.</b> Model đã học chính những ảnh này, nên đây là mức khớp dữ liệu, không phải độ chính xác trên ảnh mới. Con số trung thực cho mục tiêu A là 3-fold CV (mỗi fold học 2/3 ảnh, đo trên 1/3 còn lại), dự kiến xong khoảng 00:00 hôm nay.</p></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Lớp</th><th class="n">Nhãn</th><th class="n">Tìm đúng</th><th class="n">Bỏ sót</th><th class="n">Phát hiện thừa</th><th class="n">Tỷ lệ tìm</th></tr></thead>
+    <tbody>
+      <tr><td>ignition_coil</td><td class="n">430</td><td class="n">409</td><td class="n">21</td><td class="n">124</td><td class="n">95%</td></tr>
+      <tr><td>air_intake_duct</td><td class="n">412</td><td class="n">395</td><td class="n">17</td><td class="n">132</td><td class="n">96%</td></tr>
+      <tr><td>battery_terminal</td><td class="n">336</td><td class="n">304</td><td class="n">32</td><td class="n">122</td><td class="n">90%</td></tr>
+      <tr><td>air_filter_box</td><td class="n">306</td><td class="n">301</td><td class="n">5</td><td class="n">85</td><td class="n">98%</td></tr>
+      <tr><td>battery</td><td class="n">263</td><td class="n">253</td><td class="n">10</td><td class="n">73</td><td class="n">96%</td></tr>
+      <tr><td>intake_manifold</td><td class="n">236</td><td class="n">228</td><td class="n">8</td><td class="n">69</td><td class="n">97%</td></tr>
+      <tr><td>oil_filler_cap</td><td class="n">218</td><td class="n">207</td><td class="n">11</td><td class="n">62</td><td class="n">95%</td></tr>
+      <tr><td>oil_dipstick</td><td class="n">210</td><td class="n">192</td><td class="n">18</td><td class="n">45</td><td class="n">91%</td></tr>
+      <tr><td>throttle_body</td><td class="n">180</td><td class="n">156</td><td class="n">24</td><td class="n">64</td><td class="n">87%</td></tr>
+      <tr><td>brake_fluid_reservoir</td><td class="n">166</td><td class="n">153</td><td class="n">13</td><td class="n">69</td><td class="n">92%</td></tr>
+      <tr><td>fuse_relay_box</td><td class="n">125</td><td class="n">124</td><td class="n">1</td><td class="n">69</td><td class="n">99%</td></tr>
+      <tr><td>coolant_reservoir</td><td class="n">121</td><td class="n">101</td><td class="n">20</td><td class="n">30</td><td class="n">83%</td></tr>
+      <tr><td>maf_sensor</td><td class="n">108</td><td class="n">102</td><td class="n">6</td><td class="n">36</td><td class="n">94%</td></tr>
+      <tr><td>engine_cover</td><td class="n">92</td><td class="n">92</td><td class="n">0</td><td class="n">25</td><td class="n">100%</td></tr>
+      <tr><td>radiator_cap</td><td class="n">83</td><td class="n">81</td><td class="n">2</td><td class="n">18</td><td class="n">98%</td></tr>
+      <tr><td>washer_fluid_reservoir</td><td class="n">81</td><td class="n">72</td><td class="n">9</td><td class="n">37</td><td class="n">89%</td></tr>
+      <tr><td>ecu_module</td><td class="n">80</td><td class="n">76</td><td class="n">4</td><td class="n">14</td><td class="n">95%</td></tr>
+      <tr><td>radiator_hose</td><td class="n">71</td><td class="n">65</td><td class="n">6</td><td class="n">36</td><td class="n">92%</td></tr>
+      <tr><td>multimeter_diagnostic_tool</td><td class="n">64</td><td class="n">63</td><td class="n">1</td><td class="n">2</td><td class="n">98%</td></tr>
+      <tr><td>alternator</td><td class="n">53</td><td class="n">47</td><td class="n">6</td><td class="n">23</td><td class="n">89%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">File: <code>runs/train_kd/kd_n_full/weights/best.pt</code> (6 MB, đã gỡ adapter) và <code>scripts/deployment/weights/kd_n_full_640.onnx</code>. Teacher cho máy chủ: <code>runs/segment/teacher_full/weights/best.pt</code>.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Tốc độ</span>
+  <h2>Độ trễ trên DGX GB10</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Model</th><th class="n">Tham số</th><th class="n">Kích thước</th><th class="n">Chỉ model</th><th class="n">Toàn pipeline</th><th class="n">FPS</th></tr></thead>
+    <tbody>
+      <tr><td>Student yolo11n-seg, PyTorch FP16</td><td class="n">2,84 tr</td><td class="n">5,7 MB</td><td class="n">2,9 ms</td><td class="n">4,0 ms</td><td class="n">248</td></tr>
+      <tr><td>Student yolo11n-seg, ONNX (CPU)</td><td class="n">2,84 tr</td><td class="n">11,1 MB</td><td class="n">36,5 ms</td><td class="n">47,4 ms</td><td class="n">21</td></tr>
+      <tr><td>Teacher yolo11l-seg, PyTorch (bs1)</td><td class="n">27,6 tr</td><td class="n">56 MB</td><td class="n">9,2 ms</td><td class="n">–</td><td class="n">–</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">Warm-up 20 lần, đo 200 lần trên ảnh thật. TensorRT chưa đo: phải build trên thiết bị đích.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Rút ra</span>
+  <h2>Điều gì thực sự giúp</h2>
+  <ol class="lessons">
+    <li><b>Nhãn sạch là đòn bẩy lớn nhất ở giai đoạn đầu.</b> Nhãn review ở v8 nâng cả teacher (+3,2) và student (+1,5); ảnh ngoài khác kiểu chụp ở v7 chỉ +0,4.</li>
+    <li><b>Trung bình checkpoint rẻ mà hiệu quả.</b> +3 đến +6 điểm cho teacher, +0,2 đến +1 cho student, không tốn thêm thời gian train.</li>
+    <li><b>KD luôn có lợi.</b> Student KD hơn student train một mình 1–3 điểm ở mọi lần đo, và đạt 80–95% điểm teacher với kích thước nhỏ hơn 10 lần.</li>
+    <li><b>Rút ngắn lịch train gây hại.</b> v5 dừng sớm và tụt 1,6 điểm.</li>
+    <li><b>Giới hạn còn lại là số xe.</b> 19 xe train khiến khoảng cách giữa ảnh đã học và xe mới vẫn lớn. Cần thêm 40–60 xe mới để vượt mức khoảng 0,30.</li>
+  </ol>
+  <div class="callout"><p><b>Độ tin cậy của số đo.</b> Tập test chỉ có 3 xe, 125 ảnh. Hai seed của cùng công thức có thể chênh tới 3 điểm (0,302 so với 0,270), nên chênh lệch dưới 2 điểm giữa hai phiên bản chưa chắc là thật.</p></div>
+</section>
+
+<footer>Nguồn số liệu: qa_results_v5…v8, qa_results_p5, qa_results_p5_avgfix, qa_results_p5_kd, test_cases_kd_*, qa_results/latency_kd_n_v8 trên DGX; báo cáo được tạo 29/09/2026.</footer>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e;}
+const V=[["v4",0.233,0.209,0.198],["v5",0.219,0.193,0.165],["v6",0.259,0.245,0.218],["v7",0.258,0.249,null],["v8",0.290,0.264,null],["kd_n_p5t",0.354,0.286,null]];
+const svg=document.getElementById("bench"),W=900,H=330,L=48,R=16,T=20,B=40,max=0.4;
+const y=v=>H-B-v/max*(H-T-B);
+[0,0.1,0.2,0.3,0.4].forEach(v=>{el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),class:"gridl"},svg);const t=el("text",{x:L-8,y:y(v)+4,"text-anchor":"end",class:"lbl"},svg);t.textContent=v.toFixed(1).replace(".",",");});
+el("line",{x1:L,x2:W-R,y1:y(0.30),y2:y(0.30),stroke:"var(--loss)","stroke-dasharray":"6 5","stroke-width":1.5},svg);
+const gw=(W-L-R)/V.length,bw=Math.min(34,gw/4);
+V.forEach(([n,t,s,b],i)=>{const cx=L+gw*i+gw/2;
+  [[t,"var(--teacher)",-1.1],[s,"var(--student)",0],[b,"var(--base)",1.1]].forEach(([v,c,o])=>{ if(v==null) return;
+    const x=cx+o*bw-bw/2; el("rect",{x:x,y:y(v),width:bw-3,height:H-B-y(v),fill:c,rx:2},svg);
+    const tx=el("text",{x:x+(bw-3)/2,y:y(v)-5,"text-anchor":"middle",class:"val"},svg); tx.textContent=v.toFixed(3).replace(".",",");});
+  const lt=el("text",{x:cx,y:H-14,"text-anchor":"middle",class:"lbl"},svg); lt.textContent=n;});
+</script>
+</body>
+</html>

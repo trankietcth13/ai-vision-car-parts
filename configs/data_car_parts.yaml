@@ -1,0 +1,64 @@
+# Dataset Configuration for Vehicle Component Detection & Segmentation
+# Standard YOLO Segmentation Format
+
+path: ./data/car_parts_dataset  # dataset root dir
+train: images/train            # train images (relative to 'path')
+val: images/val                # val images (relative to 'path')
+test: images/test              # test images (optional)
+
+# Number of classes
+nc: 24
+
+# Class Names (Ontology)
+names:
+  0: front_bumper
+  1: rear_bumper
+  2: hood
+  3: headlight_left
+  4: headlight_right
+  5: taillight_left
+  6: taillight_right
+  7: front_door_left
+  8: front_door_right
+  9: rear_door_left
+  10: rear_door_right
+  11: fender_front_left
+  12: fender_front_right
+  13: fender_rear_left
+  14: fender_rear_right
+  15: side_mirror_left
+  16: side_mirror_right
+  17: grille
+  18: windshield
+  19: rear_windshield
+  20: roof
+  21: wheel
+  22: quarter_panel
+  23: trunk_lid
+
+# Text prompts for Grounding DINO auto-labeling
+prompts:
+  front_bumper: "front bumper of car . front vehicle bumper"
+  rear_bumper: "rear bumper of car . back vehicle bumper"
+  hood: "car hood . bonnet of vehicle"
+  headlight_left: "left headlight of car . front left light"
+  headlight_right: "right headlight of car . front right light"
+  taillight_left: "left taillight of car . rear left light"
+  taillight_right: "right taillight of car . rear right light"
+  front_door_left: "front left car door"
+  front_door_right: "front right car door"
+  rear_door_left: "rear left car door"
+  rear_door_right: "rear right car door"
+  fender_front_left: "front left car fender"
+  fender_front_right: "front right car fender"
+  fender_rear_left: "rear left car fender"
+  fender_rear_right: "rear right car fender"
+  side_mirror_left: "left side wing mirror"
+  side_mirror_right: "right side wing mirror"
+  grille: "car front radiator grille"
+  windshield: "front car windshield glass"
+  rear_windshield: "rear car windshield glass"
+  roof: "car roof"
+  wheel: "car wheel tire and rim"
+  quarter_panel: "car quarter panel"
+  trunk_lid: "car trunk lid . boot lid"

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vehicle-image-database-crawler"
+version = "0.1.0"
+description = "License-aware vehicle image collector with Jev/YOLO classification and YMME Excel catalogs"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "httpx>=0.27,<1",
+  "openpyxl>=3.1,<4",
+  "Pillow>=10,<12",
+  "playwright>=1.48,<2",
+  "ultralytics>=8.3,<9",
+]
+
+[project.scripts]
+vehicle-image-crawler = "image_db_crawler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

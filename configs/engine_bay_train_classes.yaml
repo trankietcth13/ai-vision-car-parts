@@ -1,0 +1,71 @@
+# Training ontology for the engine-bay model (derived from the 36-class annotation ontology
+# in configs/data_engine_bay.yaml, which stays unchanged).
+#
+# Rule used on 2026-09-26: keep classes with >= ~40 auto-labeled instances, merge upper/lower
+# radiator hoses, drop very rare classes (their objects become background during training).
+# Instance counts come from data/engine_bay_labeled/annotation_summary.json (Qwen3-VL boxes);
+# revisit after the reviewed val/test sets and the first teacher run.
+#
+# map: annotation class name -> training class name (null = ignore)
+
+names:
+  0: battery
+  1: battery_terminal
+  2: fuse_relay_box
+  3: coolant_reservoir
+  4: radiator_cap
+  5: brake_fluid_reservoir
+  6: washer_fluid_reservoir
+  7: engine_cover
+  8: oil_filler_cap
+  9: oil_dipstick
+  10: air_filter_box
+  11: air_intake_duct
+  12: maf_sensor
+  13: throttle_body
+  14: alternator
+  15: ignition_coil
+  16: radiator_hose
+  17: ecu_module
+  18: multimeter_diagnostic_tool
+  19: intake_manifold
+  20: oil_filter
+
+map:
+  battery: battery
+  battery_terminal: battery_terminal
+  fuse_relay_box: fuse_relay_box
+  coolant_reservoir: coolant_reservoir
+  radiator_cap: radiator_cap
+  brake_fluid_reservoir: brake_fluid_reservoir
+  washer_fluid_reservoir: washer_fluid_reservoir
+  engine_cover: engine_cover
+  oil_filler_cap: oil_filler_cap
+  oil_dipstick: oil_dipstick
+  air_filter_box: air_filter_box
+  air_intake_duct: air_intake_duct
+  maf_sensor: maf_sensor
+  throttle_body: throttle_body
+  alternator: alternator
+  ignition_coil: ignition_coil
+  radiator_hose_upper: radiator_hose
+  radiator_hose_lower: radiator_hose
+  ecu_module: ecu_module
+  multimeter_diagnostic_tool: multimeter_diagnostic_tool
+  intake_manifold: intake_manifold
+  oil_filter: oil_filter
+  # dropped (too rare for now)
+  serpentine_belt: null            # 7
+  radiator: null                   # 3
+  radiator_cooling_fan: null       # 1
+  abs_modulator_unit: null         # 0
+  brake_booster: null              # 11
+  power_steering_reservoir: null   # 24
+  transmission_oil_dipstick: null  # 1
+  ac_compressor: null              # 20
+  exhaust_manifold_heat_shield: null  # 22
+  turbocharger: null               # 0
+  intercooler_piping: null         # 0
+  strut_tower_brace: null          # 18
+  hood_latch_mechanism: null       # 3
+  windshield_wiper_motor: null     # 1
