@@ -1,0 +1,592 @@
+# Engine-bay taxonomy v2: system -> fine component -> generic fallback class.
+# Design: docs/plans/teacher_all_components_workflow_2026-09-29.md
+#
+# Tiers
+#   A  trained as its own class now.
+#   B  labelled with its fine name, but trained under its `fallback` generic class (or ignored when
+#      fallback is null) until it reaches `promotion` thresholds; then set tier: A.
+# Generic classes (tier C) catch every visible component of their shape group that has no own class.
+# `ann_names` are names used by the 36-class annotation ontology (configs/data_engine_bay.yaml) and by
+# review verdicts; they map onto the fine component. `detail_classes` belong to the crop layer (L3),
+# not to the whole-bay model.
+# Knowledge cards (vi/en/cues/confusers) come from the automotive-expert component catalog.
+# Tiers here are declared; `scripts/data_pipeline/taxonomy_stats.py` reports the recommended tier.
+
+version: 2
+promotion:
+  min_instances: 60        # B -> A needs this many reviewed instances ...
+  min_vehicles: 8          # ... coming from at least this many vehicles
+  keep_min_instances: 40   # an A class is only demoted below this (hysteresis; v1 ontology used >= ~40)
+
+systems:
+  electrical:        {vi: "Điện & khởi động", en: "Charging, starting & electrical"}
+  ignition:          {vi: "Đánh lửa", en: "Ignition"}
+  air_intake:        {vi: "Nạp khí", en: "Air intake"}
+  forced_induction:  {vi: "Tăng áp", en: "Forced induction"}
+  fuel_evap:         {vi: "Nhiên liệu & EVAP", en: "Fuel & EVAP"}
+  exhaust_emissions: {vi: "Khí xả & khí thải", en: "Exhaust & emissions"}
+  cooling:           {vi: "Làm mát", en: "Cooling"}
+  lubrication:       {vi: "Bôi trơn", en: "Lubrication"}
+  accessory_drive:   {vi: "Truyền động phụ", en: "Accessory drive"}
+  brakes:            {vi: "Phanh", en: "Brakes"}
+  steering:          {vi: "Lái", en: "Steering"}
+  washer:            {vi: "Rửa kính", en: "Washer & wiper"}
+  body:              {vi: "Vỏ & tham chiếu", en: "Body & reference"}
+  tools:             {vi: "Dụng cụ", en: "Tools"}
+
+generic_classes:
+  other_reservoir:       {vi: "bình chứa khác", en: "other fluid reservoir"}
+  other_module_box:      {vi: "hộp / module khác", en: "other box or module"}
+  other_sensor_actuator: {vi: "cảm biến / van khác", en: "other sensor or actuator"}
+  other_hose_line:       {vi: "ống / đường dẫn khác", en: "other hose or line"}
+  other_cap_plug:        {vi: "nắp / tay cầm khác", en: "other cap, plug or handle"}
+  other_rotating_device: {vi: "thiết bị quay trên dây curoa khác", en: "other belt-driven device"}
+
+detail_classes: [electrical_connector, bolt_nut, hose_clamp, clip_push_pin]
+
+components:
+  # ---------------------------------------------------------------- electrical
+  battery:
+    system: electrical
+    tier: A
+    fallback: other_module_box
+    vi: "ắc quy 12V"
+    en: "12V battery"
+    cues: ["hộp chữ nhật có tem nhãn", "2 cọc", "giá kẹp"]
+    confusers:
+      fuse_relay_box: "hộp cầu chì có chốt gài, không có cọc"
+      air_filter_box: "hộp lọc gió có ống dẫn khí vào/ra"
+  battery_terminal:
+    system: electrical
+    tier: A
+    fallback: other_cap_plug
+    vi: "cọc / đầu cực ắc quy"
+    en: "battery terminal"
+    cues: ["kẹp trên cọc ắc quy", "nắp đỏ (+) hoặc cáp mát đen (-)"]
+    confusers:
+      jump_start_post: "cọc câu bình nằm xa ắc quy, trên hộp cầu chì/vè"
+  fuse_relay_box:
+    system: electrical
+    tier: A
+    fallback: other_module_box
+    vi: "hộp cầu chì / rơ-le"
+    en: "fuse & relay box"
+    cues: ["hộp đen có chốt gài", "nắp có sơ đồ cầu chì / chữ FUSE", "bó dây đi vào"]
+    confusers:
+      ecu_module: "ECU có giắc nhiều chân bản rộng, vỏ nhôm/nhựa, không có nắp gài"
+      battery: "ắc quy có cọc"
+  ecu_module:
+    system: electrical
+    tier: A
+    fallback: other_module_box
+    vi: "hộp ECU / ECM"
+    en: "engine control module"
+    cues: ["vỏ nhôm hoặc nhựa", "1-3 giắc nhiều chân bản rộng", "tem Bosch/Denso/Continental"]
+    confusers:
+      fuse_relay_box: "hộp cầu chì có nắp gài và sơ đồ"
+      abs_modulator_unit: "ABS có nhiều ống dầu phanh thép"
+  alternator:
+    system: electrical
+    tier: A
+    fallback: other_rotating_device
+    vi: "máy phát điện"
+    en: "alternator"
+    cues: ["vỏ nhôm có khe tản nhiệt", "puly + dây curoa", "cọc B+ chụp đỏ"]
+    confusers:
+      ac_compressor: "lốc lạnh có đĩa ly hợp và 2 ống gas nhôm, không có khe tản nhiệt"
+      starter_motor: "củ đề nằm thấp, không có dây curoa"
+  starter_motor:
+    system: electrical
+    tier: B
+    fallback: other_rotating_device
+    vi: "máy đề"
+    en: "starter motor"
+    cues: ["trụ có rơ-le đề phía trên", "cáp to", "bắt vào vỏ hộp số"]
+  jump_start_post:
+    system: electrical
+    tier: B
+    fallback: other_cap_plug
+    vi: "cọc câu bình"
+    en: "remote jump-start post"
+    cues: ["chụp đỏ", "cách xa ắc quy"]
+  wiring_harness:
+    system: electrical
+    tier: B
+    fallback: null
+    vi: "bó dây điện"
+    en: "wiring harness"
+    cues: ["bó dây quấn băng / ống gen gân"]
+    confusers:
+      vacuum_hose: "ống chân không trơn, nối vào cổ hút"
+
+  # ---------------------------------------------------------------- ignition
+  ignition_coil:
+    system: ignition
+    tier: A
+    fallback: other_sensor_actuator
+    vi: "mobin (bô-bin) đánh lửa"
+    en: "ignition coil"
+    cues: ["một cái cho mỗi xi-lanh, xếp hàng", "đầu có giắc, thân cắm xuống lỗ bugi", "trên nắp dàn cò"]
+    confusers:
+      fuel_injector: "kim phun nhỏ hơn, nằm dưới ống phân phối nhiên liệu"
+      spark_plug: "bugi rời trên bàn thợ có sứ trắng + ren"
+  coil_pack:
+    system: ignition
+    tier: B
+    fallback: other_module_box
+    vi: "cụm mobin"
+    en: "coil pack"
+    cues: ["một khối có 2-4 tháp + dây cao áp"]
+  spark_plug_wire:
+    system: ignition
+    tier: B
+    fallback: other_hose_line
+    vi: "dây cao áp"
+    en: "spark plug wire"
+    cues: ["dây to cách điện có chụp cao su"]
+
+  # ---------------------------------------------------------------- air intake
+  air_filter_box:
+    system: air_intake
+    tier: A
+    fallback: other_module_box
+    vi: "hộp lọc gió"
+    en: "air filter box"
+    cues: ["hộp nhựa đen 2-6 chốt/vít", "ống hút gió vào, ống dẫn khí ra"]
+    confusers:
+      engine_cover: "nắp máy phẳng, trang trí, không có chốt"
+      battery: "ắc quy có cọc"
+  air_intake_duct:
+    system: air_intake
+    tier: A
+    fallback: other_hose_line
+    vi: "ống dẫn khí nạp"
+    en: "air intake duct"
+    cues: ["ống đen to, thường có đoạn xếp nếp", "đai kẹp ở hai đầu", "hộp lọc gió -> bướm ga/turbo"]
+    confusers:
+      radiator_hose: "ống nước nhỏ hơn, trơn, đi tới két nước"
+      intercooler_piping: "ống sau turbo, thường bằng kim loại/silicone"
+  maf_sensor:
+    system: air_intake
+    tier: A
+    fallback: other_sensor_actuator
+    vi: "cảm biến lưu lượng khí nạp (MAF)"
+    en: "mass air flow sensor"
+    cues: ["cắm vào đầu ra hộp lọc gió", "giắc 4-6 chân + 2 vít", "chữ DENSO/HITACHI/BOSCH"]
+    confusers:
+      iat_sensor: "IAT nhỏ hơn, 2 chân"
+  throttle_body:
+    system: air_intake
+    tier: A
+    fallback: other_sensor_actuator
+    vi: "cụm bướm ga"
+    en: "throttle body"
+    cues: ["thân nhôm có lỗ tròn nơi ống nạp kết thúc", "gờ mô-tơ + giắc 6 chân"]
+    confusers:
+      egr_valve: "EGR có ống từ phía xả tới"
+      maf_sensor: "MAF ở phía hộp lọc gió"
+  intake_manifold:
+    system: air_intake
+    tier: A
+    fallback: null
+    vi: "cổ góp hút"
+    en: "intake manifold"
+    cues: ["buồng nhựa/nhôm có các nhánh tới từng xi-lanh", "hàng bu-lông ở chân", "cổng chân không"]
+    confusers:
+      engine_cover: "nắp máy trơn, không thấy nhánh"
+      valve_cover: "nắp dàn cò có nắp đổ dầu"
+  map_sensor:
+    system: air_intake
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "cảm biến áp suất đường nạp (MAP)"
+    en: "manifold absolute pressure sensor"
+    cues: ["cảm biến nhỏ 3 chân, 1 vít", "cắm vào cổ hút"]
+    confusers:
+      evap_purge_valve: "van EVAP có 2 núm ống"
+  iat_sensor:
+    system: air_intake
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "cảm biến nhiệt độ khí nạp (IAT)"
+    en: "intake air temperature sensor"
+    cues: ["cảm biến nhỏ 2 chân trên ống/hộp lọc gió"]
+  intake_resonator:
+    system: air_intake
+    tier: B
+    fallback: other_module_box
+    vi: "hộp cộng hưởng khí nạp"
+    en: "intake resonator"
+    cues: ["bầu nhựa rỗng nhánh ra từ ống nạp"]
+  vacuum_hose:
+    system: air_intake
+    tier: B
+    fallback: other_hose_line
+    vi: "ống chân không"
+    en: "vacuum hose"
+    cues: ["ống cao su/nhựa nhỏ nối cổ hút với các bộ phận"]
+
+  # ---------------------------------------------------------------- forced induction
+  turbocharger:
+    system: forced_induction
+    tier: B
+    fallback: other_rotating_device
+    vi: "tăng áp (turbo)"
+    en: "turbocharger"
+    cues: ["vỏ hình ốc sên nhôm + tuabin gang (thường dưới tấm chắn nhiệt)", "ống dầu/nước"]
+  intercooler_piping:
+    system: forced_induction
+    tier: B
+    fallback: other_hose_line
+    vi: "ống dẫn khí tăng áp"
+    en: "intercooler piping"
+    cues: ["ống to nhôm/nhựa/silicone có đai kẹp giữa turbo, két làm mát khí nạp, bướm ga"]
+  wastegate_actuator:
+    system: forced_induction
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "bộ chấp hành van xả tăng áp"
+    en: "wastegate actuator"
+    cues: ["hộp tròn có cần đẩy tới vỏ tuabin"]
+
+  # ---------------------------------------------------------------- fuel & EVAP
+  fuel_rail:
+    system: fuel_evap
+    tier: B
+    fallback: other_hose_line
+    vi: "ống phân phối nhiên liệu"
+    en: "fuel rail"
+    cues: ["ống kim loại dọc nắp máy, kim phun bên dưới", "chữ CAUTION FUEL trên đường ống"]
+  fuel_injector:
+    system: fuel_evap
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "kim phun"
+    en: "fuel injector"
+    cues: ["trụ nhỏ có giắc 2 chân xếp hàng, dưới ống phân phối"]
+    confusers:
+      ignition_coil: "mobin to hơn, nằm trên nắp dàn cò"
+  evap_purge_valve:
+    system: fuel_evap
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "van xả hơi xăng EVAP (purge)"
+    en: "EVAP purge valve"
+    cues: ["van điện từ nhỏ có 2 núm ống + giắc 2 chân", "ống tới cổ hút và về phía sau"]
+    confusers:
+      map_sensor: "MAP chỉ có 1 cổng"
+  fuel_supply_line:
+    system: fuel_evap
+    tier: B
+    fallback: other_hose_line
+    vi: "ống cấp nhiên liệu"
+    en: "fuel supply line"
+    cues: ["ống cứng/nylon có khớp nối nhanh, chữ FUEL"]
+  hp_fuel_pump:
+    system: fuel_evap
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "bơm nhiên liệu cao áp (GDI)"
+    en: "high-pressure fuel pump"
+    cues: ["bơm trụ bắt ở đầu nắp máy, ống thép dày tới ống phân phối"]
+
+  # ---------------------------------------------------------------- exhaust & emissions
+  exhaust_manifold_heat_shield:
+    system: exhaust_emissions
+    tier: A
+    fallback: null
+    vi: "tấm chắn nhiệt cổ xả"
+    en: "exhaust manifold heat shield"
+    cues: ["tấm kim loại mỏng sáng/gân có bu-lông trên cổ xả"]
+    confusers:
+      engine_cover: "nắp máy bằng nhựa"
+  exhaust_manifold:
+    system: exhaust_emissions
+    tier: B
+    fallback: null
+    vi: "cổ góp xả"
+    en: "exhaust manifold"
+    cues: ["ống gang/thép từ từng cửa xả gộp lại, thường gỉ màu nâu"]
+  o2_sensor:
+    system: exhaust_emissions
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "cảm biến oxy (O2/AF)"
+    en: "oxygen sensor"
+    cues: ["giống bugi, có dây tín hiệu tới giắc", "vặn vào cổ xả / ống xả"]
+    confusers:
+      knock_sensor: "cảm biến kích nổ dạng vòng đệm bắt vào thân máy"
+  egr_valve:
+    system: exhaust_emissions
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "van EGR"
+    en: "EGR valve"
+    cues: ["van có bộ chấp hành chân không/điện", "mặt bích bắt bu-lông", "ống từ phía xả"]
+    confusers:
+      throttle_body: "bướm ga có ống gió to đi vào"
+
+  # ---------------------------------------------------------------- cooling
+  coolant_reservoir:
+    system: cooling
+    tier: A
+    fallback: other_reservoir
+    vi: "bình nước làm mát phụ"
+    en: "coolant reservoir"
+    cues: ["bình trắng/vàng trong có MIN/MAX", "dung dịch màu hồng/xanh/cam", "nắp có biểu tượng hơi nóng (loại có áp)"]
+    confusers:
+      washer_fluid_reservoir: "nắp có biểu tượng kính chắn gió + tia nước, thường màu xanh"
+      brake_fluid_reservoir: "nhỏ, chữ DOT, nằm trên xi-lanh phanh chính ở vách máy"
+      power_steering_reservoir: "nắp có biểu tượng vô-lăng"
+  radiator_cap:
+    system: cooling
+    tier: A
+    fallback: other_cap_plug
+    vi: "nắp két nước"
+    en: "radiator cap"
+    cues: ["nắp áp suất trên cổ két nước", "cảnh báo không mở khi nóng"]
+    confusers:
+      coolant_reservoir: "nắp nằm trên bình phụ thì gán nhãn bình phụ"
+  radiator_hose:
+    system: cooling
+    tier: A
+    fallback: other_hose_line
+    ann_names: [radiator_hose_upper, radiator_hose_lower]
+    vi: "ống nước két (trên/dưới)"
+    en: "radiator hose"
+    cues: ["ống cao su trơn, dày, có đai kẹp", "két nước <-> van hằng nhiệt/bơm nước"]
+    confusers:
+      air_intake_duct: "ống nạp to hơn, có gân, đi tới hộp lọc gió"
+      heater_hose: "ống sưởi nhỏ hơn, đi xuyên vách máy"
+  heater_hose:
+    system: cooling
+    tier: B
+    fallback: other_hose_line
+    vi: "ống nước sưởi"
+    en: "heater hose"
+    cues: ["2 ống nước nhỏ đi xuyên vách máy"]
+  thermostat_housing:
+    system: cooling
+    tier: B
+    fallback: null
+    vi: "cổ nước / hộp van hằng nhiệt"
+    en: "thermostat housing"
+    cues: ["cút nhựa/đúc nơi ống nước trên cắm vào", "2-3 bu-lông, thường có cảm biến ECT"]
+  radiator:
+    system: cooling
+    tier: B
+    fallback: null
+    vi: "két nước làm mát"
+    en: "radiator"
+    cues: ["lõi có lá tản nhiệt, bình hai bên, cổ ống trên/dưới"]
+  radiator_cooling_fan:
+    system: cooling
+    tier: B
+    fallback: null
+    vi: "quạt két nước"
+    en: "radiator cooling fan"
+    cues: ["cánh quạt trong khung che + mô-tơ"]
+  ect_sensor:
+    system: cooling
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "cảm biến nhiệt độ nước làm mát (ECT)"
+    en: "engine coolant temperature sensor"
+    cues: ["cảm biến nhỏ đồng/nhựa 2 chân trên hộp van hằng nhiệt / nắp máy"]
+
+  # ---------------------------------------------------------------- lubrication
+  oil_filler_cap:
+    system: lubrication
+    tier: A
+    fallback: other_cap_plug
+    vi: "nắp đổ dầu máy"
+    en: "oil filler cap"
+    cues: ["nắp tròn vặn, biểu tượng bình dầu", "thường có chữ SAE 5W-30/0W-20", "trên nắp dàn cò"]
+    confusers:
+      radiator_cap: "nắp két nước có cảnh báo nóng, nằm trên két/bình"
+      brake_fluid_reservoir: "nắp dầu phanh có chữ DOT"
+      washer_fluid_reservoir: "nắp nước rửa kính có biểu tượng kính chắn gió"
+  oil_dipstick:
+    system: lubrication
+    tier: A
+    fallback: other_cap_plug
+    vi: "que thăm dầu máy"
+    en: "engine oil dipstick"
+    cues: ["tay cầm vòng/chữ T màu vàng/cam", "ống nhỏ cắm xuống thân máy", "chữ ENGINE OIL"]
+    confusers:
+      transmission_oil_dipstick: "que dầu hộp số màu đỏ, chữ ATF, gần hộp số"
+  oil_filter:
+    system: lubrication
+    tier: B
+    fallback: null
+    vi: "lọc dầu"
+    en: "oil filter"
+    cues: ["lõi lọc vặn (xanh/trắng/đen/cam) hoặc nắp hộp lọc có biểu tượng"]
+  valve_cover:
+    system: lubrication
+    tier: B
+    fallback: null
+    vi: "nắp dàn cò"
+    en: "valve cover"
+    cues: ["nắp dài bắt bu-lông dọc đỉnh nắp máy", "có nắp đổ dầu, mobin xuyên qua"]
+    confusers:
+      engine_cover: "nắp máy trang trí, không có hàng bu-lông, không có nắp dầu"
+  pcv_valve:
+    system: lubrication
+    tier: B
+    fallback: other_sensor_actuator
+    vi: "van PCV"
+    en: "PCV valve"
+    cues: ["van nhỏ/gioăng trên nắp dàn cò có ống tới đường nạp"]
+  breather_hose:
+    system: lubrication
+    tier: B
+    fallback: other_hose_line
+    vi: "ống thông hơi các-te"
+    en: "crankcase breather hose"
+    cues: ["ống nhỏ-vừa từ nắp dàn cò tới ống nạp"]
+  transmission_oil_dipstick:
+    system: lubrication
+    tier: B
+    fallback: other_cap_plug
+    vi: "que thăm dầu hộp số (ATF)"
+    en: "transmission dipstick"
+    cues: ["tay cầm đỏ/đen, chữ ATF, gần hộp số"]
+
+  # ---------------------------------------------------------------- accessory drive
+  serpentine_belt:
+    system: accessory_drive
+    tier: B
+    fallback: null
+    vi: "dây curoa tổng"
+    en: "serpentine belt"
+    cues: ["dây cao su dẹt có gân quấn quanh nhiều puly"]
+  ac_compressor:
+    system: accessory_drive
+    tier: B
+    fallback: other_rotating_device
+    vi: "lốc lạnh (máy nén điều hòa)"
+    en: "A/C compressor"
+    cues: ["puly có đĩa ly hợp", "2 ống gas nhôm"]
+    confusers:
+      alternator: "máy phát có khe tản nhiệt và cọc B+"
+  belt_tensioner:
+    system: accessory_drive
+    tier: B
+    fallback: other_rotating_device
+    vi: "bộ căng đai"
+    en: "belt tensioner"
+    cues: ["tay lò xo có puly, thường có vạch chỉ báo"]
+  power_steering_pump:
+    system: accessory_drive
+    tier: B
+    fallback: other_rotating_device
+    vi: "bơm trợ lực lái"
+    en: "power steering pump"
+    cues: ["bơm có puly + ống cao áp + ống về bình dầu"]
+
+  # ---------------------------------------------------------------- brakes
+  brake_fluid_reservoir:
+    system: brakes
+    tier: A
+    fallback: other_reservoir
+    vi: "bình dầu phanh"
+    en: "brake fluid reservoir"
+    cues: ["bình nhỏ trong trên xi-lanh phanh chính", "nắp có chữ DOT 3/4 và biểu tượng phanh", "vách máy phía người lái"]
+    confusers:
+      coolant_reservoir: "bình nước làm mát to hơn, ở góc/đầu xe"
+      clutch_reservoir: "bình dầu côn nhỏ nằm cạnh (xe số sàn)"
+  brake_booster:
+    system: brakes
+    tier: B
+    fallback: null
+    vi: "bầu trợ lực phanh"
+    en: "brake booster"
+    cues: ["trống tròn đen lớn ở vách máy", "ống chân không có van một chiều"]
+  abs_modulator_unit:
+    system: brakes
+    tier: B
+    fallback: other_module_box
+    vi: "cụm ABS"
+    en: "ABS modulator"
+    cues: ["khối kim loại có nhiều ống dầu phanh thép + module điện tử"]
+    confusers:
+      ecu_module: "ECU không có ống dầu phanh"
+  brake_master_cylinder:
+    system: brakes
+    tier: B
+    fallback: null
+    vi: "xi-lanh phanh chính"
+    en: "brake master cylinder"
+    cues: ["trụ kim loại dưới bình dầu phanh, 2 ống thép"]
+  clutch_reservoir:
+    system: brakes
+    tier: B
+    fallback: other_reservoir
+    vi: "bình dầu côn"
+    en: "clutch fluid reservoir"
+    cues: ["bình nhỏ cạnh bình dầu phanh (xe số sàn)"]
+
+  # ---------------------------------------------------------------- steering
+  power_steering_reservoir:
+    system: steering
+    tier: B
+    fallback: other_reservoir
+    vi: "bình dầu trợ lực lái"
+    en: "power steering reservoir"
+    cues: ["bình nhỏ, nắp có biểu tượng vô-lăng, thường tròn"]
+    confusers:
+      brake_fluid_reservoir: "nắp dầu phanh có chữ DOT"
+
+  # ---------------------------------------------------------------- washer
+  washer_fluid_reservoir:
+    system: washer
+    tier: A
+    fallback: other_reservoir
+    vi: "bình nước rửa kính"
+    en: "washer fluid reservoir"
+    cues: ["cổ đổ + nắp (thường xanh) có biểu tượng kính chắn gió + tia nước", "thân bình thường bị che"]
+    confusers:
+      coolant_reservoir: "bình nước làm mát có MIN/MAX và nắp cảnh báo nóng"
+  windshield_wiper_motor:
+    system: washer
+    tier: B
+    fallback: null
+    vi: "mô-tơ gạt mưa"
+    en: "windshield wiper motor"
+    cues: ["mô-tơ + thanh truyền dưới hộc gió"]
+
+  # ---------------------------------------------------------------- body & reference
+  engine_cover:
+    system: body
+    tier: A
+    fallback: null
+    vi: "nắp che động cơ"
+    en: "engine cover"
+    cues: ["tấm nhựa lớn trơn trang trí, có logo/chữ", "gài vào chốt bi"]
+    confusers:
+      intake_manifold: "cổ hút có nhánh, bu-lông, cổng chân không"
+      air_filter_box: "hộp lọc gió có chốt và ống dẫn"
+  strut_tower_brace:
+    system: body
+    tier: B
+    fallback: null
+    vi: "thanh giằng tháp giảm xóc"
+    en: "strut tower brace"
+    cues: ["thanh kim loại nối hai tháp giảm xóc"]
+  hood_latch_mechanism:
+    system: body
+    tier: B
+    fallback: null
+    vi: "khóa nắp capo"
+    en: "hood latch"
+    cues: ["chốt khóa + lẫy an toàn giữa khung trước"]
+
+  # ---------------------------------------------------------------- tools
+  multimeter_diagnostic_tool:
+    system: tools
+    tier: A
+    fallback: null
+    vi: "đồng hồ đo / thiết bị chẩn đoán"
+    en: "multimeter / diagnostic tool"
+    cues: ["thiết bị cầm tay có màn hình và que đo / cáp OBD"]

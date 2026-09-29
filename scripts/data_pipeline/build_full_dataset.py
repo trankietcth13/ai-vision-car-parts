@@ -82,6 +82,33 @@ def repeat_list(stems: list[str], labels: dict[str, list[str]], rng: random.Rand
     return out
 
 
+def build_remaps(base_names: dict[int, str], ann: dict[int, str], tc: dict, taxonomy_path: Path | None = None):
+    """Class-id maps for the pool.
+
+    Returns (out_names, ann_remap, train_remap):
+        out_names    id -> name of the output ontology
+        ann_remap    36-class annotation id -> output id (None = drop)
+        train_remap  base training id (v1 ontology of --base) -> output id (None = drop)
+    Without a taxonomy the output ontology is the v1 training ontology (oil_filter dropped, as since v6).
+    With configs/taxonomy_v2.yaml every name goes through Taxonomy.train_id_for (tier A itself, tier B its
+    generic fallback, unknown/ignored -> None).
+    """
+    if taxonomy_path is not None:
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from data_pipeline.taxonomy import load_taxonomy
+        tax = load_taxonomy(taxonomy_path)
+        ann_remap = {k: tax.train_id_for(n) for k, n in ann.items()}
+        train_remap = {k: tax.train_id_for(n) for k, n in base_names.items()}
+        return tax.yolo_names(), ann_remap, train_remap
+    t_id = {v: int(k) for k, v in tc["names"].items()}
+    oil = t_id.get("oil_filter")
+    ann_remap = {k: (t_id[tc["map"][n]] if tc["map"].get(n) else None) for k, n in ann.items()}
+    ann_remap = {k: (None if v == oil else v) for k, v in ann_remap.items()}
+    train_remap = {k: (None if k == oil else k) for k in base_names}
+    return dict(base_names), ann_remap, train_remap
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", type=Path, required=True, help="v8/v9 train dataset (training class ids)")
@@ -95,6 +122,13 @@ def main():
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "engine_bay_full")
     ap.add_argument("--ann-config", type=Path, default=ROOT / "configs" / "data_engine_bay.yaml")
     ap.add_argument("--train-classes", type=Path, default=ROOT / "configs" / "engine_bay_train_classes.yaml")
+    ap.add_argument("--taxonomy", type=Path, default=None,
+                    help="configs/taxonomy_v2.yaml: output the v2 training classes (tier A + generic fallbacks) "
+                         "instead of the v1 training ontology; base and reviewed labels are remapped by name")
+    ap.add_argument("--extra-from", nargs="*", default=[],
+                    help="with --taxonomy: DIR:SPLIT 36-class reviewed label folders (e.g. data/engine_bay_reviewed:train). "
+                         "For stems labelled from --base (v1 ids, which dropped non-v1 classes) the instances of classes "
+                         "that v1 dropped but v2 trains (heat shield, generic fallbacks) are added back from here")
     ap.add_argument("--folds", type=int, default=5)
     ap.add_argument("--dup-groups", type=Path, default=ROOT / "data" / "engine_bay_phase2" / "DUPLICATES.json",
                     help="find_duplicates.py output; each group of identical/near-identical photos stays in one fold")
@@ -108,12 +142,10 @@ def main():
 
     base, out = a.base.resolve(), a.out.resolve()
     cfg = yaml.safe_load((base / "data_engine_bay_train.yaml").read_text(encoding="utf-8"))
-    names = {int(k): v for k, v in cfg["names"].items()}
+    base_names = {int(k): v for k, v in cfg["names"].items()}
     ann = {int(k): v for k, v in yaml.safe_load(a.ann_config.read_text(encoding="utf-8"))["names"].items()}
     tc = yaml.safe_load(a.train_classes.read_text(encoding="utf-8"))
-    t_id = {v: int(k) for k, v in tc["names"].items()}
-    remap = {k: (t_id[tc["map"][n]] if tc["map"].get(n) else None) for k, n in ann.items()}
-    remap = {k: (None if v == t_id.get("oil_filter") else v) for k, v in remap.items()}
+    names, remap, train_remap = build_remaps(base_names, ann, tc, a.taxonomy)
 
     status, orig_path = {}, {}
     if a.candidates.exists():
@@ -159,8 +191,8 @@ def main():
                 s = line.split()
                 if len(s) < 7:
                     continue
-                new = int(s[0]) if train_ids else remap.get(int(s[0]))
-                if new is None or (train_ids and new == t_id.get("oil_filter")):
+                new = train_remap.get(int(s[0])) if train_ids else remap.get(int(s[0]))
+                if new is None:
                     stats["reviewed_instances_dropped_non_training_class"] += 1
                     continue
                 lines.append(" ".join([str(new), *s[1:]]))
@@ -193,9 +225,41 @@ def main():
             if img is None:
                 stats["base_missing_image"] += 1
                 continue
-            labels[stem] = [l for l in lp.read_text().splitlines() if l.split()]
+            kept = []
+            for l in lp.read_text().splitlines():
+                s = l.split()
+                if not s:
+                    continue
+                new = train_remap.get(int(s[0]))
+                if new is None:
+                    stats["base_instances_dropped_non_training_class"] += 1
+                    continue
+                kept.append(" ".join([str(new), *s[1:]]))
+            labels[stem] = kept
             image_of[stem], source[stem] = img, f"base_{split}"
             stats[f"from_base_{split}"] += 1
+
+    # 3) v2 only: add back instances of classes the v1 base build dropped
+    if a.extra_from:
+        if a.taxonomy is None:
+            raise SystemExit("--extra-from needs --taxonomy")
+        _, v1_ann_remap, _ = build_remaps(base_names, ann, tc)
+        dropped_by_v1 = {k for k, v in v1_ann_remap.items() if v is None and remap.get(k) is not None}
+        for spec in a.extra_from:
+            d, _, split = spec.rpartition(":")
+            d = Path(d) if Path(d).is_absolute() else ROOT / d
+            if not (d / "labels" / split).is_dir():
+                print(f"note: extra source {d}/labels/{split} not found, skipped")
+                continue
+            for lp in sorted((d / "labels" / split).glob("*.txt")):
+                s = lp.stem
+                if s not in labels or not source[s].startswith("base_"):
+                    continue
+                for line in lp.read_text().splitlines():
+                    p = line.split()
+                    if len(p) >= 7 and int(p[0]) in dropped_by_v1:
+                        labels[s].append(" ".join([str(remap[int(p[0])]), *p[1:]]))
+                        stats["extra_instances_added_v2"] += 1
 
     dataset_stems = sorted(s for s in labels if not s.startswith("EXT__"))
     missing = sorted(s for s, st in status.items() if st in ("unreviewed_in_train", "unreviewed_not_in_train")

@@ -1,0 +1,369 @@
+{
+  "images": 912,
+  "instances": 3542,
+  "components": {
+    "battery": {
+      "instances": 255,
+      "vehicles": 25
+    },
+    "battery_terminal": {
+      "instances": 320,
+      "vehicles": 25
+    },
+    "fuse_relay_box": {
+      "instances": 106,
+      "vehicles": 25
+    },
+    "ecu_module": {
+      "instances": 76,
+      "vehicles": 19
+    },
+    "alternator": {
+      "instances": 51,
+      "vehicles": 11
+    },
+    "starter_motor": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "jump_start_post": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "wiring_harness": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "ignition_coil": {
+      "instances": 394,
+      "vehicles": 26
+    },
+    "coil_pack": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "spark_plug_wire": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "air_filter_box": {
+      "instances": 292,
+      "vehicles": 28
+    },
+    "air_intake_duct": {
+      "instances": 384,
+      "vehicles": 28
+    },
+    "maf_sensor": {
+      "instances": 107,
+      "vehicles": 18
+    },
+    "throttle_body": {
+      "instances": 159,
+      "vehicles": 24
+    },
+    "intake_manifold": {
+      "instances": 196,
+      "vehicles": 24
+    },
+    "map_sensor": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "iat_sensor": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "intake_resonator": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "vacuum_hose": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "turbocharger": {
+      "instances": 4,
+      "vehicles": 2
+    },
+    "intercooler_piping": {
+      "instances": 14,
+      "vehicles": 4
+    },
+    "wastegate_actuator": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "fuel_rail": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "fuel_injector": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "evap_purge_valve": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "fuel_supply_line": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "hp_fuel_pump": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "exhaust_manifold_heat_shield": {
+      "instances": 68,
+      "vehicles": 15
+    },
+    "exhaust_manifold": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "o2_sensor": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "egr_valve": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "coolant_reservoir": {
+      "instances": 112,
+      "vehicles": 23
+    },
+    "radiator_cap": {
+      "instances": 73,
+      "vehicles": 16
+    },
+    "radiator_hose": {
+      "instances": 49,
+      "vehicles": 18
+    },
+    "heater_hose": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "thermostat_housing": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "radiator": {
+      "instances": 1,
+      "vehicles": 1
+    },
+    "radiator_cooling_fan": {
+      "instances": 4,
+      "vehicles": 4
+    },
+    "ect_sensor": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "oil_filler_cap": {
+      "instances": 204,
+      "vehicles": 28
+    },
+    "oil_dipstick": {
+      "instances": 192,
+      "vehicles": 27
+    },
+    "oil_filter": {
+      "instances": 15,
+      "vehicles": 7
+    },
+    "valve_cover": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "pcv_valve": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "breather_hose": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "transmission_oil_dipstick": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "serpentine_belt": {
+      "instances": 9,
+      "vehicles": 4
+    },
+    "ac_compressor": {
+      "instances": 1,
+      "vehicles": 1
+    },
+    "belt_tensioner": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "power_steering_pump": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "brake_fluid_reservoir": {
+      "instances": 149,
+      "vehicles": 24
+    },
+    "brake_booster": {
+      "instances": 17,
+      "vehicles": 7
+    },
+    "abs_modulator_unit": {
+      "instances": 8,
+      "vehicles": 5
+    },
+    "brake_master_cylinder": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "clutch_reservoir": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "power_steering_reservoir": {
+      "instances": 24,
+      "vehicles": 3
+    },
+    "washer_fluid_reservoir": {
+      "instances": 70,
+      "vehicles": 21
+    },
+    "windshield_wiper_motor": {
+      "instances": 3,
+      "vehicles": 2
+    },
+    "engine_cover": {
+      "instances": 85,
+      "vehicles": 20
+    },
+    "strut_tower_brace": {
+      "instances": 12,
+      "vehicles": 4
+    },
+    "hood_latch_mechanism": {
+      "instances": 24,
+      "vehicles": 9
+    },
+    "multimeter_diagnostic_tool": {
+      "instances": 64,
+      "vehicles": 14
+    }
+  },
+  "training_classes": {
+    "battery": {
+      "instances": 255,
+      "vehicles": 25
+    },
+    "battery_terminal": {
+      "instances": 320,
+      "vehicles": 25
+    },
+    "fuse_relay_box": {
+      "instances": 106,
+      "vehicles": 25
+    },
+    "ecu_module": {
+      "instances": 76,
+      "vehicles": 19
+    },
+    "alternator": {
+      "instances": 51,
+      "vehicles": 11
+    },
+    "ignition_coil": {
+      "instances": 394,
+      "vehicles": 26
+    },
+    "air_filter_box": {
+      "instances": 292,
+      "vehicles": 28
+    },
+    "air_intake_duct": {
+      "instances": 384,
+      "vehicles": 28
+    },
+    "maf_sensor": {
+      "instances": 107,
+      "vehicles": 18
+    },
+    "throttle_body": {
+      "instances": 159,
+      "vehicles": 24
+    },
+    "intake_manifold": {
+      "instances": 196,
+      "vehicles": 24
+    },
+    "exhaust_manifold_heat_shield": {
+      "instances": 68,
+      "vehicles": 15
+    },
+    "coolant_reservoir": {
+      "instances": 112,
+      "vehicles": 23
+    },
+    "radiator_cap": {
+      "instances": 73,
+      "vehicles": 16
+    },
+    "radiator_hose": {
+      "instances": 49,
+      "vehicles": 18
+    },
+    "oil_filler_cap": {
+      "instances": 204,
+      "vehicles": 28
+    },
+    "oil_dipstick": {
+      "instances": 192,
+      "vehicles": 27
+    },
+    "brake_fluid_reservoir": {
+      "instances": 149,
+      "vehicles": 24
+    },
+    "washer_fluid_reservoir": {
+      "instances": 70,
+      "vehicles": 21
+    },
+    "engine_cover": {
+      "instances": 85,
+      "vehicles": 20
+    },
+    "multimeter_diagnostic_tool": {
+      "instances": 64,
+      "vehicles": 14
+    },
+    "other_reservoir": {
+      "instances": 24,
+      "vehicles": 3
+    },
+    "other_module_box": {
+      "instances": 8,
+      "vehicles": 5
+    },
+    "other_sensor_actuator": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "other_hose_line": {
+      "instances": 14,
+      "vehicles": 4
+    },
+    "other_cap_plug": {
+      "instances": 0,
+      "vehicles": 0
+    },
+    "other_rotating_device": {
+      "instances": 5,
+      "vehicles": 3
+    }
+  },
+  "tier_changes": []
+}
