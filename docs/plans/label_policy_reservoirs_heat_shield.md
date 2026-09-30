@@ -28,6 +28,18 @@
 | `power_steering_reservoir`, `clutch_reservoir` | cả bình | ký hiệu vô-lăng (PS); nằm cạnh bình dầu phanh (côn) | tier B → train dưới `other_reservoir` |
 | `exhaust_manifold_heat_shield` | **chỉ tấm chắn kim loại bắt bu-lông trên cổ xả / turbo / đoạn ống xả đầu**, nhìn thấy từ trên xuống | kim loại mỏng sáng hoặc có gân; bu-lông bắt vào cổ xả; nằm ở mặt xả của nắp máy | **không** gán cho: tấm chắn dưới gầm (ảnh gầm xe bị loại), tấm cách nhiệt vách máy/capo, nắp máy bằng nhựa, nắp dàn cò, vỏ bảo vệ ống điều hòa |
 
+## 2a. Giới hạn box: ống nạp, cọc bình, ắc quy (D2, thêm 2026-09-30)
+
+**Lý do:** 9–12% vật trên xe mới bị bỏ sót vì **box lệch** (IoU 0,1–0,5). Trong 40 lỗi loại này của teacher, 25 lỗi thuộc 3 class sau: ống nạp 10/47, cọc bình 9/53, ắc quy 6/37 (`docs/reports/miss_analysis_2026-09-30.md`).
+
+| class | 1 instance = | Gồm | Không gồm |
+|---|---|---|---|
+| `air_intake_duct` | **một đoạn ống liên tục giữa hai linh kiện** (hộp lọc gió → bướm ga / turbo / thân MAF; ống hút gió trước hộp lọc là một instance riêng) | đoạn xếp nếp, đoạn cứng, đai kẹp ở hai đầu; nếu bị che một phần, các phần nhìn thấy vẫn là **một** instance (mask có thể rời) | thân cảm biến MAF, bầu cộng hưởng, hộp lọc gió, bướm ga, ống thông hơi nhỏ nối vào ống |
+| `battery_terminal` | **một cọc** (+ hoặc −) | kẹp trên cọc + nắp chụp nhựa (đỏ/đen) + đoạn cáp ngắn ngay tại kẹp | đoạn cáp chạy xa, hộp cầu chì gắn trên cọc dương, cọc câu bình ở chỗ khác |
+| `battery` | **thân vỏ ắc quy nhìn thấy được** (mặt trên + các mặt bên thấy được, cả vùng cọc) | vỏ bọc cách nhiệt ôm sát thân bình, khi thấy cọc hoặc tem ắc quy | giá kẹp, khay, nắp che rời không ôm thân bình; ắc quy bị che hoàn toàn thì không gán nhãn |
+
+**Quy tắc chung:** box ôm sát phần nhìn thấy, không kéo dài qua vật khác. Hai ắc quy / hai cọc / hai đoạn ống thì là hai instance, không gộp một box.
+
 ## 2b. Linh kiện cao áp hybrid/EV (thêm 2026-09-30)
 
 **Lý do:** trên ảnh Chevrolet Volt, cả 4 model hiện có đều gọi hộp biến tần cao áp là `engine_cover` hoặc `air_filter_box` (`docs/reports/model_comparison_2026-09-30.md`).
