@@ -84,6 +84,7 @@ def main():
         by_file[path].append((int(line), c))
     seg = None
     applied, skipped = collections.Counter(), []
+    patches = []  # {"stem", "match": {"class", "box"}, "replace": [{"class", "polygon"}]} for build-time patching
     for path, items in by_file.items():
         src_dir, split, stem = path.split("/")
         src = ROOT / "data" / src_dir
@@ -92,11 +93,13 @@ def main():
         lines = (src / "labels" / split / f"{stem}.txt").read_text().splitlines()
         img = next(p for e in (".jpg", ".jpeg", ".png") if (p := src / "images" / split / (stem + e)).exists())
         new_lines = {i: [l] for i, l in enumerate(lines)}
+        touched = set()
         for li, c in items:
             if float(c.get("confidence") or 0) < a.min_conf:
                 skipped.append({"key": c["key"], "reason": f"confidence {c.get('confidence')}"})
                 continue
             cls_id = int(lines[li].split()[0])
+            touched.add(li)
             v = c["verdict"]
             if v == "not_a_component" or (v == "wrong_class" and c.get("new_class") not in ids):
                 new_lines[li] = []
@@ -121,6 +124,16 @@ def main():
                     applied["resegmented" if pts else "box_fallback"] += 1
                 if out:
                     new_lines[li] = out
+        for li in sorted(touched):
+            xy = np.asarray(lines[li].split()[1:], float).reshape(-1, 2)
+            repl = []
+            for l in new_lines[li]:
+                q = l.split()
+                repl.append({"class": names[int(q[0])], "polygon": np.asarray(q[1:], float).reshape(-1, 2).round(6).tolist()})
+            patches.append({"stem": stem, "source": f"geometry:{path}#{li}",
+                            "match": {"class": names[int(lines[li].split()[0])],
+                                      "box": [float(xy[:, 0].min()), float(xy[:, 1].min()), float(xy[:, 0].max()), float(xy[:, 1].max())]},
+                            "replace": repl})
         dst = ROOT / "data" / f"{src_dir}_geo" / "labels" / split / f"{stem}.txt"
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_text("\n".join(l for i in sorted(new_lines) for l in new_lines[i]) + "\n", encoding="utf-8")
@@ -129,6 +142,7 @@ def main():
             yml.write_text(yaml.safe_dump({"names": names, "nc": len(names),
                                            "note": f"only images touched by the D2 geometry audit; others: data/{src_dir}"},
                                           sort_keys=False, allow_unicode=True), encoding="utf-8")
+    (GEO / "PATCHES.jsonl").write_text("".join(json.dumps(x) + "\n" for x in patches), encoding="utf-8")
     (GEO / "APPLIED.json").write_text(json.dumps({"applied": dict(applied), "skipped": skipped,
                                                   "files": sorted(by_file)}, indent=1), encoding="utf-8")
     print(json.dumps({"applied": dict(applied), "skipped": len(skipped), "files": len(by_file)}, indent=1))
