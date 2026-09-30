@@ -104,8 +104,8 @@ def embed_all(insts, embedder, batch=32):
     feats = np.zeros((len(insts), 0), np.float32)
     buf, idx, chunks = [], [], []
     for n, (path, ids) in enumerate(by_img.items()):
-        im = Image.open(path)
-        im.draft("RGB", (im.size[0] // 2, im.size[1] // 2))  # fast JPEG decode at 1/2 res (3000 px)
+        from inference.teacher_system import open_upright
+        im = open_upright(path, draft_side=3000)  # EXIF-upright like the labels; fast 1/2-res JPEG decode
         for i in ids:
             buf.append(crop(im, insts[i]["box"]))
             idx.append(i)

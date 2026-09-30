@@ -49,3 +49,17 @@ def test_run_moves_tensors_to_cpu():
     from inference.teacher_system import TeacherSystem
     src = inspect.getsource(TeacherSystem._run)
     assert ".xyxy.cpu().numpy()" in src and ".conf.cpu().numpy()" in src and ".cls.cpu().numpy()" in src
+
+
+def test_open_upright_applies_exif_orientation(tmp_path):
+    from PIL import Image
+    from inference.teacher_system import open_upright
+    im = Image.new("RGB", (60, 20), (255, 0, 0))
+    im.paste((0, 0, 255), (0, 0, 10, 20))  # blue strip on the left
+    exif = Image.Exif()
+    exif[274] = 6  # rotate 90 CW when displayed
+    p = tmp_path / "rot.jpg"
+    im.save(p, exif=exif)
+    up = open_upright(p)
+    assert up.size == (20, 60)  # portrait after applying the tag
+    assert up.getpixel((10, 2))[2] > 200  # the left strip is now at the top

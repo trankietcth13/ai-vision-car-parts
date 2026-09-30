@@ -47,10 +47,8 @@ def box_iou(a, b):
 
 
 def open_view(path, max_side):
-    im = Image.open(path)
-    if im.format == "JPEG":
-        im.draft("RGB", (max_side, max_side))
-    im = im.convert("RGB")
+    from inference.teacher_system import open_upright
+    im = open_upright(path, draft_side=max_side)
     im.thumbnail((max_side, max_side))
     return im
 

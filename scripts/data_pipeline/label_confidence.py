@@ -92,7 +92,8 @@ def embed_rows(rows, cache: Path, model_id):
         by_img[r["img"]].append(i)
     feats = None
     for n, (path, ids) in enumerate(by_img.items()):
-        im = Image.open(path)
+        from inference.teacher_system import open_upright
+        im = open_upright(path)
         f = emb([crop(im, rows[i]["box"]) for i in ids])
         if feats is None:
             feats = np.zeros((len(rows), f.shape[1]), np.float32)

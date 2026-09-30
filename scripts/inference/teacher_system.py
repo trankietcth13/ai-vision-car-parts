@@ -40,12 +40,27 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PRIORS = ROOT / "artifacts" / "priors" / "position_priors_v2.json"
 
 
-def load_image(path, max_side=1600) -> Image.Image:
-    """Open like the training data (stored at 1600 px long side); JPEG draft keeps 6000 px decodes fast."""
+_EXIF_TRANSPOSE = {2: Image.FLIP_LEFT_RIGHT, 3: Image.ROTATE_180, 4: Image.FLIP_TOP_BOTTOM, 5: Image.TRANSPOSE,
+                   6: Image.ROTATE_270, 7: Image.TRANSVERSE, 8: Image.ROTATE_90}
+
+
+def open_upright(path, draft_side: int | None = None) -> Image.Image:
+    """RGB image in its EXIF-upright orientation, as cv2.imread / the label pipeline sees it.
+    (PIL and Ultralytics' PIL input path ignore the EXIF orientation tag; ~2% of the photos carry one.)
+    `draft_side` lets the JPEG decoder downscale on load (fast for 6000 px originals)."""
     im = Image.open(path)
-    if im.format == "JPEG":
-        im.draft("RGB", (max_side, max_side))
+    orientation = im.getexif().get(274, 1)
+    if draft_side and im.format == "JPEG":
+        im.draft("RGB", (draft_side, draft_side))
     im = im.convert("RGB")
+    if orientation in _EXIF_TRANSPOSE:
+        im = im.transpose(_EXIF_TRANSPOSE[orientation])
+    return im
+
+
+def load_image(path, max_side=1600) -> Image.Image:
+    """Open like the training data (stored at 1600 px long side, EXIF-upright)."""
+    im = open_upright(path, draft_side=max_side)
     f = max_side / max(im.size)
     if f < 1:
         im = im.resize((round(im.size[0] * f), round(im.size[1] * f)), Image.BILINEAR)

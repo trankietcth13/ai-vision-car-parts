@@ -98,10 +98,8 @@ def test_localisation_cases(items, weights):
 
 
 def render(it, out_path, draw_grid):
-    im = Image.open(it["image"])
-    if im.format == "JPEG":
-        im.draft("RGB", (3000, 3000))
-    im = im.convert("RGB")
+    from inference.teacher_system import open_upright
+    im = open_upright(it["image"], draft_side=3000)  # labels are in EXIF-upright coordinates
     W, H = im.size
     boxes = [it["box"]] + ([it["teacher_box"]] if it.get("teacher_box") else [])
     x0, y0 = min(b[0] for b in boxes), min(b[1] for b in boxes)
@@ -173,9 +171,11 @@ def cmd_summary(a):
     for f in sorted((OUT / "batches").glob("geo_batch_*.json")):
         for it in json.loads(f.read_text(encoding="utf-8")):
             items[it["key"]] = it
-    ver = []
-    for f in sorted((OUT / "verdicts").glob("*.json")):
-        ver += json.loads(f.read_text(encoding="utf-8"))
+    by_key = {}
+    for f in sorted((OUT / "verdicts").glob("*.json")):  # later files (e.g. zz_*_overrides.json) win per key
+        for v in json.loads(f.read_text(encoding="utf-8")):
+            by_key[v["key"]] = v
+    ver = list(by_key.values())
     L = ["# D2 geometry audit: air intake duct, battery terminal, battery", "",
          f"{len(ver)} reviewed items (policy: docs/plans/label_policy_reservoirs_heat_shield.md §2a).", ""]
     for origin in ("sample", "test_localisation"):
