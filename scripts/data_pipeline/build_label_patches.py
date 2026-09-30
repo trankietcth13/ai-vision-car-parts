@@ -58,6 +58,7 @@ def reservoir_patches(seg_factory, report):
         lp, pp = rdir / "labels" / split / f"{stem}.txt", rdir / "provenance" / split / f"{stem}.json"
         if not lp.exists() or not pp.exists():
             report["reservoir_missing_reviewed_dir"] += 1
+            print(f"[warn] {key}: missing {lp if not lp.exists() else pp} (patch skipped)", file=sys.stderr)
             continue
         names = read_names(rdir)
         lines = [l for l in lp.read_text().splitlines() if l.strip()]
