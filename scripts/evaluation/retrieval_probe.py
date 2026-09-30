@@ -146,9 +146,9 @@ def teacher_matches(weights, query_insts, imgsz=640, conf=0.1):
     out = [None] * len(query_insts)
     for n, (path, ids) in enumerate(by_img.items()):
         r = model.predict(path, imgsz=imgsz, conf=conf, device="cpu", verbose=False)[0]
-        pb = r.boxes.xyxyn.numpy()
-        pc = r.boxes.cls.numpy().astype(int)
-        ps = r.boxes.conf.numpy()
+        pb = r.boxes.xyxyn.cpu().numpy()
+        pc = r.boxes.cls.cpu().numpy().astype(int)
+        ps = r.boxes.conf.cpu().numpy()
         used = set()
         for qi in sorted(ids, key=lambda i: -(query_insts[i]["box"][2] - query_insts[i]["box"][0])):
             g = query_insts[qi]["box"]

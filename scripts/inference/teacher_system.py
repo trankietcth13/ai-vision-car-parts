@@ -78,7 +78,7 @@ class TeacherSystem:
             return out
         tw, th = im.size
         polys = r.masks.xyn if r.masks is not None else [None] * len(r.boxes)
-        for b, s, c, poly in zip(r.boxes.xyxy.numpy(), r.boxes.conf.numpy(), r.boxes.cls.numpy().astype(int), polys):
+        for b, s, c, poly in zip(r.boxes.xyxy.cpu().numpy(), r.boxes.conf.cpu().numpy(), r.boxes.cls.cpu().numpy().astype(int), polys):
             if inner is not None:
                 l, t, rr, bb = inner
                 if (l and b[0] < 3) or (t and b[1] < 3) or (rr and b[2] > tw - 3) or (bb and b[3] > th - 3):

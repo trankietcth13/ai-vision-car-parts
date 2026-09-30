@@ -76,7 +76,7 @@ class SamEverything:
         h, w = bgr.shape[:2]
         r = self.imgsz / max(h, w)  # letterbox is top-left aligned
         out = []
-        for m, s, b in zip(masks.numpy(), scores.numpy(), boxes.numpy()):
+        for m, s, b in zip(masks.cpu().numpy(), scores.cpu().numpy(), boxes.cpu().numpy()):
             m = m[: round(h * r), : round(w * r)]
             box = [float(b[0] / r / w), float(b[1] / r / h), float(b[2] / r / w), float(b[3] / r / h)]
             out.append(dict(source="sam", score=float(s), box=box, mask=Image.fromarray(m.astype(np.uint8) * 255).resize((w, h))))
@@ -88,8 +88,8 @@ def teacher_regions(model, im, conf=0.15):
     out = []
     if r.boxes is None:
         return out
-    ms = r.masks.data.numpy() if r.masks is not None else [None] * len(r.boxes)
-    for b, s, c, m in zip(r.boxes.xyxyn.numpy(), r.boxes.conf.numpy(), r.boxes.cls.numpy().astype(int), ms):
+    ms = r.masks.data.cpu().numpy() if r.masks is not None else [None] * len(r.boxes)
+    for b, s, c, m in zip(r.boxes.xyxyn.cpu().numpy(), r.boxes.conf.cpu().numpy(), r.boxes.cls.cpu().numpy().astype(int), ms):
         mask = Image.fromarray((m > 0.5).astype(np.uint8) * 255).resize(im.size) if m is not None else None
         out.append(dict(source="teacher", teacher_class=model.names[int(c)], score=float(s),
                         box=[float(v) for v in b], mask=mask))
@@ -322,7 +322,7 @@ def cmd_score(args):
         r = teacher.predict(open_view(path, 1600), imgsz=640, conf=0.25, device="cpu", verbose=False)[0]
         systems["teacher p5_reg alone (conf 0.25)"][stem] = to_v2(
             [{"class_name": teacher.names[int(c)], "box": [float(v) for v in b]}
-             for b, c in zip(r.boxes.xyxyn.numpy(), r.boxes.cls.numpy())], tax)
+             for b, c in zip(r.boxes.xyxyn.cpu().numpy(), r.boxes.cls.cpu().numpy())], tax)
         systems[f"SoM: teacher+SAM2 regions, {args.model} names"][stem] = to_v2(som, tax)
     n_gt = sum(len(gt[s]) for s in stems)
     lines = ["# Set-of-Mark labelling pilot (W1b-c)", "",

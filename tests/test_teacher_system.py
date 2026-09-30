@@ -41,3 +41,11 @@ def test_count_cap_and_threshold():
     out = ts.postprocess(coils + [_det("battery_terminal", 0.2, [0.5, 0.5, 0.6, 0.6])], use_cap=True, use_agnostic=True)
     assert sum(d["cls"] == "ignition_coil" for d in out) == 5  # count_max 4 + cap_extra 1
     assert all(d["cls"] != "battery_terminal" for d in out)  # below conf 0.25
+
+
+def test_run_moves_tensors_to_cpu():
+    # regression: on GPU the Ultralytics result tensors live on cuda; _run must call .cpu() before .numpy()
+    import inspect
+    from inference.teacher_system import TeacherSystem
+    src = inspect.getsource(TeacherSystem._run)
+    assert ".xyxy.cpu().numpy()" in src and ".conf.cpu().numpy()" in src and ".cls.cpu().numpy()" in src
