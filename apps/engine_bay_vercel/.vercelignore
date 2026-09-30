@@ -1,0 +1,3 @@
+# Upload everything the page needs (model/, vendor/, examples/, config.json are generated, not in git)
+README.md
+.gitignore

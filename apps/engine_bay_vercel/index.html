@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engine Bay Vision</title>
+<meta name="description" content="Demo nhận diện linh kiện khoang máy, chạy ngay trên trình duyệt">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><path d='M8 20h16M10 20v-6h12v6M13 14v-3h6v3' stroke='white' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  :root {
+    --bg: #faf8f5; --panel: #ffffff; --ink: #1c1917; --muted: #78716c; --line: #e7e5e4;
+    --accent: #c2410c; --accent-soft: #ffedd5; --warn-bg: #fef3c7; --warn-ink: #78350f; --shadow: 0 1px 2px rgb(0 0 0 / .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151311; --panel: #1f1c1a; --ink: #f5f5f4; --muted: #a8a29e; --line: #34302d;
+            --accent: #fb923c; --accent-soft: #431407; --warn-bg: #3b2a10; --warn-ink: #fde68a; --shadow: none; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header, main, footer { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 22px; padding-bottom: 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+  .badge { font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
+  .sub { flex-basis: 100%; margin: 0; color: var(--muted); }
+  main { display: grid; grid-template-columns: minmax(250px, 320px) 1fr; gap: 16px; padding-top: 10px; padding-bottom: 16px; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
+  .side { display: flex; flex-direction: column; gap: 14px; align-self: start; }
+  #drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 22px 12px; text-align: center; cursor: pointer; color: var(--muted); }
+  #drop:hover, #drop.over { border-color: var(--accent); color: var(--ink); }
+  #drop b { color: var(--accent); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+  .examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .examples button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; background: none; aspect-ratio: 4/3; }
+  .examples button:hover, .examples button:focus-visible { border-color: var(--accent); outline: none; }
+  .examples img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  label.row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+  input[type=range] { flex: 1; accent-color: var(--accent); }
+  input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 2px 0 0; }
+  .stage { position: relative; min-height: 320px; display: flex; flex-direction: column; gap: 10px; }
+  #view { width: 100%; height: auto; border-radius: 8px; display: none; background: var(--bg); }
+  .empty { flex: 1; display: grid; place-items: center; color: var(--muted); text-align: center; border-radius: 8px; background: repeating-linear-gradient(45deg, transparent 0 12px, rgb(120 113 108 / .05) 12px 24px); }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+  #status { color: var(--muted); font-size: 13.5px; }
+  #status.err { color: #dc2626; }
+  button.btn { font: inherit; font-size: 13.5px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+  button.btn:hover { border-color: var(--accent); }
+  button.btn[aria-pressed=true] { background: var(--accent-soft); border-color: var(--accent); }
+  ul.parts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 4px 18px; }
+  ul.parts li { display: grid; grid-template-columns: 12px 1fr 70px 36px; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .dot { width: 12px; height: 12px; border-radius: 3px; }
+  .meter { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--accent); }
+  .pct { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  footer { color: var(--muted); font-size: 12.5px; padding-bottom: 28px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Nhận diện linh kiện khoang máy</h1>
+  <span class="badge">Demo POC v1</span>
+  <p class="sub">Model chạy ngay trên trình duyệt của bạn: ảnh không được gửi lên server.</p>
+</header>
+<main>
+  <section class="side">
+    <div class="panel">
+      <div id="drop" role="button" tabindex="0" aria-label="Chọn ảnh khoang máy">
+        <b>Chọn ảnh</b> hoặc kéo thả vào đây<br><span class="hint">Có thể dán ảnh (Ctrl+V) hoặc chụp bằng điện thoại</span>
+      </div>
+      <input id="file" type="file" accept="image/*" hidden>
+    </div>
+    <div class="panel">
+      <h2>Ảnh mẫu</h2>
+      <div class="examples" id="examples"></div>
+    </div>
+    <div class="panel">
+      <h2>Tùy chọn</h2>
+      <label class="row"><input type="checkbox" id="perclass" checked> Ngưỡng riêng từng loại linh kiện</label>
+      <p class="hint">Hiệu chỉnh bằng cross-validation. Khi bật, thanh ngưỡng bên dưới chỉ áp cho loại chưa hiệu chỉnh.</p>
+      <label class="row">Ngưỡng tin cậy <input type="range" id="conf" min="0.05" max="0.9" step="0.05"> <span id="confv"></span></label>
+    </div>
+  </section>
+  <section class="panel stage">
+    <div class="bar">
+      <span id="status">Đang tải model…</span>
+      <button class="btn" id="orig" aria-pressed="false" disabled title="Phím O">Ảnh gốc</button>
+    </div>
+    <div class="progress" id="prog"><i></i></div>
+    <canvas id="view" aria-label="Kết quả nhận diện"></canvas>
+    <div class="empty" id="empty"><div>Tải ảnh khoang máy lên, hoặc chọn một ảnh mẫu.</div></div>
+    <ul class="parts" id="parts"></ul>
+    <div class="note">Kết quả là <b>gợi ý</b> để kỹ thuật viên xác nhận. Model đạt mask mAP50-95 khoảng 0,38 trên các xe
+      có trong dữ liệu và 0,27–0,30 trên xe mới chưa từng thấy. Các linh kiện nhận kém: máy phát điện, ống két nước, hộp ECU, bình nước làm mát.</div>
+  </section>
+</main>
+<footer id="foot"></footer>
+
+<script type="module">
+import { Detector } from "./detector.js";
+
+const $ = (id) => document.getElementById(id);
+const cfg = await (await fetch("config.json")).json();
+const rgb = cfg.colors.map((h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
+const MAX_SIDE = 1600;
+let det = null, current = null, showOrig = false, busy = false, pending = false;
+
+$("conf").value = cfg.default_conf;
+$("confv").textContent = Number(cfg.default_conf).toFixed(2);
+const hasThr = Object.keys(cfg.thresholds).length > 0;
+$("perclass").checked = hasThr; $("perclass").disabled = !hasThr;
+
+function status(t, err = false) { $("status").textContent = t; $("status").className = err ? "err" : ""; }
+
+// examples
+const examples = await (await fetch("examples/index.json")).json();
+for (const name of examples) {
+  const b = document.createElement("button");
+  b.title = name; b.setAttribute("aria-label", `Ảnh mẫu ${name}`);
+  const im = document.createElement("img");
+  im.src = `examples/${encodeURIComponent(name)}`; im.alt = ""; im.loading = "lazy";
+  b.append(im);
+  b.onclick = () => openUrl(`examples/${name}`);
+  $("examples").append(b);
+}
+
+// input: click / keyboard / drag-drop / paste
+$("drop").onclick = () => $("file").click();
+$("drop").onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
+$("file").onchange = () => $("file").files[0] && openFile($("file").files[0]);
+$("drop").ondragover = (e) => { e.preventDefault(); $("drop").classList.add("over"); };
+$("drop").ondragleave = () => $("drop").classList.remove("over");
+$("drop").ondrop = (e) => { e.preventDefault(); $("drop").classList.remove("over"); const f = e.dataTransfer.files[0]; f && openFile(f); };
+window.addEventListener("paste", (e) => { const f = [...e.clipboardData.files].find((x) => x.type.startsWith("image/")); f && openFile(f); });
+$("conf").oninput = () => ($("confv").textContent = Number($("conf").value).toFixed(2));
+$("conf").onchange = () => run();
+$("perclass").onchange = () => run();
+$("orig").onclick = () => toggleOrig();
+window.addEventListener("keydown", (e) => { if ((e.key === "o" || e.key === "O") && current && !e.target.closest("input")) toggleOrig(); });
+
+function toggleOrig() { showOrig = !showOrig; $("orig").setAttribute("aria-pressed", showOrig); draw(); }
+
+async function loadImage(src) {
+  const img = new Image();  // <img> decoding applies the EXIF orientation, like the Python app
+  img.src = src;
+  await img.decode();
+  return img;
+}
+async function openFile(f) {
+  if (!f.type.startsWith("image/")) return status("Tệp không phải ảnh.", true);
+  try { await setImage(await loadImage(URL.createObjectURL(f))); } catch { status("Không đọc được ảnh này.", true); }
+}
+async function openUrl(u) { await setImage(await loadImage(u)); }
+async function setImage(img) {
+  current = { img, result: null }; showOrig = false; $("orig").setAttribute("aria-pressed", false);
+  await run();
+  if (matchMedia("(max-width: 760px)").matches) $("status").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function settings() {
+  const conf = Number($("conf").value), perClass = $("perclass").checked && hasThr;
+  const predConf = perClass ? Math.min(conf, ...Object.values(cfg.thresholds)) : conf;
+  return { conf, perClass, predConf };
+}
+
+async function run() {
+  if (!current || !det) return;
+  if (busy) { pending = true; return; }
+  busy = true;
+  status("Đang phân tích…");
+  await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));  // let the status paint
+  try {
+    const s = settings();
+    const r = await det.detect(current.img, s.predConf);
+    r.dets = r.dets.filter((d) => d.score >= (s.perClass ? cfg.thresholds[d.name] ?? s.conf : s.conf));
+    r.overlay = det.renderMasks(r.dets, r.proto, (c) => rgb[c]);
+    current.result = r;
+    draw();
+    const n = r.dets.length;
+    status(n ? `${n} linh kiện · ${Math.round(r.ms)} ms · ${det.threads} luồng` : `Không tìm thấy linh kiện nào ở ngưỡng này · ${Math.round(r.ms)} ms`);
+  } catch (e) {
+    console.error(e);
+    status(`Lỗi khi phân tích: ${e.message}`, true);
+  } finally {
+    busy = false;
+    if (pending) { pending = false; run(); }
+  }
+}
+
+function draw() {
+  const { img, result: r } = current;
+  const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, MAX_SIDE / Math.max(w, h));
+  const W = Math.round(w * k), H = Math.round(h * k), cv = $("view"), ctx = cv.getContext("2d");
+  cv.width = W; cv.height = H;
+  cv.style.display = "block"; $("empty").style.display = "none"; $("orig").disabled = false;
+  ctx.drawImage(img, 0, 0, W, H);
+  renderParts(r ? r.dets : []);
+  if (!r || showOrig) return;
+  const { lb } = r;
+  ctx.drawImage(r.overlay, lb.left, lb.top, lb.nw, lb.nh, 0, 0, W, H);
+  const lw = Math.max(2, Math.round(Math.max(W, H) / 400)), fs = Math.max(12, Math.round(Math.max(W, H) / 70));
+  ctx.font = `600 ${fs}px system-ui, sans-serif`; ctx.textBaseline = "top";
+  for (const d of [...r.dets].reverse()) {
+    const [x1, y1, x2, y2] = d.xyxy.map((v) => v * k), col = cfg.colors[d.cls];
+    ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    const label = `${d.name_vi} ${Math.round(d.score * 100)}%`, tw = ctx.measureText(label).width + 8, th = fs + 6;
+    const ty = y1 - th >= 0 ? y1 - th : y1;
+    ctx.fillStyle = col; ctx.fillRect(x1 - lw / 2, ty, tw, th);
+    const [cr, cg, cb] = rgb[d.cls];
+    ctx.fillStyle = cr * 0.299 + cg * 0.587 + cb * 0.114 > 150 ? "#111" : "#fff";
+    ctx.fillText(label, x1 + 4 - lw / 2, ty + 3);
+  }
+}
+
+function renderParts(dets) {
+  const by = new Map();
+  for (const d of dets) { const e = by.get(d.cls) || { n: 0, best: 0 }; e.n++; e.best = Math.max(e.best, d.score); by.set(d.cls, e); }
+  $("parts").innerHTML = "";
+  for (const [c, e] of [...by].sort((a, b) => b[1].best - a[1].best)) {
+    const li = document.createElement("li"), pct = Math.round(e.best * 100);
+    li.innerHTML = `<span class="dot" style="background:${cfg.colors[c]}"></span><span></span>`
+      + `<span class="meter"><i style="width:${pct}%"></i></span><span class="pct">${pct}%</span>`;
+    li.children[1].textContent = cfg.names_vi[c] + (e.n > 1 ? ` ×${e.n}` : "");
+    $("parts").append(li);
+  }
+}
+
+$("foot").textContent = `Model ${cfg.model_name} (${cfg.release}, yolo11n-seg, ${cfg.names.length} loại) · md5 ${cfg.model_md5.slice(0, 8)} · onnxruntime-web`;
+try {
+  det = await Detector.load(cfg, (p) => { $("prog").firstElementChild.style.width = `${Math.round(p * 100)}%`; status(`Đang tải model… ${Math.round(p * 100)}%`); });
+  $("prog").style.display = "none";
+  status(current ? "" : "Sẵn sàng. Chọn ảnh để bắt đầu.");
+  if (current) run();
+} catch (e) {
+  console.error(e);
+  status(`Không tải được model: ${e.message}`, true);
+}
+
+// test hook: detections for an image URL, in original-image pixels
+window.__engineBay = {
+  ready: () => !!det,
+  async detectUrl(url, conf, perClass) {
+    $("conf").value = conf; $("perclass").checked = perClass;
+    await openUrl(url);
+    while (busy) await new Promise((r) => setTimeout(r, 20));
+    return current.result.dets.map((d) => ({ cls: d.name, score: d.score, xyxy: d.xyxy }));
+  },
+};
+</script>
+</body>
+</html>
