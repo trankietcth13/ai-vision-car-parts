@@ -12,7 +12,7 @@ dependencies = []
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["distillation*"]
+include = ["distillation*", "jev*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "scripts"]

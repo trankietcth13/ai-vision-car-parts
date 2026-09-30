@@ -29,3 +29,7 @@ onnx>=1.16.0
 onnxsim>=0.4.36
 # For TensorRT: install tensorrt if running with CUDA support on Linux/DGX
 # tensorrt>=10.0.0
+
+# Diagnosis layer: TypeSafe Jev text judgments (src/jev, needs TYPESAFE_API_KEY)
+typesafe-sdk>=0.7
+python-dotenv>=1.0

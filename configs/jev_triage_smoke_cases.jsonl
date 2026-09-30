@@ -1,0 +1,10 @@
+{"complaint": "Engine shakes at idle and the check engine light is on. Scanner shows a misfire on cylinder 2.", "dtc": ["P0302"], "expected_system": "ignition_misfire", "expected_action": "inspect", "expected_targets": ["ignition_coil"]}
+{"complaint": "Temperature gauge went into the red on the highway and there is steam coming from under the hood.", "expected_system": "cooling", "expected_action": "stop_driving", "expected_targets": ["coolant_reservoir", "radiator_hose"]}
+{"complaint": "Car clicks but will not crank in the morning, battery light was on yesterday while driving.", "expected_system": "charging_starting", "expected_action": "inspect", "expected_targets": ["battery", "battery_terminal", "alternator"]}
+{"complaint": "Check engine light is on, fuel economy got worse, I hear a hissing sound near the engine at idle.", "dtc": ["P0171"], "expected_system": "air_intake_metering", "expected_action": "inspect", "expected_targets": ["air_intake_duct", "intake_manifold", "maf_sensor"]}
+{"complaint": "Check engine light came on right after I filled up the tank.", "dtc": ["P0456"], "expected_system": "emissions_control", "expected_action": "inspect"}
+{"complaint": "Brake pedal goes almost to the floor and the car takes a long time to stop.", "expected_system": "brakes", "expected_action": "stop_driving", "expected_targets": ["brake_fluid_reservoir"]}
+{"complaint": "My car has a problem.", "expected_system": "unclear", "expected_action": "ask_more_info"}
+{"complaint": "Đèn check engine sáng, máy rung khi chạy không tải, tăng ga bị hụt.", "dtc": ["P0300"], "expected_system": "ignition_misfire", "expected_action": "inspect", "expected_targets": ["ignition_coil"]}
+{"complaint": "Kim nhiệt độ nước làm mát lên cao khi kẹt xe, quạt két nước hình như không quay.", "expected_system": "cooling", "expected_targets": ["coolant_reservoir"]}
+{"complaint": "Đèn báo ắc quy sáng khi đang chạy, đèn pha tối dần.", "dtc": ["P0562"], "expected_system": "charging_starting", "expected_action": "inspect", "expected_targets": ["alternator", "battery"]}

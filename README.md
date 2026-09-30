@@ -54,6 +54,22 @@ python scripts/training/average_checkpoints.py --run runs/train_kd/<student> --t
 5. Đánh giá bằng `scripts/evaluation/qa_test.py`, `test_cases.py` và `cv_eval.py`.
 6. Triển khai bằng `scripts/deployment/`; ứng dụng nằm trong `apps/engine_bay_web/`.
 
+## Chẩn đoán bằng Jev (TypeSafe)
+
+`src/jev/` nối Jev (model System One của TypeSafe, chỉ nhận văn bản) vào tầng tri thức `[K]`:
+mô tả triệu chứng + mã DTC → hệ thống nghi lỗi, mức khẩn cấp, cảnh báo an toàn, danh sách linh kiện cần kiểm tra.
+`detector_targets` là các class L1 cần tìm và crop trên ảnh. Tra mã DTC làm bằng code theo `configs/diagnosis_knowledge.yaml`.
+
+```bash
+# thêm TYPESAFE_API_KEY=... vào .env (tạo key tại https://console.typesafe.ai/)
+python scripts/diagnosis/jev_triage.py check
+python scripts/diagnosis/jev_triage.py run --complaint "máy rung khi chạy không tải" --dtc P0302
+python scripts/diagnosis/jev_triage.py cases --cases configs/jev_triage_smoke_cases.jsonl
+```
+
+Jev không nhìn được ảnh: không dùng để kiểm tra nhãn hay mô tả ảnh của VLM (đã thử, AUROC ~0,5).
+Các ngưỡng trong `diagnosis_triage.py` là giá trị khởi điểm, cần hiệu chỉnh trên dữ liệu phàn nàn thật của Innova.
+
 ## Kiểm thử
 
 ```bash

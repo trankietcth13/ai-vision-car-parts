@@ -1,0 +1,83 @@
+# Knowledge table for the diagnosis layer [K] (docs/plans/diagnosis_guidance_architecture_2026-09-29.md).
+# Used by src/jev/diagnosis_triage.py: Jev judges free-text complaints against these descriptions;
+# DTC codes are looked up here in code (exact lookup, no model). Generic OBD-II meanings for gasoline ICE only.
+# detector_class: training class of the L1 model (configs/engine_bay_train_classes.yaml) or null (not detectable yet).
+
+systems:
+  air_intake_metering: "Air intake and air metering: air filter, intake duct, MAF/MAP sensors, throttle body, vacuum leaks, lean/rich mixture from unmetered air"
+  fuel_delivery: "Fuel delivery: fuel pump, fuel pressure, injectors, fuel smell or fuel leak"
+  ignition_misfire: "Ignition and misfire: spark plugs, ignition coils, engine shaking, rough running, flashing check-engine light"
+  emissions_control: "Emissions control: EVAP system, gas cap, EGR, oxygen sensors, catalytic converter"
+  cooling: "Engine cooling: coolant level or leaks, overheating, temperature gauge high or low, thermostat, radiator, fan, hoses"
+  charging_starting: "Charging and starting: 12 V battery, terminals, alternator, starter, battery light, car will not crank"
+  lubrication: "Engine lubrication: oil level, oil pressure light, oil leaks, oil consumption"
+  brakes: "Brakes: brake pedal feel, brake fluid, brake warning light, ABS light, noises when braking"
+  steering: "Steering: heavy steering, power steering fluid, whining when turning"
+  transmission: "Transmission: gear shifting problems, slipping, transmission fluid"
+  hvac: "Air conditioning and heating: A/C not cold, heater not warm, blower"
+  body_electrical: "Body electrical: lights, windows, locks, fuses and relays for accessories"
+  unclear: "The complaint does not point to any specific vehicle system"
+
+components:
+  # --- detectable by the L1 model ---
+  battery: {detector_class: battery, name: "12 V battery", description: "the 12 V lead-acid battery that powers starting and electronics"}
+  battery_terminal: {detector_class: battery_terminal, name: "battery terminals and cable clamps", description: "the clamps on the battery posts; corrosion or looseness causes no-crank and voltage faults"}
+  fuse_relay_box: {detector_class: fuse_relay_box, name: "under-hood fuse and relay box", description: "fuses and relays for fans, fuel pump, starter, lights and modules"}
+  coolant_reservoir: {detector_class: coolant_reservoir, name: "coolant reservoir", description: "the coolant expansion tank; shows coolant level and leaks"}
+  radiator_cap: {detector_class: radiator_cap, name: "radiator pressure cap", description: "the pressure cap on the radiator; a weak cap causes coolant loss and overheating"}
+  radiator_hose: {detector_class: radiator_hose, name: "radiator hoses", description: "the upper and lower coolant hoses between engine and radiator; cracks and leaks cause overheating"}
+  brake_fluid_reservoir: {detector_class: brake_fluid_reservoir, name: "brake fluid reservoir", description: "the brake fluid tank on the master cylinder; low level means pad wear or a leak"}
+  washer_fluid_reservoir: {detector_class: washer_fluid_reservoir, name: "windshield washer reservoir", description: "the washer fluid tank for the windshield sprayers"}
+  oil_filler_cap: {detector_class: oil_filler_cap, name: "engine oil filler cap", description: "the cap where engine oil is added; a missing or loose cap causes vacuum leaks and oil smell"}
+  oil_dipstick: {detector_class: oil_dipstick, name: "engine oil dipstick", description: "used to check the engine oil level and condition"}
+  oil_filter: {detector_class: oil_filter, name: "engine oil filter", description: "the engine oil filter; leaks here cause oil loss"}
+  air_filter_box: {detector_class: air_filter_box, name: "air filter box", description: "the housing of the engine air filter; a clogged filter or open clips affect airflow"}
+  air_intake_duct: {detector_class: air_intake_duct, name: "air intake duct", description: "the tube from the air filter to the throttle body; cracks or loose clamps let unmetered air in"}
+  maf_sensor: {detector_class: maf_sensor, name: "mass air flow (MAF) sensor", description: "measures intake air; dirty or faulty sensors cause lean/rich mixture, hesitation and MAF codes"}
+  throttle_body: {detector_class: throttle_body, name: "throttle body", description: "controls intake air; carbon build-up causes rough or high idle and stalling"}
+  intake_manifold: {detector_class: intake_manifold, name: "intake manifold", description: "distributes air to the cylinders; gasket or hose leaks cause lean codes and rough idle"}
+  ignition_coil: {detector_class: ignition_coil, name: "ignition coils", description: "coil-on-plug units that fire the spark plugs; a failed coil causes a misfire on one cylinder"}
+  alternator: {detector_class: alternator, name: "alternator", description: "charges the battery while driving; failure causes battery light and low voltage"}
+  ecu_module: {detector_class: ecu_module, name: "engine control unit (ECU)", description: "the engine computer; relevant for communication codes, water intrusion or connector problems"}
+  # --- important but not detectable yet (candidates for new classes) ---
+  spark_plug: {detector_class: null, name: "spark plugs", description: "worn or fouled spark plugs cause misfires and hard starting"}
+  fuel_injector: {detector_class: null, name: "fuel injectors", description: "spray fuel into the cylinders; a clogged or leaking injector causes misfire or rich/lean running"}
+  map_sensor: {detector_class: null, name: "manifold absolute pressure (MAP) sensor", description: "measures intake manifold pressure; faults affect fuel mixture"}
+  evap_purge_valve: {detector_class: null, name: "EVAP purge valve", description: "controls fuel vapour flow from the charcoal canister; stuck valves cause EVAP codes and hard starting after refuelling"}
+  gas_cap: {detector_class: null, name: "fuel filler cap (gas cap)", description: "a loose or damaged gas cap causes EVAP leak codes; located at the fuel door, not in the engine bay"}
+  egr_valve: {detector_class: null, name: "EGR valve", description: "recirculates exhaust gas; a clogged or stuck valve causes rough idle and EGR codes"}
+  o2_sensor: {detector_class: null, name: "oxygen (O2) sensors", description: "measure oxygen in the exhaust for fuel control and catalyst monitoring"}
+  thermostat_housing: {detector_class: null, name: "thermostat and housing", description: "a stuck thermostat causes overheating or a cold engine / slow warm-up"}
+  radiator_cooling_fan: {detector_class: null, name: "radiator cooling fan", description: "cools the radiator at low speed; a dead fan causes overheating in traffic"}
+  serpentine_belt: {detector_class: null, name: "serpentine drive belt", description: "drives alternator, water pump, A/C and power steering; a worn belt squeals or breaks"}
+  starter_motor: {detector_class: null, name: "starter motor", description: "cranks the engine; failure causes a click or no crank with a good battery"}
+  pcv_valve: {detector_class: null, name: "PCV valve and hoses", description: "crankcase ventilation; a broken hose causes vacuum leaks, whistling and lean codes"}
+  cam_crank_sensor: {detector_class: null, name: "camshaft / crankshaft position sensors", description: "engine position sensors; failure causes no-start or stalling"}
+  power_steering_reservoir: {detector_class: null, name: "power steering reservoir", description: "hydraulic power steering fluid tank; low fluid causes whining and heavy steering"}
+
+# Code lookup (ranges allowed with the same prefix, e.g. P0301-P0308).
+dtc:
+  - {codes: [P0100-P0103], meaning: "Mass air flow sensor circuit or range/performance problem", components: [maf_sensor, air_intake_duct, air_filter_box]}
+  - {codes: [P0106-P0108], meaning: "Manifold absolute pressure sensor range/performance or circuit problem", components: [map_sensor, intake_manifold, pcv_valve]}
+  - {codes: [P0115-P0119], meaning: "Engine coolant temperature sensor circuit problem", components: [thermostat_housing, coolant_reservoir]}
+  - {codes: [P0121-P0123, P2135], meaning: "Throttle position sensor range or correlation problem", components: [throttle_body]}
+  - {codes: [P0128], meaning: "Coolant temperature below thermostat regulating temperature", components: [thermostat_housing, coolant_reservoir, radiator_hose]}
+  - {codes: [P0130-P0167], meaning: "Oxygen sensor circuit or heater problem", components: [o2_sensor, fuse_relay_box]}
+  - {codes: [P0171, P0174], meaning: "System too lean (bank 1 / bank 2)", components: [air_intake_duct, intake_manifold, pcv_valve, maf_sensor, fuel_injector]}
+  - {codes: [P0172, P0175], meaning: "System too rich (bank 1 / bank 2)", components: [maf_sensor, fuel_injector, evap_purge_valve, air_filter_box]}
+  - {codes: [P0201-P0208], meaning: "Fuel injector circuit problem on one cylinder", components: [fuel_injector]}
+  - {codes: [P0217], meaning: "Engine overheat condition", components: [coolant_reservoir, radiator_hose, radiator_cap, radiator_cooling_fan, thermostat_housing]}
+  - {codes: [P0300], meaning: "Random or multiple cylinder misfire detected", components: [spark_plug, ignition_coil, intake_manifold, fuel_injector]}
+  - {codes: [P0301-P0308], meaning: "Misfire detected on one specific cylinder", components: [ignition_coil, spark_plug, fuel_injector]}
+  - {codes: [P0335-P0349], meaning: "Crankshaft or camshaft position sensor circuit problem", components: [cam_crank_sensor]}
+  - {codes: [P0351-P0358], meaning: "Ignition coil primary/secondary circuit problem", components: [ignition_coil]}
+  - {codes: [P0400-P0404], meaning: "Exhaust gas recirculation flow or circuit problem", components: [egr_valve]}
+  - {codes: [P0420, P0430], meaning: "Catalyst system efficiency below threshold", components: [o2_sensor]}
+  - {codes: [P0440-P0446, P0449, P0451-P0453], meaning: "Evaporative emission system malfunction", components: [evap_purge_valve, gas_cap]}
+  - {codes: [P0455, P0456, P0457], meaning: "Evaporative emission system leak detected (large / small / fuel cap loose)", components: [gas_cap, evap_purge_valve]}
+  - {codes: [P0505-P0507], meaning: "Idle air control system or idle speed problem", components: [throttle_body, pcv_valve, intake_manifold]}
+  - {codes: [P0520-P0524], meaning: "Engine oil pressure sensor or low oil pressure", components: [oil_dipstick, oil_filler_cap, oil_filter]}
+  - {codes: [P0562, P0563], meaning: "System voltage low / high", components: [battery, battery_terminal, alternator, serpentine_belt]}
+  - {codes: [P0600-P0606], meaning: "Engine control module internal or communication problem", components: [ecu_module, battery_terminal]}
+  - {codes: [P0620-P0622], meaning: "Generator (alternator) control circuit problem", components: [alternator, ecu_module]}
+  - {codes: [U0100, U0101], meaning: "Lost communication with engine / transmission control module", components: [ecu_module, fuse_relay_box, battery_terminal]}
