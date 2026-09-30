@@ -55,3 +55,13 @@
 | **Sau cùng** | Teacher foundation model (#8), sau khi đã có D1/D3 | so trên cùng dữ liệu | cao |
 
 **Không ưu tiên:** copy-paste chéo xe (#6; ngoại cảnh không thật), riêng cặp hộp cầu chì ↔ hộp lọc gió (#4; ảnh hưởng hẹp, sẽ được D1/D2 xử lý gián tiếp).
+
+## 4. Tiến độ (cập nhật 2026-09-30 chiều)
+
+- **D2 xong.** Nhãn sai giới hạn: ống nạp 13%, cọc bình 20%, ắc quy 37%; 18/26 ca "box lệch" trên test là lỗi nhãn. Sửa 18 ảnh test → F1 teacher 0,612 → 0,647 (`docs/reports/geometry_audit_d2.md`, `relabel_effect_d2.md`).
+- **v10 đã xếp hàng trên DGX** (`scripts/operations/v10_chain.sh`, sau Phase 3 → v2 → E1):
+  - dữ liệu Phase 3 + bản vá nhãn (bình chứa 2 đợt + D2), khớp theo class + IoU box;
+  - chia theo xe, cùng công thức p5 (teacher + KD 2 seed);
+  - chấm mọi model, kể cả p5_reg và kd_n_p5t, trên **test v2** (nhãn test đã vá).
+- **Quy ước báo cáo:** từ v10, mỗi model báo cả "test cũ" và "test v2". Không so số của hai bộ nhãn với nhau.
+- **Gate v10** (test v2, mask mAP50-95): teacher ≥ p5_reg + 0,01; trung bình KD 2 seed ≥ kd_n_p5t + 0,01.
