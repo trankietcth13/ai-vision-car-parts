@@ -38,6 +38,7 @@ class Component:
     cues: List[str] = field(default_factory=list)
     confusers: Dict[str, str] = field(default_factory=dict)
     ann_names: List[str] = field(default_factory=list)
+    safety: Optional[str] = None  # e.g. "high_voltage": identify only, never guide disassembly
 
 
 class Taxonomy:
@@ -60,6 +61,7 @@ class Taxonomy:
                 cues=list(c.get("cues", [])),
                 confusers=dict(c.get("confusers", {}) or {}),
                 ann_names=list(c.get("ann_names", [name])),
+                safety=c.get("safety"),
             )
         self._validate()
         self._ann_index = {a: comp.name for comp in self.components.values() for a in comp.ann_names}
@@ -110,6 +112,13 @@ class Taxonomy:
     def system_of(self, name: str) -> Optional[str]:
         comp = self.component_for(name)
         return comp.system if comp else None
+
+    def safety_of(self, name: str) -> Optional[str]:
+        """Safety tag of a component, annotation name or generic class (None when not safety-relevant)."""
+        comp = self.component_for(name)
+        if comp is not None:
+            return comp.safety
+        return (self.generic.get(name) or {}).get("safety")
 
     def members_of_generic(self, generic: str) -> List[str]:
         """Tier-B components currently trained under a generic class."""

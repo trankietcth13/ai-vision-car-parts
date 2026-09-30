@@ -33,6 +33,7 @@ systems:
   washer:            {vi: "Rửa kính", en: "Washer & wiper"}
   body:              {vi: "Vỏ & tham chiếu", en: "Body & reference"}
   tools:             {vi: "Dụng cụ", en: "Tools"}
+  high_voltage:      {vi: "Cao áp hybrid/EV (chỉ nhận diện)", en: "Hybrid/EV high voltage (identify only)"}
 
 generic_classes:
   other_reservoir:       {vi: "bình chứa khác", en: "other fluid reservoir"}
@@ -41,6 +42,8 @@ generic_classes:
   other_hose_line:       {vi: "ống / đường dẫn khác", en: "other hose or line"}
   other_cap_plug:        {vi: "nắp / tay cầm khác", en: "other cap, plug or handle"}
   other_rotating_device: {vi: "thiết bị quay trên dây curoa khác", en: "other belt-driven device"}
+  # safety: every detection of this class carries "identify only, never guide disassembly" (automotive-expert rule 5)
+  hv_component: {vi: "linh kiện cao áp (hybrid/EV)", en: "high-voltage component (hybrid/EV)", safety: high_voltage}
 
 detail_classes: [electrical_connector, bolt_nut, hose_clamp, clip_push_pin]
 
@@ -581,6 +584,60 @@ components:
     vi: "khóa nắp capo"
     en: "hood latch"
     cues: ["chốt khóa + lẫy an toàn giữa khung trước"]
+
+  # ---------------------------------------------------------------- high voltage (hybrid / EV): identify only
+  # Added 2026-09-30 after the model comparison: a Chevrolet Volt inverter was labelled engine_cover.
+  # All train under the generic `hv_component` until each has enough labels; the guidance layer must refuse them.
+  hv_cable:
+    system: high_voltage
+    tier: B
+    fallback: hv_component
+    safety: high_voltage
+    vi: "cáp cao áp"
+    en: "high-voltage cable"
+    cues: ["cáp / ống gen dày màu CAM", "nối biến tần, mô-tơ, máy nén điện, pin cao áp"]
+    confusers:
+      wiring_harness: "bó dây thường màu đen, không có vỏ cam"
+      spark_plug_wire: "dây cao áp bugi mảnh, nối mobin/bugi, không màu cam"
+  inverter_converter:
+    system: high_voltage
+    tier: B
+    fallback: hv_component
+    safety: high_voltage
+    vi: "bộ biến tần / chuyển đổi cao áp"
+    en: "hybrid inverter / converter"
+    cues: ["hộp nhôm lớn có cáp cam và ống nước làm mát", "nhãn HIGH VOLTAGE / DANGER", "thường nằm trên hộp số (Toyota THS)"]
+    confusers:
+      engine_cover: "nắp máy bằng nhựa trơn, không có cáp cam"
+      air_filter_box: "hộp lọc gió có ống gió, không có cáp cam"
+      fuse_relay_box: "hộp cầu chì có nắp gài, không có cáp cam dày"
+  electric_ac_compressor:
+    system: high_voltage
+    tier: B
+    fallback: hv_component
+    safety: high_voltage
+    vi: "máy nén điều hòa điện"
+    en: "electric A/C compressor"
+    cues: ["máy nén không có puly/dây curoa", "có cáp cam"]
+    confusers:
+      ac_compressor: "lốc lạnh thường có puly và đĩa ly hợp"
+  hv_service_plug:
+    system: high_voltage
+    tier: B
+    fallback: hv_component
+    safety: high_voltage
+    vi: "chốt ngắt cao áp"
+    en: "high-voltage service plug"
+    cues: ["tay nắm/chốt màu cam"]
+  inverter_coolant_reservoir:
+    system: high_voltage
+    tier: B
+    fallback: other_reservoir
+    vi: "bình nước làm mát biến tần"
+    en: "inverter coolant reservoir"
+    cues: ["bình nước làm mát thứ hai, nhỏ hơn, gần biến tần", "xe có cáp cam / nhãn HYBRID"]
+    confusers:
+      coolant_reservoir: "bình nước làm mát động cơ lớn hơn, nối về két nước / cổ nước"
 
   # ---------------------------------------------------------------- tools
   multimeter_diagnostic_tool:

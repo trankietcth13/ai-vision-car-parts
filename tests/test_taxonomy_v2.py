@@ -93,3 +93,14 @@ def test_build_full_dataset_remaps(tax):
     for k, n in base.items():
         if n != "oil_filter":
             assert names2[train2[k]] == n  # every v1 training class survives under its own name
+
+
+def test_high_voltage_components_are_safety_tagged(tax):
+    for name in ("hv_cable", "inverter_converter", "electric_ac_compressor", "hv_service_plug"):
+        assert tax.system_of(name) == "high_voltage"
+        assert tax.safety_of(name) == "high_voltage"
+        assert tax.train_class_for(name) == "hv_component"
+    assert tax.safety_of("hv_component") == "high_voltage"
+    assert tax.safety_of("battery") is None
+    assert tax.train_class_for("inverter_coolant_reservoir") == "other_reservoir"
+    assert "hv_component" in tax.training_names

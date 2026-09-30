@@ -28,6 +28,22 @@
 | `power_steering_reservoir`, `clutch_reservoir` | cả bình | ký hiệu vô-lăng (PS); nằm cạnh bình dầu phanh (côn) | tier B → train dưới `other_reservoir` |
 | `exhaust_manifold_heat_shield` | **chỉ tấm chắn kim loại bắt bu-lông trên cổ xả / turbo / đoạn ống xả đầu**, nhìn thấy từ trên xuống | kim loại mỏng sáng hoặc có gân; bu-lông bắt vào cổ xả; nằm ở mặt xả của nắp máy | **không** gán cho: tấm chắn dưới gầm (ảnh gầm xe bị loại), tấm cách nhiệt vách máy/capo, nắp máy bằng nhựa, nắp dàn cò, vỏ bảo vệ ống điều hòa |
 
+## 2b. Linh kiện cao áp hybrid/EV (thêm 2026-09-30)
+
+**Lý do:** trên ảnh Chevrolet Volt, cả 4 model hiện có đều gọi hộp biến tần cao áp là `engine_cover` hoặc `air_filter_box` (`docs/reports/model_comparison_2026-09-30.md`).
+
+| linh kiện (taxonomy v2) | Box bao | Dấu hiệu | Train dưới |
+|---|---|---|---|
+| `hv_cable` | từng đoạn cáp/ống gen **màu cam** nhìn thấy được | màu cam, dày, nối biến tần / mô-tơ / máy nén điện | `hv_component` |
+| `inverter_converter` | cả hộp | hộp nhôm lớn, cáp cam, ống nước làm mát, nhãn HIGH VOLTAGE | `hv_component` |
+| `electric_ac_compressor` | cả máy nén | không có puly, có cáp cam | `hv_component` |
+| `hv_service_plug` | chốt / tay nắm | màu cam | `hv_component` |
+| `inverter_coolant_reservoir` | cả bình | bình nước làm mát thứ hai, nhỏ hơn, gần biến tần, xe có cáp cam | `other_reservoir` |
+
+- **Mọi class cao áp mang cờ `safety: high_voltage`.** Teacher system ghi cảnh báo "chỉ nhận diện, không hướng dẫn tháo" vào `warnings`. Tầng hướng dẫn [K]/[L5] phải từ chối mọi bước tháo lắp chạm vào các linh kiện này.
+- **Có cáp cam** → không gán bộ phận đó thành `engine_cover` / `air_filter_box` / `fuse_relay_box`.
+- **Nguồn ảnh:** cần ảnh khoang máy xe hybrid/EV (Toyota THS, Honda i-MMD, Volt…). Hiện dataset gần như không có loại ảnh này.
+
 ## 3. Cách áp dụng
 
 - **Skill review** (`engine-bay-label-review`) áp dụng bảng trên khi viết verdict: box sai quy định → `bad_geometry` kèm `fixed_box_norm`; box sai tên → `wrong_class`.
@@ -37,5 +53,10 @@
   - Mọi lỗi tên đều do đoán theo vị trí khi không đọc được nắp.
   - Cờ "chỉ bao nắp" của Jev báo thừa, vì ghi chú review mô tả mask chứ không mô tả box. Nên chỉ dùng cờ này để **xếp thứ tự** soát lại, không dùng để sửa nhãn.
   - Danh sách sửa cho lần build sau: `docs/reports/reservoir_corrections_round1.jsonl`.
+- **Đợt 2** (100 box nhận dạng yếu, `docs/reports/reservoir_rereview_round2.md`):
+  - 16/80 box coolant/PS sai loại. Trong đó 4 là **bình nước làm mát biến tần hybrid** và 3 là **chi tiết thân xe màu trắng** (tháp giảm xóc) bị tưởng là bình.
+  - Bình dầu phanh: 19/20 đúng loại, nhưng **10/20 box cần vẽ lại**.
+  - Tổng hai đợt: 134 box → 9 đổi tên, 14 bỏ, 31 vẽ lại box.
+  - Bản sao verdict đã sửa nằm ở `data/<review>_rr/`, sinh ra bằng `apply_reservoir_corrections.py`.
 - **Đợt tiếp theo:** soát toàn bộ nhãn coolant/brake đã chấp nhận mà người review chỉ dựa vào vị trí hoặc hình dạng (theo trường `evidence` của Jev). Tỉ lệ sai 21% cho thấy lỗi không chỉ nằm trong hàng đợi.
 - **Đánh giá:** tập test chỉ có 3 instance coolant, nên AP gần 0 của class này trên test không có ý nghĩa thống kê. Hãy dùng AP theo class từ CV (Phase 3) để quyết định class này có thật sự yếu không.

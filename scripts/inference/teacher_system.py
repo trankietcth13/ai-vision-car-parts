@@ -153,6 +153,9 @@ class TeacherSystem:
                 "polygon_norm": None if d["poly"] is None
                 else np.round(d["poly"][:: max(1, len(d["poly"]) // 60)].astype(float), 4).tolist(),
             }
+            safety = self.tax.safety_of(d["cls"])
+            if safety:
+                entry["safety"] = safety
             if self.priors:
                 cx, cy = (d["box"][0] + d["box"][2]) / 2, (d["box"][1] + d["box"][3]) / 2
                 entry["position_prior"] = round(self.priors.score(d["cls"], cx, cy), 2)
@@ -164,6 +167,8 @@ class TeacherSystem:
             "settings": {"imgsz": self.imgsz, "conf": self.conf, "tiles": list(self.tiles) if use_tiles else None,
                          "count_cap": use_cap},
             "n_components": len(dets),
+            "warnings": sorted({f"{e['safety']}: {e['class']} detected - identify only, do not guide disassembly; refer to a qualified technician"
+                                for g in systems.values() for e in g["components"] if e.get("safety")}),
             "systems": systems,
         }
 
