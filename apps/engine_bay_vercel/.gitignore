@@ -4,3 +4,6 @@ vendor/
 examples/
 config.json
 .vercel
+
+.vercel
+.env*
