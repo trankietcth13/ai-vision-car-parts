@@ -92,7 +92,11 @@ def main():
     (out / "overlays").mkdir(parents=True, exist_ok=True)
     cfg = yaml.safe_load(Path(a.data).read_text(encoding="utf-8"))
     root = Path(cfg["path"])
-    test_imgs = sorted((root / cfg[a.split]).glob("*.jpg"))
+    split = root / cfg[a.split]
+    if split.suffix == ".txt":  # vehicle splits are image lists, not folders
+        test_imgs = sorted((root / l.strip()).resolve() for l in split.read_text().splitlines() if l.strip())
+    else:
+        test_imgs = sorted(split.glob("*.jpg"))
     random.Random(0).shuffle(test_imgs)
     samples = test_imgs[: a.n_samples]
     if a.extra_images and Path(a.extra_images).exists():
