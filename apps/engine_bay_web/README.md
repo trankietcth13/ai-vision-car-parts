@@ -7,13 +7,15 @@
 apps/engine_bay_web/
 ├── app.py             web UI (Gradio) + REST API (FastAPI), chạy bằng uvicorn
 ├── models/            kd_n_full.pt (mặc định), teacher_full.pt
-├── config/            class_thresholds.yaml (tuỳ chọn, ngưỡng riêng từng lớp)
+├── config/            class_thresholds/<model>.yaml (ngưỡng riêng từng lớp, hiệu chỉnh riêng cho từng model)
 ├── examples/          6 ảnh mẫu
 ├── requirements.txt
 └── Dockerfile
 ```
 
 ## Model
+
+Bản chốt hiện tại: **POC v1** (tag `poc-v1`). Độ chính xác chi tiết và các giới hạn xem [docs/releases/poc_v1.md](../../docs/releases/poc_v1.md).
 
 | File | Loại | Kích thước | Tốc độ | Ghi chú |
 |---|---|---|---|---|
@@ -48,7 +50,7 @@ Cấu hình bằng biến môi trường (hoặc cờ `--model`, `--host`, `--po
 | `ENGINE_BAY_DEVICE` | GPU `0` nếu có, không thì `cpu` | Thiết bị suy luận |
 | `ENGINE_BAY_CONF` | `0.35` | Ngưỡng tin cậy mặc định |
 | `ENGINE_BAY_MODELS_DIR` | `./models` | Thư mục chứa model |
-| `ENGINE_BAY_THRESHOLDS` | `./config/class_thresholds.yaml` | File ngưỡng từng lớp |
+| `ENGINE_BAY_THRESHOLDS` | `./config/class_thresholds.yaml` | File ngưỡng dùng chung, chỉ dùng khi không có `config/class_thresholds/<model>.yaml` |
 
 ## Chạy bằng Docker
 
@@ -81,7 +83,7 @@ file `config/class_thresholds.yaml`.
 |---|---|---|
 | `file` | có | Ảnh JPG/PNG |
 | `conf` | không | Ngưỡng tin cậy, mặc định `ENGINE_BAY_CONF` |
-| `model` | không | `kd_n_full.pt` hoặc `teacher_full.pt` |
+| `model` | không | `kd_n_full` hoặc `teacher_full` (tên trong `/healthz`, có hoặc không có `.pt`) |
 | `per_class` | không | `true` (mặc định): dùng ngưỡng từng lớp nếu có file cấu hình |
 
 ```bash

@@ -1,0 +1,24 @@
+model: teacher_full
+source: cv_eval.py out-of-fold F1
+default: 0.4
+thresholds:
+  air_filter_box: 0.55
+  air_intake_duct: 0.5
+  alternator: 0.15
+  battery: 0.4
+  battery_terminal: 0.4
+  brake_fluid_reservoir: 0.6
+  coolant_reservoir: 0.55
+  ecu_module: 0.15
+  engine_cover: 0.35
+  fuse_relay_box: 0.5
+  ignition_coil: 0.25
+  intake_manifold: 0.4
+  maf_sensor: 0.3
+  multimeter_diagnostic_tool: 0.4
+  oil_dipstick: 0.55
+  oil_filler_cap: 0.6
+  radiator_cap: 0.35
+  radiator_hose: 0.6
+  throttle_body: 0.25
+  washer_fluid_reservoir: 0.55

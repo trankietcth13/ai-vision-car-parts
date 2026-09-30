@@ -1,0 +1,24 @@
+model: kd_n_full
+source: cv_eval.py out-of-fold F1
+default: 0.5
+thresholds:
+  air_filter_box: 0.6
+  air_intake_duct: 0.6
+  alternator: 0.45
+  battery: 0.5
+  battery_terminal: 0.5
+  brake_fluid_reservoir: 0.55
+  coolant_reservoir: 0.25
+  ecu_module: 0.25
+  engine_cover: 0.65
+  fuse_relay_box: 0.6
+  ignition_coil: 0.5
+  intake_manifold: 0.65
+  maf_sensor: 0.3
+  multimeter_diagnostic_tool: 0.4
+  oil_dipstick: 0.5
+  oil_filler_cap: 0.45
+  radiator_cap: 0.4
+  radiator_hose: 0.3
+  throttle_body: 0.3
+  washer_fluid_reservoir: 0.4

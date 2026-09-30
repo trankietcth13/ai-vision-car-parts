@@ -1,6 +1,7 @@
 """Engine Bay Vision: web app + JSON API for the engine-bay component segmentation models.
 
-Self-contained: models are read from ./models/*.pt, optional per-class thresholds from ./config/class_thresholds.yaml,
+Self-contained: models are read from ./models/*.pt, optional per-class thresholds from
+./config/class_thresholds/<model>.yaml (fallback ./config/class_thresholds.yaml),
 sample photos from ./examples. Configuration by CLI flag or environment variable (see README.md).
 
     python app.py                               # http://127.0.0.1:7860
@@ -37,19 +38,25 @@ DEFAULT_CONF = float(os.environ.get("ENGINE_BAY_CONF", "0.35"))
 IMAGE_SIZE = 640  # all current engine-bay models are trained and evaluated at 640
 MAX_SIDE = 1600  # inputs are downscaled first (training images are 1600 px); keeps labels readable and plotting fast
 EXAMPLE_DIR = APP_DIR / "examples"
+CLASS_THRESHOLDS_DIR = APP_DIR / "config" / "class_thresholds"  # <model stem>.yaml, calibrated per model by cv_eval.py
 CLASS_THRESHOLDS_FILE = Path(os.environ.get("ENGINE_BAY_THRESHOLDS", APP_DIR / "config" / "class_thresholds.yaml"))
+_THRESHOLDS: dict[str, dict[str, float]] = {}
 
 
-def load_class_thresholds() -> dict[str, float]:
-    if not CLASS_THRESHOLDS_FILE.is_file():
-        return {}
-    import yaml
+def class_thresholds(model_path: str | Path) -> dict[str, float]:
+    """Per-class confidence thresholds of one model ({} = none): config/class_thresholds/<stem>.yaml, else the shared
+    file. Thresholds are model specific (the student and the teacher are calibrated separately)."""
+    stem = Path(model_path).stem
+    if stem not in _THRESHOLDS:
+        f = CLASS_THRESHOLDS_DIR / f"{stem}.yaml"
+        f = f if f.is_file() else CLASS_THRESHOLDS_FILE
+        thr = {}
+        if f.is_file():
+            import yaml
 
-    return {k: float(v) for k, v in (yaml.safe_load(CLASS_THRESHOLDS_FILE.read_text(encoding="utf-8")) or {})
-            .get("thresholds", {}).items()}
-
-
-CLASS_THRESHOLDS = load_class_thresholds()
+            thr = {k: float(v) for k, v in (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("thresholds", {}).items()}
+        _THRESHOLDS[stem] = thr
+    return _THRESHOLDS[stem]
 
 VI_NAMES = {
     "battery": "Ắc quy",
@@ -90,6 +97,11 @@ def resolve_model(name: str | None) -> Path | None:
         if cand.is_file():
             return cand.resolve()
     return None
+
+
+def served_model(name: str) -> Path | None:
+    """API lookup: only models in MODELS_DIR, by stem ("kd_n_full", as /healthz lists them) or file name."""
+    return next((p for p in discover_models() if name in (p.stem, p.name)), None)
 
 
 def model_label(path: Path) -> str:
@@ -176,14 +188,15 @@ def analyze(image: np.ndarray | None, model_path: str, confidence: float, per_cl
     except FileNotFoundError as e:
         raise gr.Error(str(e))
     image = downscale(image)
-    use_thr = bool(per_class and CLASS_THRESHOLDS)
-    pred_conf = min([float(confidence), *CLASS_THRESHOLDS.values()]) if use_thr else float(confidence)
+    thresholds = class_thresholds(model_path)
+    use_thr = bool(per_class and thresholds)
+    pred_conf = min([float(confidence), *thresholds.values()]) if use_thr else float(confidence)
     started = time.perf_counter()
     result = model.predict(cv2.cvtColor(image, cv2.COLOR_RGB2BGR), imgsz=IMAGE_SIZE, conf=pred_conf,
                            device=DEVICE, verbose=False)[0]
     if use_thr and result.boxes is not None and len(result.boxes):
         keep = [i for i, (c, sc) in enumerate(zip(result.boxes.cls.tolist(), result.boxes.conf.tolist()))
-                if sc >= CLASS_THRESHOLDS.get(result.names[int(c)], float(confidence))]
+                if sc >= thresholds.get(result.names[int(c)], float(confidence))]
         result = result[keep]
     ms = (time.perf_counter() - started) * 1000
     plotted = cv2.cvtColor(result.plot(conf=False), cv2.COLOR_BGR2RGB)  # line/font size scale with the image
@@ -325,9 +338,11 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
                 with gr.Accordion("Tùy chọn", open=False):
                     model = gr.Dropdown(choices, value=default, label="Model")
                     confidence = gr.Slider(0.05, 0.9, value=DEFAULT_CONF, step=0.05, label="Ngưỡng tin cậy")
-                    per_class = gr.Checkbox(value=bool(CLASS_THRESHOLDS), interactive=bool(CLASS_THRESHOLDS),
-                                            label="Ngưỡng riêng từng loại linh kiện (hiệu chỉnh bằng cross-validation)"
-                                            if CLASS_THRESHOLDS else "Ngưỡng riêng từng loại (chưa có configs/class_thresholds.yaml)")
+                    any_thr = any(class_thresholds(p) for p in discover_models())
+                    per_class = gr.Checkbox(value=any_thr, interactive=any_thr,
+                                            label="Ngưỡng riêng từng loại linh kiện (hiệu chỉnh bằng cross-validation; "
+                                                  "khi bật, thanh ngưỡng chỉ áp cho loại chưa hiệu chỉnh)"
+                                            if any_thr else "Ngưỡng riêng từng loại (chưa có config/class_thresholds/)")
             with gr.Column(scale=5):
                 image_out = gr.HTML(viewer_html(), padding=False)
                 summary = gr.HTML(summary_html("Tải ảnh khoang máy lên để bắt đầu.", "muted"))
@@ -344,8 +359,9 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
 def detect_json(image_bgr: np.ndarray, model_path: str, conf: float, per_class: bool) -> dict:
     """Detections as plain data for the REST API (coordinates in pixels of the submitted image)."""
     model = CACHE.get(model_path)
-    use_thr = bool(per_class and CLASS_THRESHOLDS)
-    pred_conf = min([conf, *CLASS_THRESHOLDS.values()]) if use_thr else conf
+    thresholds = class_thresholds(model_path)
+    use_thr = bool(per_class and thresholds)
+    pred_conf = min([conf, *thresholds.values()]) if use_thr else conf
     started = time.perf_counter()
     r = model.predict(image_bgr, imgsz=IMAGE_SIZE, conf=pred_conf, device=DEVICE, verbose=False)[0]
     ms = (time.perf_counter() - started) * 1000
@@ -354,14 +370,14 @@ def detect_json(image_bgr: np.ndarray, model_path: str, conf: float, per_class: 
         polys = r.masks.xy if r.masks is not None else [None] * len(r.boxes)
         for c, sc, box, poly in zip(r.boxes.cls.tolist(), r.boxes.conf.tolist(), r.boxes.xyxy.tolist(), polys):
             name = r.names[int(c)]
-            if use_thr and sc < CLASS_THRESHOLDS.get(name, conf):
+            if use_thr and sc < thresholds.get(name, conf):
                 continue
             dets.append({"class": name, "name_vi": VI_NAMES.get(name, name), "confidence": round(float(sc), 4),
                          "box_xyxy": [round(float(v), 1) for v in box],
                          "polygon": [[round(float(x), 1), round(float(y), 1)] for x, y in poly] if poly is not None else None})
     h, w = image_bgr.shape[:2]
     return {"model": Path(model_path).stem, "image_size": [w, h], "inference_ms": round(ms, 1),
-            "count": len(dets), "detections": dets}
+            "per_class_thresholds": use_thr, "count": len(dets), "detections": dets}
 
 
 def create_server(initial_model: str | None = None):
@@ -373,12 +389,13 @@ def create_server(initial_model: str | None = None):
     @api.get("/healthz")
     def healthz():
         return {"status": "ok", "device": DEVICE, "default_model": default.stem if default else None,
-                "models": [p.stem for p in discover_models()], "per_class_thresholds": bool(CLASS_THRESHOLDS)}
+                "models": [p.stem for p in discover_models()],
+                "per_class_thresholds": {p.stem: bool(class_thresholds(p)) for p in discover_models()}}
 
     @api.post("/api/detect")
     async def detect(file: UploadFile = File(...), conf: float = Form(DEFAULT_CONF), model: str | None = Form(None),
                      per_class: bool = Form(True)):
-        path = resolve_model(model) if model else default
+        path = served_model(model) if model else default
         if path is None:
             raise HTTPException(404, f"model not found: {model}")
         img = cv2.imdecode(np.frombuffer(await file.read(), np.uint8), cv2.IMREAD_COLOR)
