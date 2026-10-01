@@ -5,7 +5,7 @@ Inputs (all from real runs): qa_results/version_report/* (QA reports pulled from
 (per-epoch results), qa_results/test_cases_kd_full_c025/summary.json, scratch per-class JSON (embedded below).
 Output: reports/Engine_Bay_KD_Training_Report_EN.pdf and _VI.pdf, charts in reports/fig/.
 
-Usage: python reports/build_training_report.py
+Usage: python docs/reports/build_training_report.py [--lang en vi]
 """
 
 from __future__ import annotations
@@ -29,8 +29,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table,
                                 TableStyle)
 
-ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "reports"
+ROOT = Path(__file__).resolve().parents[2]  # project root (qa_results/ with the pulled run data)
+OUT = Path(__file__).resolve().parent  # docs/reports
 FIG = OUT / "fig"
 FIG.mkdir(parents=True, exist_ok=True)
 
@@ -56,10 +56,12 @@ VERSIONS = [  # name, teacher mAP50-95, student KD mAP50-95 (seed mean), student
     ("v7", 0.258, 0.249, 0.441, None, 47),
     ("v8", 0.290, 0.264, 0.466, None, 48),
     ("kd_n_p5t", 0.354, 0.286, 0.491, None, 58),
+    ("v9", 0.355, 0.277, 0.473, None, None),
+    ("v10*", 0.350, 0.299, 0.520, None, None),
 ]
 PHASE5 = [("teacher v8", 0.290, None, 0.479), ("freeze 10", 0.310, 0.338, 0.557), ("SGD lr0 0.01", 0.285, 0.319, 0.510),
           ("wd 0.001 + scale 0.7", 0.290, 0.354, 0.577)]
-PER_CLASS = json.loads((ROOT / "reports" / "perclass.json").read_text()) if (ROOT / "reports" / "perclass.json").exists() else None
+PER_CLASS = json.loads((OUT / "perclass.json").read_text()) if (OUT / "perclass.json").exists() else None
 FINAL = json.loads((ROOT / "qa_results" / "test_cases_kd_full_c025" / "summary.json").read_text())
 
 
@@ -240,7 +242,7 @@ CLS_EN["ecu_module"] = "ECU module"
 EN = dict(
     lang="en", cls=CLS_EN, file="Engine_Bay_KD_Training_Report_EN.pdf",
     title="Engine-Bay Component Segmentation", subtitle="Knowledge-distillation training report",
-    meta="Distillation project · 29 September 2026 · all numbers from runs on the DGX GB10",
+    meta="Distillation project · status 1 October 2026 (POC v1 frozen) · all numbers from runs on the DGX GB10",
     header="Engine-bay KD training report", page="Page",
     c_teacher="Teacher yolo11l-seg", c_student="KD student yolo11n-seg (seed mean)", c_base="Student trained alone",
     c_target="student target 0.30", c_map="mask mAP50-95 (test, 3 unseen vehicles)", c_teacher_short="teacher",
@@ -277,13 +279,14 @@ def body(lang):
     if lang == "en":
         return [
             ("h1", "1. Executive summary"),
-            ("p", "We trained an instance-segmentation model that finds 20 engine-bay components in inspection photos, and distilled it into a model small enough for edge devices. A large teacher (yolo11l-seg, 27.6M parameters) learns from expert-reviewed labels; a student ten times smaller (yolo11n-seg, 2.84M parameters, 6 MB) learns from the same labels and imitates the teacher's features, class confidences and box boundaries."),
+            ("p", "We trained an instance-segmentation model that finds 20 engine-bay components in inspection photos, and distilled it into a model small enough for edge devices and web browsers. A large teacher (yolo11l-seg, 27.6M parameters) learns from expert-reviewed labels; a student ten times smaller (yolo11n-seg, 2.84M parameters, 6 MB) learns from the same labels and imitates the teacher's features, class confidences and box boundaries. On 30 September 2026 the current models were frozen as <b>POC v1</b> (git tag poc-v1), because no new data is available for now."),
             ("bullets", [
-                "<b>New vehicles (3 held-out cars, 125 images):</b> best student mask mAP50-95 <b>0.302</b> (mAP50 0.514; 2-seed mean 0.286), best teacher <b>0.354</b>. In the per-image test, 58 of 100 images pass.",
-                "<b>Progress since the first measured version (v4):</b> student 0.209 → 0.302 (+44%), teacher 0.233 → 0.354 (+52%).",
-                f"<b>Final model on all 28 vehicles (kd_n_full):</b> on the 1,081 dataset images it was trained on, {f['pass']}/{f['images']} images pass, recall {f['recall']:.3f}, precision {f['precision']:.3f}. Cross-validation numbers for unseen images of these vehicles follow tonight.",
-                "<b>Speed:</b> 4.0 ms per image end to end (PyTorch FP16 on the DGX GB10), 2.9 ms for the network alone.",
-                "<b>Recommendation:</b> use the student as an assistant that proposes components for a technician to confirm on new vehicles; use it automatically on the vehicles in the dataset once cross-validation confirms the accuracy. The main lever for new vehicles is more distinct vehicles in the training data.",
+                "<b>POC v1 = kd_n_full (student, default) + teacher_full</b>, both trained on all 28 vehicles. On new photos of these vehicles (3-fold cross-validation) the student reaches mask mAP50-95 <b>0.381 ± 0.010</b> and the teacher <b>0.418 ± 0.010</b>. With per-class confidence thresholds the student's precision rises from 0.59 to <b>0.715</b> (recall 0.61, F1 0.66).",
+                "<b>New vehicles (3 held-out cars, same recipe):</b> student mask mAP50-95 0.27–0.30 (2 seeds), teacher 0.354. Results on unseen vehicles should be treated as suggestions for a technician to confirm.",
+                "<b>Four experiments since the last report</b> (more data in v9, a new KD recipe E1, a 27-class taxonomy, corrected labels in v10): <b>none is measurably better</b> than the reference in a paired statistical test. The most promising is v10 (corrected labels): the student gains +0.011 with a 94% probability of being positive, but the 95% interval still includes zero.",
+                "<b>Label quality is now a measured limit.</b> A pixel-level audit found wrong extents in 13% of air-duct, 20% of battery-terminal and 37% of battery labels, and 18 of the 26 'localisation misses' on the test set were label errors.",
+                "<b>Deployment:</b> a self-contained web app + REST API (Docker) and a public in-browser demo (https://engine-bay-vision-demo.vercel.app) that runs the student with onnxruntime-web in about 0.2 s per photo. Photos never leave the device.",
+                "<b>Main lever:</b> more distinct vehicles. Training changes on the current 28 vehicles no longer move the new-vehicle score beyond the measurement noise.",
             ]),
             ("h1", "2. Data and labels"),
             ("p", "The dataset holds 1,307 photos of 28 vehicles (one Request_ID per vehicle), taken during inspections at 6000×4000 px. The training ontology has 20 classes derived from 36 annotation classes; rare classes are dropped and upper and lower radiator hoses are merged."),
@@ -294,8 +297,11 @@ def body(lang):
                        ["Phase 2 relabel", "332 images without reviewed labels: DeepSeek + Codex drafts, full review", "139 excluded (underbody, fuel door), 193 kept; DeepSeek box precision 0.23"],
                        ["Independent verification", "Second reviewer sees only model/label disagreements", "287 disagreements → 70 label fixes"],
                        ["Empty-image recheck", "Teacher suggestions + review of 134 unlabelled images", "30 more excluded, 23 labels added"],
-                       ["Final pool", "Duplicates grouped, consistent scene policy", "1,081 images, 28 vehicles, 13 duplicate photos grouped"]]),
-            ("p", "Splits: for new-vehicle measurement the vehicles are split 19 train / 6 validation / 3 test; test images are never trained on. For the final model all 28 vehicles are used and accuracy is measured with image-level 3-fold cross-validation. A 50-image human spot check of the final labels reported no errors (awaiting the reviewer's confirmation)."),
+                       ["Final pool", "Duplicates grouped, consistent scene policy", "1,081 images, 28 vehicles, 13 duplicate photos grouped"],
+                       ["Reservoir re-review (new)", "Two rounds on every coolant / brake / washer / other reservoir label", "134 boxes: 86 kept, 31 re-boxed, 8 renamed, 12 removed"],
+                       ["Geometry audit D2 (new)", "116 duct / terminal / battery labels judged on the full-resolution crop against a written extent policy", "Wrong extent: duct 13%, terminal 20%, battery 37%; 18 of 26 test 'localisation misses' were label errors"]]),
+            ("p", "Splits: for new-vehicle measurement the vehicles are split 19 train / 6 validation / 3 test; test images are never trained on. For the final model all 28 vehicles are used and accuracy is measured with image-level 3-fold cross-validation."),
+            ("p", "<b>What the label audit changed.</b> Typical errors: a battery box that includes the positive-terminal cover, fuse box or hold-down; a terminal box that covers only the bolt; an intake-duct box that runs into the MAF sensor or air-filter box. Correcting only the 18 affected test images raised the teacher's box F1 on the test set from 0.612 to 0.647 and the student's from 0.531 to 0.556, with the models unchanged. Corrections are stored as geometry-matched patches (class + box IoU ≥ 0.8) so that they apply to any later dataset build. One tooling bug was found and fixed during the audit: photos with an EXIF rotation (about 2%) were read sideways by the review tools; the deployed apps were checked and handle the rotation correctly."),
             ("h1", "3. Algorithm"),
             ("img", "kd"),
             ("p", "<b>Knowledge distillation.</b> For every batch the frozen teacher and the student see the same images. The student minimises"),
@@ -309,7 +315,7 @@ def body(lang):
             ]),
             ("p", "<b>Training recipe (final).</b> 640 px, batch 16, 100 epochs, cosine learning rate, copy-paste 0.3, mixup 0.1, rotation ±5°, mosaic off for the last 10 epochs, repeat-factor sampling for rare classes (t = 0.1, at most 4 repeats). The teacher adds weight decay 0.001, scale 0.7 and perspective 0.0005. Both models save a checkpoint every 5 epochs; the deployed weights are the average of 5 checkpoints."),
             ("h1", "4. Training process"),
-            ("p", "Hardware: NVIDIA DGX GB10 with 121 GB unified memory, shared with a vLLM service, so one job runs at a time. Software: PyTorch 2.14, Ultralytics 8.4.75. A teacher takes about 90 minutes and a student about 60 minutes."),
+            ("p", "Hardware: NVIDIA DGX GB10 with 121 GB unified memory, shared with a vLLM service, so one job runs at a time. Software: PyTorch 2.14, Ultralytics 8.4.75. A teacher takes about 80–90 minutes and a student about 50–60 minutes."),
             ("img", "curves"),
             ("caption", "Real run kd_n_p5t_s0. Left: validation mask mAP50-95 per epoch for the student and its teacher. Right: each loss component relative to epoch 1. The student's mAP swings by several points between epochs, which is why checkpoint averaging helps."),
             ("h1", "5. Benchmark across versions"),
@@ -320,9 +326,22 @@ def body(lang):
                        ["v6", "640 px, cosine LR, copy-paste, mixup, rare-class sampling, re-pseudo-labelling", "0.259", "0.245", "0.423", "0.218", "47"],
                        ["v7", "+175 reviewed external images (train only)", "0.258", "0.249", "0.441", "–", "47"],
                        ["v8", "344 pseudo-labels replaced by reviewed hybrid labels", "0.290", "0.264", "0.466", "–", "48"],
-                       ["kd_n_p5t", "Regularised teacher + checkpoint averaging for both models", "0.354", "0.286", "0.491", "–", "58"],
-                       ["full", "All 28 vehicles, 1,081 verified images", "n/a", "n/a", "n/a", "–", "CV"]]),
-            ("caption", "mask mAP50-95 on the same 125 test images of 3 unseen vehicles. Student KD is the mean of 2 seeds from v6 on. v4 and v5 used test labels before Codex's fixes. 'Pass/100' = images with precision ≥ 0.5 and recall ≥ 0.5 at confidence 0.25. v1–v3 used unreviewed machine labels and no fixed test set, so they are not comparable."),
+                       ["kd_n_p5t", "Regularised teacher + checkpoint averaging for both models (reference)", "0.354", "0.286", "0.491", "–", "58"],
+                       ["v9", "+ Phase 2/3 data (empty-image fixes, verified Phase 2 images)", "0.355", "0.277", "0.473", "–", "–"],
+                       ["E1", "New KD recipe, p5 teacher, same data", "0.354", "0.281", "0.481", "–", "–"],
+                       ["v2 taxonomy", "27 classes incl. 6 'other_*' catch-all classes", "0.335†", "–", "–", "–", "–"],
+                       ["v10", "Corrected labels (D2 + part of the reservoir fixes)", "0.350*", "0.299*", "0.520*", "–", "–"]]),
+            ("caption", "mask mAP50-95 on 125 test images of 3 unseen vehicles. Student KD is the mean of 2 seeds from v6 on. 'Pass/100' = images with precision ≥ 0.5 and recall ≥ 0.5 at confidence 0.25. * v10 is scored on the corrected test labels (118 images of the same 3 vehicles); on that set the reference scores teacher 0.354 and student 0.288. † on the 27-class labels; see the paired comparison below. v1–v3 used unreviewed machine labels and are not comparable."),
+            ("h2", "Paired statistical comparison"),
+            ("p", "The test set has only 3 vehicles, so one model's mask mAP50-95 carries a 95% interval of about ±0.05 (e.g. reference teacher 0.354, interval 0.319–0.425). Instead of comparing averages against fixed thresholds, every candidate is now compared with the reference on the <b>same resampled test images</b> (1,000 bootstrap resamples). Two seeds are averaged; seed-to-seed noise is not inside the interval."),
+            ("table", [["Comparison", "Test set", "Difference", "95% interval", "P(diff > 0)", "Verdict"],
+                       ["v9 teacher − reference", "125 images", "+0.001", "−0.033 … +0.033", "0.46", "no difference"],
+                       ["v9 student − reference", "125 images", "−0.009", "−0.025 … +0.011", "0.26", "no difference"],
+                       ["E1 student − reference", "125 images", "−0.006", "−0.017 … +0.010", "0.29", "no difference"],
+                       ["v2 taxonomy teacher − reference", "117 images, 20 shared classes", "−0.020", "−0.049 … +0.006", "0.07", "no difference (likely worse)"],
+                       ["v10 teacher − reference", "118 corrected images", "−0.004", "−0.036 … +0.021", "0.29", "no difference"],
+                       ["v10 student − reference", "118 corrected images", "+0.011", "−0.003 … +0.029", "0.94", "no difference (promising)"]]),
+            ("caption", "Reference = teacher p5_reg and students kd_n_p5t seeds 0/1. All pairs share identical test labels except the v2 taxonomy pair (labels differ on 6 of 117 images). v10 applied all 39 geometry fixes but only about a third of the reservoir fixes (29 were skipped because a review folder was missing on the training server); the v10 students are also more stable across seeds (0.301 / 0.297 vs 0.302 / 0.274)."),
             ("h2", "Phase 5: one change at a time on the teacher"),
             ("img", "phase5"),
             ("caption", "Averaging the 5 best checkpoints (chosen on validation, scored on test) adds 3–6 points; the regularised teacher with averaging is the best teacher."),
@@ -333,36 +352,47 @@ def body(lang):
             ("table", [["Model", "Params", "Size", "Network", "End to end", "FPS"],
                        ["Student, PyTorch FP16 (DGX GB10)", "2.84 M", "5.7 MB", "2.9 ms", "4.0 ms", "248"],
                        ["Student, ONNX on CPU (DGX)", "2.84 M", "11.1 MB", "36.5 ms", "47.4 ms", "21"],
-                       ["Teacher, PyTorch (batch 1)", "27.6 M", "56 MB", "9.2 ms", "–", "–"]]),
-            ("caption", "20 warm-up calls, 200 timed calls on real images. TensorRT must be built on the target device and has not been measured yet."),
-            ("h1", "6. Final model"),
-            ("p", f"<b>kd_n_full</b> (student) and <b>teacher_full</b> are trained on all 1,081 verified images of the 28 vehicles with the kd_n_p5t recipe, averaging the last 5 checkpoints. On the dataset images (which the model has seen): {f['pass']} of {f['images']} images pass (94.1%), {f['tp']} of {f['instances']} components found (recall {f['recall']:.3f}), {f['fp']} extra detections at a shared threshold of 0.25 (precision {f['precision']:.3f}). These numbers show fit, not generalisation. 3-fold cross-validation (train on two thirds, score on the rest) and per-class confidence thresholds run tonight; a v9 run with the new recipe and the 3 test vehicles held out gives the matching new-vehicle number tomorrow."),
-            ("p", "Deliverables: runs/train_kd/kd_n_full/weights/best.pt (6 MB), scripts/deployment/weights/kd_n_full_640.onnx, runs/segment/teacher_full/weights/best.pt (server option), web UI defaulting to the student."),
+                       ["Student, browser WASM, 4 threads (dev PC)", "2.84 M", "11.6 MB", "–", "≈ 180 ms", "≈ 5"],
+                       ["Student, web app on CPU (dev PC)", "2.84 M", "6 MB", "–", "0.35–0.6 s", "–"],
+                       ["Teacher, PyTorch (batch 1, DGX)", "27.6 M", "56 MB", "9.2 ms", "–", "–"],
+                       ["Teacher, web app on CPU (dev PC)", "27.6 M", "56 MB", "–", "1.8–2.7 s", "–"]]),
+            ("caption", "DGX rows: 20 warm-up calls, 200 timed calls on real images. Dev-PC rows: single 1600 px photos, including pre- and post-processing. TensorRT must be built on the target device and has not been measured yet."),
+            ("h1", "6. Final model: POC v1"),
+            ("p", "<b>kd_n_full</b> (student) and <b>teacher_full</b> are trained on all 1,081 verified images of the 28 vehicles with the kd_n_p5t recipe, averaging 5 checkpoints. They were frozen on 30 September 2026 as POC v1 (git tag poc-v1; weight checksums in docs/releases/poc_v1.md)."),
+            ("table", [["Measure (3-fold CV, unseen photos of the 28 vehicles)", "Student kd_n_full", "Teacher teacher_full"],
+                       ["mask mAP50-95", "0.381 ± 0.010", "0.418 ± 0.010"],
+                       ["mask mAP50", "0.627 ± 0.015", "0.668 ± 0.011"],
+                       ["Precision / recall / F1, one threshold 0.25", "0.589 / 0.679 / 0.631", "0.675 / 0.700 / 0.687"],
+                       ["Precision / recall / F1, per-class thresholds", "0.715 / 0.612 / 0.660", "0.740 / 0.674 / 0.705"]]),
+            ("caption", "Pooled out-of-fold detections, mask IoU ≥ 0.5. Per-class thresholds are tuned on the out-of-fold predictions, separately for each model (e.g. alternator 0.45 for the student, 0.15 for the teacher), and ship with the app."),
+            ("p", f"On the dataset images themselves (seen data, a fit check rather than generalisation): {f['pass']} of {f['images']} images pass, recall {f['recall']:.3f}, precision {f['precision']:.3f} at a shared threshold of 0.25."),
+            ("p", "<b>Deliverables.</b> (1) apps/engine_bay_web: Gradio web UI + REST API (/healthz, /api/detect) with both models and per-model thresholds, Docker image, Vietnamese labels; the API was fixed to accept the model names it lists and to load only models from its own folder. (2) apps/engine_bay_vercel: static demo that runs the student in the browser with onnxruntime-web 1.30 (self-hosted, multi-threaded), deployed publicly at https://engine-bay-vision-demo.vercel.app. Its pre-processing reproduces the Python pipeline exactly; on the 6 example photos it matches 72 of 72 Ultralytics detections (same class, box IoU ≥ 0.9)."),
             ("h1", "7. Strengths"),
             ("bullets", [
-                "<b>Distillation always helps.</b> The KD student beats the same student trained alone by 1–3 mask mAP50-95 points in every measured version, and reaches 80–95% of the teacher at one tenth of the size.",
-                "<b>Fast.</b> 4 ms per image end to end on the DGX; the 6 MB model fits edge devices.",
+                "<b>Distillation helps.</b> The KD student beats the same student trained alone by 1–3 mask mAP50-95 points in every measured version, and reaches 80–95% of the teacher at one tenth of the size.",
+                "<b>Fast and portable.</b> 4 ms per image on the DGX, about 0.2 s in a web browser without any server; the 6 MB model fits edge devices.",
                 "<b>Reliable on distinctive parts.</b> Multimeter, radiator cap, washer and brake-fluid reservoirs reach mask AP50 of about 0.8 on new vehicles.",
-                "<b>Clean, audited labels.</b> Every label in the final pool passed expert review, most passed independent verification, and the review process measured machine-label precision instead of assuming it.",
-                "<b>Reproducible pipeline.</b> Scripted dataset builds, chained DGX jobs, QA reports and per-image test galleries for every version.",
+                "<b>Audited labels with measured error rates.</b> Every label passed expert review; reservoir and geometry audits quantified the remaining errors instead of assuming the labels are correct.",
+                "<b>Honest measurement.</b> Paired bootstrap comparisons with intervals replaced fixed thresholds, which prevented adopting changes that only looked better by noise.",
+                "<b>Reproducible pipeline.</b> Scripted dataset builds, label patches, chained DGX jobs, QA and bootstrap reports, and a scripted demo build.",
             ]),
             ("h1", "8. Weaknesses and risks"),
             ("bullets", [
-                "<b>Generalisation to new vehicles is limited</b> (student mAP50-95 about 0.29, mAP50 about 0.5). 19 training vehicles make the effective diversity small; the gap between seen images (mAP50 0.94) and new vehicles is large.",
-                "<b>Small test set.</b> 3 vehicles and 125 images; two seeds of one recipe differ by up to 3 points, so differences below about 2 points are not reliable.",
-                "<b>Weak classes:</b> coolant reservoir (AP50 0.01), fuse/relay box, battery, ECU, MAF sensor. Look-alike confusions remain: brake fluid vs coolant reservoir, intake manifold vs engine cover, loose spark plugs detected as ignition coils.",
-                "<b>Extra detections</b> at a single threshold (precision 0.58 on new vehicles, 0.75 on the dataset); per-class thresholds are not applied yet.",
+                "<b>Generalisation to new vehicles is limited</b> (student mAP50-95 0.27–0.30, mAP50 about 0.5) and has plateaued: four experiments on the same 28 vehicles produced no measurable gain.",
+                "<b>Small test set.</b> 3 vehicles and about 120 images: one model's score is uncertain by about ±0.05, and only differences of roughly 0.02–0.03 can be detected in a paired comparison.",
+                "<b>Weak classes:</b> alternator (CV AP50 0.35), radiator hose (0.35), ECU (0.37), coolant reservoir (0.47; near zero on new vehicles). Look-alike confusions remain: brake fluid vs coolant reservoir, intake manifold vs engine cover, loose spark plugs detected as ignition coils.",
+                "<b>Label errors remain in train and test</b> (up to 37% wrong extents for batteries); only part of the reservoir fixes reached the v10 training data.",
                 "<b>Deployment not validated on the target device</b>; TensorRT latency and accuracy after FP16/INT8 conversion are unknown.",
+                "<b>The public demo exposes the student model file and 6 example photos</b> to anyone with the link.",
             ]),
             ("h1", "9. Recommended next steps"),
             ("bullets", [
-                "<b>Collect 40–60 new vehicles</b> with the capture guide (about 30 photos each, same photo style) and grow the test and validation splits to at least 6 vehicles each. This is the largest expected gain for new vehicles.",
-                "<b>Apply per-class confidence thresholds</b> from cross-validation in the app and in test cases.",
-                "<b>Hard-negative mining:</b> add loose spark plugs, connectors, EVAP/MAP sensors and underbody shots as explicit negatives; they cause most false detections.",
-                "<b>Active-learning loop:</b> pre-label new photos with the teacher, review only disagreements (the verification queue already does this), retrain.",
-                "<b>Use unlabelled photos</b> through feature-only distillation (supported in the trainer, not yet used).",
-                "<b>Model size by target:</b> if deployment is on a server, try a yolo11s student or deploy the teacher; if on Jetson, build TensorRT FP16/INT8 on the device and re-measure accuracy.",
-                "<b>Measurement:</b> report 2–3 seeds for every change, and keep the 3-vehicle held-out test fixed for new-vehicle tracking.",
+                "<b>Collect 40–60 new vehicles</b> with the capture guide (about 30 photos each) and grow the test and validation splits to at least 6 vehicles each. This is both the largest expected gain and the only way to make smaller improvements measurable.",
+                "<b>POC v1.1 candidate:</b> retrain the full-data models on the corrected labels, this time with all reservoir fixes, and accept them only if the paired comparison on held-out vehicles confirms the v10 signal.",
+                "<b>Extend the geometry audit</b> to the weak classes (coolant reservoir, MAF sensor, ECU, radiator hose) and to the remaining battery labels.",
+                "<b>Stop tuning the KD loss</b> on the current data (E1 showed no gain); keep the v1 20-class taxonomy (the 27-class version was not better).",
+                "<b>Hard-negative mining and active learning:</b> add loose spark plugs, connectors and underbody shots as negatives; pre-label new photos with the teacher and review only disagreements.",
+                "<b>Target-device validation:</b> build TensorRT FP16/INT8 on the device and re-measure accuracy; decide whether the public demo should be restricted.",
                 "<b>External data:</b> only engine-bay photos with licences that allow commercial training (iFixit images are CC BY-NC-SA).",
             ]),
         ]
@@ -485,10 +515,16 @@ def build(L):
     story = [Spacer(1, 40 * mm), Paragraph(L["title"], ss["title"]), Spacer(1, 4), Paragraph(L["subtitle"], ss["sub"]),
              Spacer(1, 10), Paragraph(L["meta"], ss["meta"]), Spacer(1, 16 * mm)]
     f = FINAL
-    kv = [("0.302" if lang == "en" else "0,302", "big", "Best student mAP50-95, new vehicles" if lang == "en" else "Student tốt nhất, mAP50-95 xe mới"),
-          ("0.354" if lang == "en" else "0,354", "bigt", "Best teacher mAP50-95, new vehicles" if lang == "en" else "Teacher tốt nhất, mAP50-95 xe mới"),
-          ("4.0 ms" if lang == "en" else "4,0 ms", "big", "Student end-to-end latency (DGX)" if lang == "en" else "Độ trễ student toàn pipeline (DGX)"),
-          (f"{f['pass']}/{f['images']}", "bigt", "Dataset images passed by the final model (seen data)" if lang == "en" else "Ảnh dataset đạt với model cuối (dữ liệu đã học)")]
+    if lang == "en":
+        kv = [("0.381", "big", "Student mAP50-95, new photos of known vehicles (3-fold CV)"),
+              ("0.27–0.30", "big", "Student mAP50-95, 3 unseen vehicles (2 seeds)"),
+              ("0.715", "bigt", "Student precision with per-class thresholds (CV)"),
+              ("0.2 s", "bigt", "Per photo in a web browser, no server (POC demo)")]
+    else:
+        kv = [("0.302" if lang == "en" else "0,302", "big", "Best student mAP50-95, new vehicles" if lang == "en" else "Student tốt nhất, mAP50-95 xe mới"),
+              ("0.354" if lang == "en" else "0,354", "bigt", "Best teacher mAP50-95, new vehicles" if lang == "en" else "Teacher tốt nhất, mAP50-95 xe mới"),
+              ("4.0 ms" if lang == "en" else "4,0 ms", "big", "Student end-to-end latency (DGX)" if lang == "en" else "Độ trễ student toàn pipeline (DGX)"),
+              (f"{f['pass']}/{f['images']}", "bigt", "Dataset images passed by the final model (seen data)" if lang == "en" else "Ảnh dataset đạt với model cuối (dữ liệu đã học)")]
     cells = [[Paragraph(v, ss[s]) for v, s, _ in kv], [Paragraph(d, ss["small"]) for _, _, d in kv]]
     t = Table(cells, colWidths=[W / 4] * 4)
     t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LINEABOVE", (0, 0), (-1, 0), 1.2, C(LINE)),
@@ -519,10 +555,14 @@ def build(L):
         elif kind == "table":
             rows = [[Paragraph(c, ss["th"] if i == 0 else ss["td"]) for c in r] for i, r in enumerate(payload)]
             n = len(payload[0])
-            if n == 3:
+            if payload[0][0].startswith("Measure"):
+                cw = [W * 0.42, W * 0.29, W * 0.29]
+            elif payload[0][0] == "Comparison":
+                cw = [W * 0.27, W * 0.17, W * 0.11, W * 0.2, W * 0.1, W * 0.15]
+            elif n == 3:
                 cw = [W * 0.2, W * 0.42, W * 0.38]
             elif n == 7:
-                cw = [W * 0.1, W * 0.36] + [W * 0.108] * 5
+                cw = [W * 0.12, W * 0.34] + [W * 0.108] * 5
             else:
                 cw = [W * 0.34] + [W * 0.132] * 5
             tb = Table(rows, colWidths=cw, repeatRows=1)
@@ -532,7 +572,7 @@ def build(L):
                                     ("RIGHTPADDING", (0, 0), (-1, -1), 4)]))
             if n == 7:
                 tb.setStyle(TableStyle([("BACKGROUND", (0, 6), (-1, 6), C("#F6E4C2"))]))
-            story.append(tb)
+            story.append(KeepTogether([tb]) if len(payload) <= 6 else tb)  # short tables never split across pages
             story.append(Spacer(1, 6))
 
     def deco(canvas, doc):
@@ -560,5 +600,9 @@ def build(L):
 
 
 if __name__ == "__main__":
-    for L in (EN, VI):
-        print(build(L))
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--lang", nargs="+", default=["en", "vi"], choices=["en", "vi"])
+    for lang in ap.parse_args().lang:
+        print(build(EN if lang == "en" else VI))
