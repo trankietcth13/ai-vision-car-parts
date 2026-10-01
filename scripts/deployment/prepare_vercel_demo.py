@@ -66,9 +66,17 @@ def export_model(pt: Path, model_dir: Path) -> dict:
         "max_side": 1600,  # photos are downscaled first, as in the Python app
         "names": names,
         "names_vi": [vi.get(n, n) for n in names],
+        "names_en": [display_names_en().get(n, n.replace("_", " ").capitalize()) for n in names],
         "colors": ["#%02x%02x%02x" % colors(i, False) for i in range(len(names))],
         "thresholds": {k: float(v) for k, v in thr.items()},
     }
+
+
+def display_names_en() -> dict[str, str]:
+    """Short English labels (configs/diagnosis_knowledge_vi.yaml display_names)."""
+    f = ROOT / "configs" / "diagnosis_knowledge_vi.yaml"
+    names = yaml.safe_load(f.read_text(encoding="utf-8")).get("display_names", {}) if f.is_file() else {}
+    return {k: v["en"] for k, v in names.items()}
 
 
 def vendor_ort(version: str) -> None:

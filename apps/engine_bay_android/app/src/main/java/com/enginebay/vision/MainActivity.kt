@@ -14,6 +14,9 @@ import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -32,19 +35,19 @@ import com.enginebay.vision.core.DtcTable
 import com.enginebay.vision.core.SuspectStatus
 import java.io.File
 import java.util.Locale
-import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
-    private val worker = Executors.newSingleThreadExecutor()
-    private var detector: Detector? = null
-    private var components: Map<String, ComponentInfo> = emptyMap()
-    private var photo: Bitmap? = null
-    private var result: DetectionResult? = null
+    private val worker get() = AppState.worker
+    // kept in AppState: switching the language recreates the activity, and nothing should be reloaded or lost
+    private var detector: Detector? by AppState::detector
+    private var components: Map<String, ComponentInfo> by AppState::components
+    private var photo: Bitmap? by AppState::photo
+    private var result: DetectionResult? by AppState::result
+    private var dtcTable: DtcTable? by AppState::dtcTable
+    private var diagnosis: Diagnosis? by AppState::diagnosis
+    private var dtcText: String by AppState::dtcText
     private var pendingCapture: Uri? = null
     private var runId = 0
-    private var dtcTable: DtcTable? = null
-    private var diagnosis: Diagnosis? = null
-    private var dtcText = ""
 
     private lateinit var resultView: ResultView
     private lateinit var status: TextView
@@ -63,7 +66,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (AppCompatDelegate.getApplicationLocales().isEmpty) {  // first start: Vietnamese, switchable to English
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("vi"))
+            return  // this instance is recreated in Vietnamese right away; the new one does the work
+        }
         setContentView(R.layout.activity_main)
+        findViewById<MaterialToolbar>(R.id.toolbar).apply {
+            inflateMenu(R.menu.main)
+            menu.findItem(R.id.action_language).isEnabled = false  // until the model is ready (no half-loaded switch)
+            setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.action_language) {
+                    AppState.conf = conf.value
+                    AppState.perClass = perClass.isChecked
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(if (isVi()) "en" else "vi"))
+                    true
+                } else false
+            }
+        }
         val root = findViewById<View>(R.id.root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->  // edge-to-edge (targetSdk 35+)
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
@@ -94,35 +113,62 @@ class MainActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.samples).setOnClickListener { chooseSample() }
         findViewById<MaterialButton>(R.id.dtc).setOnClickListener { askCodes() }
 
+        val firstStart = !AppState.extrasConsumed  // adb test extras (sample, dtc) are applied once per process
+        AppState.extrasConsumed = true
+        val loaded = detector
+        if (loaded != null) {  // recreated (language switch): reuse everything, re-render in the new language
+            onModelReady(loaded, firstStart)
+            findViewById<View>(R.id.dtc).isEnabled = dtcTable != null
+            photo?.let { bmp ->
+                findViewById<View>(R.id.empty).visibility = View.GONE
+                resultView.visibility = View.VISIBLE
+                resultView.highlight = diagnosis?.detectorTargets
+                resultView.show(bmp, result)
+                val r = result
+                if (r != null) showResult(r) else analyze()  // the switch interrupted an analysis: redo it
+            }
+            renderDiagnosis()
+            return
+        }
         worker.execute {  // model load takes a moment; keep the UI responsive
             val table = DiagnosisTable.load(this)  // small; the error-code lookup works even if the model fails
+            dtcTable = table
             runOnUiThread {
-                dtcTable = table
+                if (isDestroyed) return@runOnUiThread
                 findViewById<View>(R.id.dtc).isEnabled = table != null
-                intent.getStringExtra("dtc")?.let(::applyCodes)  // adb: --es dtc "P0301 P0171"
+                if (firstStart) intent.getStringExtra("dtc")?.let(::applyCodes)  // adb: --es dtc "P0301 P0171"
             }
             try {
                 val d = Detector(this)
                 val info = ComponentInfo.loadAll(this)
-                runOnUiThread {
-                    detector = d
-                    components = info
-                    conf.value = d.config.defaultConf
-                    perClass.isEnabled = d.config.thresholds.isNotEmpty()
-                    perClass.isChecked = d.config.thresholds.isNotEmpty()
-                    findViewById<TextView>(R.id.footer).text =
-                        "Model ${d.config.modelName} (${d.config.release}, yolo11n-seg, ${d.config.names.size} loại) · md5 ${d.config.modelMd5.take(8)} · ONNX Runtime"
-                    listOf(R.id.capture, R.id.gallery, R.id.samples).forEach { findViewById<View>(it).isEnabled = true }
-                    progress.visibility = View.GONE
-                    status.setText(R.string.ready)
-                    intent.getStringExtra("sample")?.let { s -> open { PhotoLoader.fromAsset(this, "examples/$s", maxSide()) } }
-                }
+                detector = d
+                components = info
+                runOnUiThread { if (!isDestroyed) onModelReady(d, firstStart) }
             } catch (e: Exception) {
                 Log.e(TAG, "model load failed", e)
-                runOnUiThread { progress.visibility = View.GONE; status.text = "Không tải được model: ${e.message}" }
+                runOnUiThread {
+                    if (!isDestroyed) { progress.visibility = View.GONE; status.text = getString(R.string.model_load_failed, e.message) }
+                }
             }
         }
     }
+
+    /** Model loaded (or reused after a language switch): enable the controls, texts in the current language. */
+    private fun onModelReady(d: Detector, firstStart: Boolean) {
+        conf.value = AppState.conf ?: d.config.defaultConf
+        perClass.isEnabled = d.config.thresholds.isNotEmpty()
+        perClass.isChecked = AppState.perClass ?: d.config.thresholds.isNotEmpty()
+        findViewById<TextView>(R.id.footer).text =
+            getString(R.string.footer, d.config.modelName, d.config.release, d.config.names.size, d.config.modelMd5.take(8))
+        listOf(R.id.capture, R.id.gallery, R.id.samples).forEach { findViewById<View>(it).isEnabled = true }
+        findViewById<MaterialToolbar>(R.id.toolbar).menu.findItem(R.id.action_language).isEnabled = true
+        progress.visibility = View.GONE
+        status.setText(R.string.ready)
+        if (firstStart) intent.getStringExtra("sample")?.let { s -> open { PhotoLoader.fromAsset(this, "examples/$s", maxSide()) } }
+    }
+
+    /** Vietnamese UI and Vietnamese data texts, or English. */
+    private fun isVi() = lang() == "vi"
 
     private fun maxSide() = detector?.config?.maxSide ?: 1600
 
@@ -143,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         val names = assets.list("examples")?.filter { it.endsWith(".jpg") }?.sorted() ?: return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.samples)
-            .setItems(names.map { it.removeSuffix(".jpg").replace('_', ' ') }.toTypedArray()) { _, i ->
+            .setItems(names.indices.map { getString(R.string.sample_n, it + 1) }.toTypedArray()) { _, i ->
                 open { PhotoLoader.fromAsset(this, "examples/${names[i]}", maxSide()) }
             }.show()
     }
@@ -155,10 +201,11 @@ class MainActivity : AppCompatActivity() {
         worker.execute {
             val bmp = try { load() } catch (e: Exception) {
                 Log.e(TAG, "decode failed", e)
-                runOnUiThread { progress.visibility = View.GONE; status.setText(R.string.read_error) }
+                runOnUiThread { if (!isDestroyed) { progress.visibility = View.GONE; status.setText(R.string.read_error) } }
                 return@execute
             }
             runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
                 photo?.takeIf { it !== bmp }?.recycle()
                 photo = bmp
                 result = null
@@ -181,23 +228,27 @@ class MainActivity : AppCompatActivity() {
         worker.execute {
             val r = try { d.detect(bmp, c, pc) } catch (e: Exception) {
                 Log.e(TAG, "inference failed", e)
-                runOnUiThread { progress.visibility = View.GONE; status.text = "Lỗi khi phân tích: ${e.message}" }
+                runOnUiThread { if (!isDestroyed) { progress.visibility = View.GONE; status.text = getString(R.string.analysis_failed, e.message) } }
                 return@execute
             }
             Log.i(TAG, "detections ${r.parts.size} inference ${r.inferenceMs} ms total ${r.totalMs} ms: " +
                 r.parts.joinToString { "${it.name}:${"%.2f".format(Locale.US, it.score)}" })
             runOnUiThread {
-                if (id != runId) return@runOnUiThread  // a newer request is pending
+                if (isDestroyed || id != runId) return@runOnUiThread  // activity replaced, or a newer request is pending
                 result = r
                 progress.visibility = View.GONE
                 resultView.show(bmp, r)
-                findViewById<MaterialButton>(R.id.original).isEnabled = true
-                status.text = if (r.parts.isEmpty()) "Không tìm thấy linh kiện ở ngưỡng này · ${r.totalMs} ms"
-                else "${r.parts.size} linh kiện · ${r.totalMs} ms"
-                renderParts(r)
+                showResult(r)
                 renderDiagnosis()
             }
         }
+    }
+
+    private fun showResult(r: DetectionResult) {
+        findViewById<MaterialButton>(R.id.original).isEnabled = true
+        status.text = if (r.parts.isEmpty()) getString(R.string.status_none, r.totalMs.toInt())
+        else getString(R.string.status_found, r.parts.size, r.totalMs.toInt())
+        renderParts(r)
     }
 
     private fun renderParts(r: DetectionResult) {
@@ -212,11 +263,12 @@ class MainActivity : AppCompatActivity() {
             val best = g.maxBy { it.score }
             val row = inflater.inflate(R.layout.item_part, parts, false)
             row.findViewById<View>(R.id.dot).setBackgroundColor(best.color)
-            val label = best.nameVi + if (g.size > 1) " ×${g.size}" else ""
+            val name = best.label(isVi())
+            val label = if (g.size > 1) getString(R.string.count_suffix, name, g.size) else name
             row.findViewById<TextView>(R.id.name).text = if (best.name in targets) getString(R.string.dtc_part_tagged, label) else label
             val pct = (best.score * 100).toInt()
             row.findViewById<LinearProgressIndicator>(R.id.meter).progress = pct
-            row.findViewById<TextView>(R.id.pct).text = "$pct%"
+            row.findViewById<TextView>(R.id.pct).text = getString(R.string.percent, pct)
             row.setOnClickListener { showInfo(best) }
             parts.addView(row)
         }
@@ -224,12 +276,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun showInfo(part: Part) {
         val info = components[part.name]
+        val vi = isVi()
         val view = layoutInflater.inflate(R.layout.sheet_component, null)
-        view.findViewById<TextView>(R.id.title).text = info?.nameVi?.ifBlank { null } ?: part.nameVi
-        view.findViewById<TextView>(R.id.subtitle).text = info?.nameEn?.ifBlank { null } ?: part.name
+        // title in the UI language, the other language underneath (technicians look parts up in both)
+        view.findViewById<TextView>(R.id.title).text = info?.name?.get(vi)?.ifBlank { null } ?: part.label(vi)
+        view.findViewById<TextView>(R.id.subtitle).text = info?.name?.get(!vi)?.ifBlank { null } ?: part.label(!vi)
         val same = result?.parts?.count { it.cls == part.cls } ?: 1
+        val pct = (part.score * 100).toInt()
         view.findViewById<TextView>(R.id.detection).text =
-            "Độ tin cậy ${(part.score * 100).toInt()}%" + if (same > 1) " · $same vị trí trên ảnh" else ""
+            if (same > 1) getString(R.string.detection_line_multi, pct, same) else getString(R.string.detection_line, pct)
         view.findViewById<View>(R.id.draft).visibility = if (info?.draft == true) View.VISIBLE else View.GONE
         val sections = view.findViewById<LinearLayout>(R.id.sections)
         fun section(title: Int, body: String) {
@@ -244,17 +299,17 @@ class MainActivity : AppCompatActivity() {
                 setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
             })
         }
-        fun bullets(items: List<String>) = items.joinToString("\n") { "• $it" }
+        fun bullets(items: List<Bilingual>) = items.joinToString("\n") { getString(R.string.bullet, it.get(vi)) }
         if (info == null || info.isEmpty) {
             section(R.string.sec_summary, getString(R.string.info_missing))
         } else {
-            section(R.string.sec_summary, info.summary)
-            section(R.string.sec_function, info.function)
-            section(R.string.sec_location, info.locationHint)
-            section(R.string.sec_checks, bullets(info.inspectionChecks))
-            section(R.string.sec_symptoms, bullets(info.commonSymptoms))
-            section(R.string.sec_dtcs, info.relatedDtcs.joinToString("\n") { (code, meaning) -> "• $code: $meaning" })
-            section(R.string.sec_safety, bullets(info.safetyNotes))
+            section(R.string.sec_summary, info.summaryText.get(vi))
+            section(R.string.sec_function, info.functionText.get(vi))
+            section(R.string.sec_location, info.locationText.get(vi))
+            section(R.string.sec_checks, bullets(info.checks))
+            section(R.string.sec_symptoms, bullets(info.symptoms))
+            section(R.string.sec_dtcs, info.dtcs.joinToString("\n") { (code, meaning) -> getString(R.string.dtc_code_line, code, meaning.get(vi)) })
+            section(R.string.sec_safety, bullets(info.safety))
         }
         BottomSheetDialog(this).apply {
             setContentView(view)
@@ -377,8 +432,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        worker.execute { detector?.close() }
-        worker.shutdown()
+        if (isFinishing && !isChangingConfigurations) {  // app closed: free the model (kept across a language switch)
+            val d = detector
+            AppState.clear()
+            worker.execute { d?.close() }
+        }
         super.onDestroy()
     }
 

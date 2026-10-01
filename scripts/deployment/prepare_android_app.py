@@ -35,28 +35,42 @@ EXAMPLES = ("Request_ID_13_img_002.jpg", "Request_ID_23_img_004.jpg", "Request_I
 FIXTURE_IMAGE = "Request_ID_23_img_004.jpg"
 
 
+def sentence(t: str) -> str:
+    """'measures intake air; ...' -> 'Measures intake air; ....' (the knowledge base stores lower-case fragments)."""
+    t = t.strip()
+    return (t[:1].upper() + t[1:] + ("" if t.endswith((".", "!", "?")) else ".")) if t else t
+
+
 def components_template(config: dict) -> dict:
-    """Starter content from configs/diagnosis_knowledge.yaml (English, marked draft) - to be replaced by reviewed text."""
-    k = yaml.safe_load((ROOT / "configs" / "diagnosis_knowledge.yaml").read_text(encoding="utf-8"))
-    comps = k.get("components", {})
-    dtcs = k.get("dtc", [])
+    """Bilingual starter content (schema 2): English from configs/diagnosis_knowledge.yaml, Vietnamese from
+    configs/diagnosis_knowledge_vi.yaml. Marked draft; replaced by reviewed text (docs/COMPONENT_INFO_SPEC.md)."""
+    en = yaml.safe_load((ROOT / "configs" / "diagnosis_knowledge.yaml").read_text(encoding="utf-8"))
+    vi = yaml.safe_load((ROOT / "configs" / "diagnosis_knowledge_vi.yaml").read_text(encoding="utf-8"))
     out = {}
-    for name, vi in zip(config["names"], config["names_vi"]):
-        c = comps.get(name, {})
-        related = [{"code": "/".join(d["codes"]), "meaning": d["meaning"]} for d in dtcs if name in d.get("components", [])]
+    for name, name_vi, name_en in zip(config["names"], config["names_vi"], config["names_en"]):
+        c_en, c_vi = en.get("components", {}).get(name, {}), vi.get("components", {}).get(name, {})
+        extra = vi.get("extra_components", {}).get(name, {})
+        summary = {"en": sentence(c_en.get("description", extra.get("en", ""))),
+                   "vi": sentence(c_vi.get("description", extra.get("vi", "")))}
+        related = []
+        for d in en.get("dtc", []):
+            if name in d.get("components", []):
+                code = "/".join(d["codes"])
+                related.append({"code": code, "meaning": {"en": d["meaning"], "vi": vi["dtc"][code]}})
         out[name] = {
-            "name_vi": vi,
-            "name_en": c.get("name", name.replace("_", " ")),
+            "name": {"en": name_en, "vi": name_vi},
             "draft": True,
-            "summary": c.get("description", ""),
-            "function": "",
-            "location_hint": "",
+            "summary": summary if summary["en"] else None,
+            "function": None,
+            "location_hint": None,
             "inspection_checks": [],
             "common_symptoms": [],
             "related_dtcs": related,
             "safety_notes": [],
         }
-    return {"schema_version": 1, "language": "vi", "source": "draft from configs/diagnosis_knowledge.yaml", "components": out}
+        out[name] = {k: v for k, v in out[name].items() if v is not None}
+    return {"schema_version": 2, "languages": ["en", "vi"],
+            "source": "draft from configs/diagnosis_knowledge.yaml + diagnosis_knowledge_vi.yaml", "components": out}
 
 
 def fixtures(onnx_path: Path, config: dict) -> None:
@@ -96,6 +110,8 @@ def fixtures(onnx_path: Path, config: dict) -> None:
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default=str(WEB / "models" / "kd_n_full.pt"))
+    ap.add_argument("--force-components", action="store_true",
+                    help="rewrite components.json from the draft knowledge (DISCARDS reviewed/Gemini content)")
     a = ap.parse_args()
     config = export_model(Path(a.model), ASSETS / "model")
     (ASSETS / "config.json").write_text(json.dumps(config, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -104,7 +120,7 @@ def main():
     for name in EXAMPLES:
         shutil.copy2(WEB / "examples" / name, ex / name)
     comp = ASSETS / "components.json"
-    if not comp.exists():
+    if a.force_components or not comp.exists():
         comp.write_text(json.dumps(components_template(config), ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"wrote template {comp}")
     else:

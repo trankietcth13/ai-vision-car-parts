@@ -20,6 +20,8 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     var showOriginal = false
         set(v) { field = v; invalidate() }
     /** Model classes to emphasise (error-code diagnosis); the other components are drawn faded. null or empty: no emphasis. */
+    /** Label language on the photo (follows the app locale; the activity is recreated when it changes). */
+    private val vietnamese = context.resources.configuration.locales[0].language == "vi"
     var highlight: Set<String>? = null
         set(v) { field = v; focusOverlay = null; invalidate() }
     private var focusOverlay: Bitmap? = null
@@ -84,7 +86,7 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             boxPaint.strokeWidth = if (focus != null && !dim) 2 * lw else lw
             canvas.drawRect(b, boxPaint)
             if (dim) continue
-            val label = "${part.nameVi} ${(part.score * 100).toInt()}%"
+            val label = context.getString(R.string.photo_label, part.label(vietnamese), (part.score * 100).toInt())
             val tw = textPaint.measureText(label) + 8 * density
             val th = fs + 6 * density
             val top = if (b.top - th >= 0) b.top - th else b.top

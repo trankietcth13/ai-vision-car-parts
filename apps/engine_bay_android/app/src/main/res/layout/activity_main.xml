@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        app:subtitle="POC v1 · chạy trên thiết bị"
+        app:subtitle="@string/subtitle"
         app:title="@string/title" />
 
     <androidx.core.widget.NestedScrollView

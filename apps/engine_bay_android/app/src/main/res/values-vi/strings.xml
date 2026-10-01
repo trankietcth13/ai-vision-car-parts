@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Vietnamese UI strings (English defaults in values/strings.xml). -->
 <resources>
+    <string name="app_name">Engine Bay Vision</string>
+    <string name="title">Nhận diện linh kiện khoang máy</string>
+    <string name="subtitle">POC v1 · chạy trên thiết bị</string>
+    <string name="lang_switch">EN</string>
+    <string name="lang_switch_desc">Chuyển sang tiếng Anh</string>
+    <string name="capture">Chụp ảnh</string>
+    <string name="gallery">Thư viện</string>
+    <string name="samples">Ảnh mẫu</string>
+    <string name="sample_n">Ảnh mẫu %1$d</string>
+    <string name="original">Ảnh gốc</string>
+    <string name="loading_model">Đang tải model…</string>
+    <string name="ready">Sẵn sàng. Chụp ảnh khoang máy để bắt đầu.</string>
+    <string name="analyzing">Đang phân tích…</string>
+    <string name="empty_hint">Chụp hoặc chọn một ảnh khoang máy. Model chạy ngay trên thiết bị, ảnh không được gửi đi đâu.</string>
+    <string name="per_class">Ngưỡng riêng từng loại linh kiện</string>
+    <string name="per_class_hint">Hiệu chỉnh bằng cross-validation. Khi bật, thanh ngưỡng chỉ áp cho loại chưa hiệu chỉnh.</string>
+    <string name="confidence">Ngưỡng tin cậy</string>
+    <string name="options">Tùy chọn</string>
+    <string name="components">Linh kiện tìm thấy</string>
+    <string name="tap_hint">Chạm vào linh kiện trên ảnh hoặc trong danh sách để xem thông tin.</string>
+    <string name="disclaimer">Kết quả là gợi ý để kỹ thuật viên xác nhận. Model (POC v1) đạt mask mAP50-95 khoảng 0,38 trên các xe có trong dữ liệu và 0,27–0,30 trên xe mới. Nhận kém: máy phát điện, ống két nước, hộp ECU, bình nước làm mát.</string>
+    <string name="no_camera">Không tìm thấy ứng dụng camera trên máy.</string>
+    <string name="read_error">Không đọc được ảnh này.</string>
+    <string name="model_load_failed">Không tải được model: %1$s</string>
+    <string name="analysis_failed">Lỗi khi phân tích: %1$s</string>
+    <string name="status_found">%1$d linh kiện · %2$d ms</string>
+    <string name="status_none">Không tìm thấy linh kiện ở ngưỡng này · %1$d ms</string>
+    <string name="footer">Model %1$s (%2$s, yolo11n-seg, %3$d loại) · md5 %4$s · ONNX Runtime</string>
+    <string name="detection_line">Độ tin cậy %1$d%%</string>
+    <string name="detection_line_multi">Độ tin cậy %1$d%% · %2$d vị trí trên ảnh</string>
+    <string name="info_missing">Thông tin chi tiết về linh kiện này đang được biên soạn.</string>
+    <string name="draft">Bản nháp – nội dung chưa được kiểm duyệt</string>
+    <string name="sec_summary">Tổng quan</string>
+    <string name="sec_function">Chức năng</string>
+    <string name="sec_location">Vị trí</string>
+    <string name="sec_checks">Kiểm tra</string>
+    <string name="sec_symptoms">Triệu chứng thường gặp</string>
+    <string name="sec_dtcs">Mã lỗi liên quan</string>
+    <string name="sec_safety">An toàn</string>
     <string name="dtc_button">Nhập mã lỗi (DTC)</string>
     <string name="dtc_title">Chẩn đoán theo mã lỗi</string>
     <string name="dtc_title_codes">Chẩn đoán theo mã lỗi: %1$s</string>

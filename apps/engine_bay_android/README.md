@@ -17,7 +17,8 @@ app/src/main/java/com/enginebay/vision/
 ├── Detector.kt           ONNX Runtime (CPU, 4 luồng), ngưỡng riêng từng lớp, overlay mask
 ├── PhotoLoader.kt        giải mã ảnh: xoay theo EXIF, thu về cạnh dài 1600 px như app Python
 ├── ResultView.kt         vẽ kết quả; chạm để chọn linh kiện
-├── ComponentInfo.kt      đọc assets/components.json
+├── ComponentInfo.kt      đọc assets/components.json (song ngữ)
+├── AppState.kt           model, ảnh, kết quả giữ nguyên khi đổi ngôn ngữ
 └── MainActivity.kt       chụp (app camera hệ thống), thư viện, ảnh mẫu, danh sách, bảng thông tin
 app/src/main/assets/
 ├── components.json       thông tin linh kiện (trong git; đặc tả: docs/COMPONENT_INFO_SPEC.md)
@@ -44,9 +45,20 @@ Unit test `UltralyticsParityTest` dùng ảnh thật và kết quả do chính U
 - **Letterbox:** lệch tối đa 1/255 so với `cv2`, do `cv2` dùng trọng số dấu phẩy tĩnh.
 - **Hậu xử lý:** cả 11/11 detection trùng lớp, điểm (sai số < 1e-5) và box (sai số < 1e-3). Mask IoU bằng 1,0000.
 
+## Song ngữ Anh–Việt
+
+- **Đổi ngôn ngữ:** nút **EN / VI** trên thanh tiêu đề. App mặc định tiếng Việt và nhớ lựa chọn. Đổi ngôn ngữ không làm mất ảnh, kết quả hay mã lỗi đang xem.
+- **Chữ trên giao diện:** tiếng Anh trong `res/values/strings.xml`, tiếng Việt trong `res/values-vi/strings.xml`. Code Kotlin không chứa chuỗi hiển thị viết cứng.
+- **Dữ liệu:** mọi đoạn văn bản là cặp `{"en", "vi"}`. Cụ thể:
+  - tên linh kiện: `config.json` có `names_en` / `names_vi`;
+  - thông tin linh kiện: `components.json`;
+  - mã lỗi và lưu ý an toàn: `diagnosis.json`.
+- **Nguồn bản dịch:** `configs/diagnosis_knowledge_vi.yaml`, đi kèm `configs/diagnosis_knowledge.yaml`.
+- **Kiểm tra:** `BilingualDataTest` báo lỗi nếu có đoạn văn bản nào thiếu một ngôn ngữ.
+
 ## Ghi chú
 
 - **Quyền:** app không xin quyền CAMERA, vì ảnh được chụp bằng app camera của hệ thống. App cũng không xin quyền INTERNET.
-- **Kích thước:** APK debug khoảng 92 MB (thư viện native cho `arm64-v8a` và `x86_64`, cộng model 11,6 MB). Nếu chỉ giữ `arm64-v8a`, APK nhỏ hơn đáng kể.
+- **Kích thước:** APK debug khoảng 115 MB (thư viện native cho `arm64-v8a`, `armeabi-v7a` cho máy 32-bit như Innova Spark, và `x86_64`; cộng model 11,6 MB). Bỏ bớt kiến trúc không dùng trong `abiFilters` để APK nhỏ hơn.
 - **Kiểm thử không cần camera:** lệnh `adb shell am start -n com.enginebay.vision/.MainActivity --es sample Request_ID_23_img_004.jpg` mở thẳng một ảnh mẫu. Logcat với tag `EngineBay` ghi số linh kiện và thời gian xử lý.
 - Kết quả là gợi ý để kỹ thuật viên xác nhận. Độ chính xác và giới hạn của model: `docs/releases/poc_v1.md`.

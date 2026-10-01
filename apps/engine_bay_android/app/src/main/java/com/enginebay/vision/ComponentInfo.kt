@@ -4,49 +4,69 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 
+/** A text in both app languages. */
+data class Bilingual(val en: String, val vi: String) {
+    fun get(vietnamese: Boolean) = if (vietnamese) vi else en
+    val isBlank get() = en.isBlank() && vi.isBlank()
+
+    companion object {
+        val EMPTY = Bilingual("", "")
+
+        /** {"en": ..., "vi": ...}; a plain string (schema 1) is used for both languages. */
+        fun parse(v: Any?): Bilingual = when (v) {
+            is JSONObject -> Bilingual(v.optString("en"), v.optString("vi"))
+            is String -> Bilingual(v, v)
+            else -> EMPTY
+        }
+    }
+}
+
 /**
- * Component information from assets/components.json (schema: docs/COMPONENT_INFO_SPEC.md in this project).
+ * Component information from assets/components.json (schema 2, bilingual; docs/COMPONENT_INFO_SPEC.md).
  * Every field is optional; empty fields are not shown.
  */
 class ComponentInfo(
-    val nameVi: String,
-    val nameEn: String,
+    val name: Bilingual,
     val draft: Boolean,
-    val summary: String,
-    val function: String,
-    val locationHint: String,
-    val inspectionChecks: List<String>,
-    val commonSymptoms: List<String>,
-    val relatedDtcs: List<Pair<String, String>>,
-    val safetyNotes: List<String>,
+    val summaryText: Bilingual,
+    val functionText: Bilingual,
+    val locationText: Bilingual,
+    val checks: List<Bilingual>,
+    val symptoms: List<Bilingual>,
+    val dtcs: List<Pair<String, Bilingual>>,
+    val safety: List<Bilingual>,
 ) {
-    val isEmpty get() = summary.isBlank() && function.isBlank() && locationHint.isBlank() && inspectionChecks.isEmpty() &&
-        commonSymptoms.isEmpty() && relatedDtcs.isEmpty() && safetyNotes.isEmpty()
+    val isEmpty get() = summaryText.isBlank && functionText.isBlank && locationText.isBlank && checks.isEmpty() &&
+        symptoms.isEmpty() && dtcs.isEmpty() && safety.isEmpty()
 
     companion object {
         fun loadAll(context: Context): Map<String, ComponentInfo> = try {
-            val root = JSONObject(context.assets.open("components.json").bufferedReader().use { it.readText() })
-            val comps = root.getJSONObject("components")
-            comps.keys().asSequence().associateWith { parse(comps.getJSONObject(it)) }
+            parseAll(context.assets.open("components.json").bufferedReader().use { it.readText() })
         } catch (e: Exception) {
             emptyMap()  // the app still works without component information
         }
 
-        private fun strings(a: JSONArray?) = if (a == null) emptyList() else List(a.length()) { a.optString(it) }.filter { it.isNotBlank() }
+        fun parseAll(json: String): Map<String, ComponentInfo> {
+            val comps = JSONObject(json).getJSONObject("components")
+            return comps.keys().asSequence().associateWith { parse(comps.getJSONObject(it)) }
+        }
+
+        private fun texts(a: JSONArray?) =
+            if (a == null) emptyList() else List(a.length()) { Bilingual.parse(a.opt(it)) }.filterNot { it.isBlank }
 
         private fun parse(o: JSONObject) = ComponentInfo(
-            nameVi = o.optString("name_vi"),
-            nameEn = o.optString("name_en"),
+            // schema 1 had name_vi / name_en
+            name = if (o.has("name")) Bilingual.parse(o.opt("name")) else Bilingual(o.optString("name_en"), o.optString("name_vi")),
             draft = o.optBoolean("draft", false),
-            summary = o.optString("summary"),
-            function = o.optString("function"),
-            locationHint = o.optString("location_hint"),
-            inspectionChecks = strings(o.optJSONArray("inspection_checks")),
-            commonSymptoms = strings(o.optJSONArray("common_symptoms")),
-            relatedDtcs = o.optJSONArray("related_dtcs")?.let { a ->
-                List(a.length()) { a.getJSONObject(it).let { d -> d.optString("code") to d.optString("meaning") } }
+            summaryText = Bilingual.parse(o.opt("summary")),
+            functionText = Bilingual.parse(o.opt("function")),
+            locationText = Bilingual.parse(o.opt("location_hint")),
+            checks = texts(o.optJSONArray("inspection_checks")),
+            symptoms = texts(o.optJSONArray("common_symptoms")),
+            dtcs = o.optJSONArray("related_dtcs")?.let { a ->
+                List(a.length()) { a.getJSONObject(it).let { d -> d.optString("code") to Bilingual.parse(d.opt("meaning")) } }
             } ?: emptyList(),
-            safetyNotes = strings(o.optJSONArray("safety_notes")),
+            safety = texts(o.optJSONArray("safety_notes")),
         )
     }
 }

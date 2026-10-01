@@ -1,417 +1,591 @@
 {
- "schema_version": 1,
- "language": "vi",
- "source": "draft from configs/diagnosis_knowledge.yaml",
+ "schema_version": 2,
+ "languages": [
+  "en",
+  "vi"
+ ],
+ "source": "draft from configs/diagnosis_knowledge.yaml + diagnosis_knowledge_vi.yaml",
  "components": {
   "battery": {
-   "name_vi": "Ắc quy",
-   "name_en": "12 V battery",
+   "name": {
+    "en": "Battery",
+    "vi": "Ắc quy"
+   },
    "draft": true,
-   "summary": "the 12 V lead-acid battery that powers starting and electronics",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The 12 V lead-acid battery that powers starting and electronics.",
+    "vi": "Ắc quy axit-chì 12 V cấp điện cho khởi động và các thiết bị điện tử."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0562/P0563",
-     "meaning": "System voltage low / high"
+     "meaning": {
+      "en": "System voltage low / high",
+      "vi": "Điện áp hệ thống thấp / cao"
+     }
     }
    ],
    "safety_notes": []
   },
   "battery_terminal": {
-   "name_vi": "Cọc bình ắc quy",
-   "name_en": "battery terminals and cable clamps",
+   "name": {
+    "en": "Battery terminal",
+    "vi": "Cọc bình ắc quy"
+   },
    "draft": true,
-   "summary": "the clamps on the battery posts; corrosion or looseness causes no-crank and voltage faults",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The clamps on the battery posts; corrosion or looseness causes no-crank and voltage faults.",
+    "vi": "Kẹp trên cọc ắc quy; cọc bị ăn mòn hoặc lỏng gây không đề được và lỗi điện áp."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0562/P0563",
-     "meaning": "System voltage low / high"
+     "meaning": {
+      "en": "System voltage low / high",
+      "vi": "Điện áp hệ thống thấp / cao"
+     }
     },
     {
      "code": "P0600-P0606",
-     "meaning": "Engine control module internal or communication problem"
+     "meaning": {
+      "en": "Engine control module internal or communication problem",
+      "vi": "Lỗi bên trong hoặc lỗi giao tiếp của hộp điều khiển động cơ"
+     }
     },
     {
      "code": "U0100/U0101",
-     "meaning": "Lost communication with engine / transmission control module"
+     "meaning": {
+      "en": "Lost communication with engine / transmission control module",
+      "vi": "Mất giao tiếp với hộp điều khiển động cơ / hộp số"
+     }
     }
    ],
    "safety_notes": []
   },
   "fuse_relay_box": {
-   "name_vi": "Hộp cầu chì / rơ-le",
-   "name_en": "under-hood fuse and relay box",
+   "name": {
+    "en": "Fuse / relay box",
+    "vi": "Hộp cầu chì / rơ-le"
+   },
    "draft": true,
-   "summary": "fuses and relays for fans, fuel pump, starter, lights and modules",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Fuses and relays for fans, fuel pump, starter, lights and modules.",
+    "vi": "Cầu chì và rơ-le cho quạt, bơm xăng, máy khởi động, đèn và các hộp điều khiển."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0130-P0167",
-     "meaning": "Oxygen sensor circuit or heater problem"
+     "meaning": {
+      "en": "Oxygen sensor circuit or heater problem",
+      "vi": "Lỗi mạch hoặc bộ sấy của cảm biến ô-xy"
+     }
     },
     {
      "code": "U0100/U0101",
-     "meaning": "Lost communication with engine / transmission control module"
+     "meaning": {
+      "en": "Lost communication with engine / transmission control module",
+      "vi": "Mất giao tiếp với hộp điều khiển động cơ / hộp số"
+     }
     }
    ],
    "safety_notes": []
   },
   "coolant_reservoir": {
-   "name_vi": "Bình nước làm mát",
-   "name_en": "coolant reservoir",
+   "name": {
+    "en": "Coolant reservoir",
+    "vi": "Bình nước làm mát"
+   },
    "draft": true,
-   "summary": "the coolant expansion tank; shows coolant level and leaks",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The coolant expansion tank; shows coolant level and leaks.",
+    "vi": "Bình giãn nở nước làm mát; cho biết mức nước làm mát và dấu hiệu rò rỉ."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0115-P0119",
-     "meaning": "Engine coolant temperature sensor circuit problem"
+     "meaning": {
+      "en": "Engine coolant temperature sensor circuit problem",
+      "vi": "Lỗi mạch cảm biến nhiệt độ nước làm mát động cơ"
+     }
     },
     {
      "code": "P0128",
-     "meaning": "Coolant temperature below thermostat regulating temperature"
+     "meaning": {
+      "en": "Coolant temperature below thermostat regulating temperature",
+      "vi": "Nhiệt độ nước làm mát thấp hơn nhiệt độ điều tiết của van hằng nhiệt"
+     }
     },
     {
      "code": "P0217",
-     "meaning": "Engine overheat condition"
+     "meaning": {
+      "en": "Engine overheat condition",
+      "vi": "Động cơ quá nhiệt"
+     }
     }
    ],
    "safety_notes": []
   },
   "radiator_cap": {
-   "name_vi": "Nắp két nước",
-   "name_en": "radiator pressure cap",
+   "name": {
+    "en": "Radiator cap",
+    "vi": "Nắp két nước"
+   },
    "draft": true,
-   "summary": "the pressure cap on the radiator; a weak cap causes coolant loss and overheating",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The pressure cap on the radiator; a weak cap causes coolant loss and overheating.",
+    "vi": "Nắp áp suất trên két nước; nắp yếu làm hao nước làm mát và gây quá nhiệt."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0217",
-     "meaning": "Engine overheat condition"
+     "meaning": {
+      "en": "Engine overheat condition",
+      "vi": "Động cơ quá nhiệt"
+     }
     }
    ],
    "safety_notes": []
   },
   "brake_fluid_reservoir": {
-   "name_vi": "Bình dầu phanh",
-   "name_en": "brake fluid reservoir",
+   "name": {
+    "en": "Brake fluid reservoir",
+    "vi": "Bình dầu phanh"
+   },
    "draft": true,
-   "summary": "the brake fluid tank on the master cylinder; low level means pad wear or a leak",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The brake fluid tank on the master cylinder; low level means pad wear or a leak.",
+    "vi": "Bình dầu phanh trên xi-lanh phanh chính; mức dầu thấp cho thấy má phanh mòn hoặc rò rỉ."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [],
    "safety_notes": []
   },
   "washer_fluid_reservoir": {
-   "name_vi": "Bình nước rửa kính",
-   "name_en": "windshield washer reservoir",
+   "name": {
+    "en": "Washer fluid reservoir",
+    "vi": "Bình nước rửa kính"
+   },
    "draft": true,
-   "summary": "the washer fluid tank for the windshield sprayers",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The washer fluid tank for the windshield sprayers.",
+    "vi": "Bình chứa nước rửa kính cho các vòi phun kính chắn gió."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [],
    "safety_notes": []
   },
   "engine_cover": {
-   "name_vi": "Nắp che động cơ",
-   "name_en": "engine cover",
+   "name": {
+    "en": "Engine cover",
+    "vi": "Nắp che động cơ"
+   },
    "draft": true,
-   "summary": "",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Plastic cover over the top of the engine; it has to be removed to reach the parts underneath.",
+    "vi": "Nắp nhựa che phía trên động cơ; cần tháo ra để tiếp cận các chi tiết bên dưới."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [],
    "safety_notes": []
   },
   "oil_filler_cap": {
-   "name_vi": "Nắp châm dầu",
-   "name_en": "engine oil filler cap",
+   "name": {
+    "en": "Oil filler cap",
+    "vi": "Nắp châm dầu"
+   },
    "draft": true,
-   "summary": "the cap where engine oil is added; a missing or loose cap causes vacuum leaks and oil smell",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The cap where engine oil is added; a missing or loose cap causes vacuum leaks and oil smell.",
+    "vi": "Nắp đổ dầu động cơ; thiếu nắp hoặc nắp lỏng gây lọt khí chân không và mùi dầu."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0520-P0524",
-     "meaning": "Engine oil pressure sensor or low oil pressure"
+     "meaning": {
+      "en": "Engine oil pressure sensor or low oil pressure",
+      "vi": "Lỗi cảm biến áp suất dầu động cơ hoặc áp suất dầu thấp"
+     }
     }
    ],
    "safety_notes": []
   },
   "oil_dipstick": {
-   "name_vi": "Que thăm dầu",
-   "name_en": "engine oil dipstick",
+   "name": {
+    "en": "Oil dipstick",
+    "vi": "Que thăm dầu"
+   },
    "draft": true,
-   "summary": "used to check the engine oil level and condition",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Used to check the engine oil level and condition.",
+    "vi": "Dùng để kiểm tra mức và tình trạng dầu động cơ."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0520-P0524",
-     "meaning": "Engine oil pressure sensor or low oil pressure"
+     "meaning": {
+      "en": "Engine oil pressure sensor or low oil pressure",
+      "vi": "Lỗi cảm biến áp suất dầu động cơ hoặc áp suất dầu thấp"
+     }
     }
    ],
    "safety_notes": []
   },
   "air_filter_box": {
-   "name_vi": "Hộp lọc gió",
-   "name_en": "air filter box",
+   "name": {
+    "en": "Air filter box",
+    "vi": "Hộp lọc gió"
+   },
    "draft": true,
-   "summary": "the housing of the engine air filter; a clogged filter or open clips affect airflow",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The housing of the engine air filter; a clogged filter or open clips affect airflow.",
+    "vi": "Vỏ chứa lọc gió động cơ; lọc gió bị nghẹt hoặc kẹp bị mở làm ảnh hưởng lưu lượng khí nạp."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0100-P0103",
-     "meaning": "Mass air flow sensor circuit or range/performance problem"
+     "meaning": {
+      "en": "Mass air flow sensor circuit or range/performance problem",
+      "vi": "Lỗi mạch hoặc dải đo/hiệu suất của cảm biến lưu lượng khí nạp (MAF)"
+     }
     },
     {
      "code": "P0172/P0175",
-     "meaning": "System too rich (bank 1 / bank 2)"
+     "meaning": {
+      "en": "System too rich (bank 1 / bank 2)",
+      "vi": "Hỗn hợp quá giàu (dãy 1 / dãy 2)"
+     }
     }
    ],
    "safety_notes": []
   },
   "air_intake_duct": {
-   "name_vi": "Ống hút gió",
-   "name_en": "air intake duct",
+   "name": {
+    "en": "Air intake duct",
+    "vi": "Ống hút gió"
+   },
    "draft": true,
-   "summary": "the tube from the air filter to the throttle body; cracks or loose clamps let unmetered air in",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The tube from the air filter to the throttle body; cracks or loose clamps let unmetered air in.",
+    "vi": "Ống dẫn khí từ hộp lọc gió đến cổ họng ga; nứt hoặc cổ dê lỏng làm lọt khí không đi qua cảm biến đo."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0100-P0103",
-     "meaning": "Mass air flow sensor circuit or range/performance problem"
+     "meaning": {
+      "en": "Mass air flow sensor circuit or range/performance problem",
+      "vi": "Lỗi mạch hoặc dải đo/hiệu suất của cảm biến lưu lượng khí nạp (MAF)"
+     }
     },
     {
      "code": "P0171/P0174",
-     "meaning": "System too lean (bank 1 / bank 2)"
+     "meaning": {
+      "en": "System too lean (bank 1 / bank 2)",
+      "vi": "Hỗn hợp quá nghèo (dãy 1 / dãy 2)"
+     }
     }
    ],
    "safety_notes": []
   },
   "maf_sensor": {
-   "name_vi": "Cảm biến lưu lượng khí (MAF)",
-   "name_en": "mass air flow (MAF) sensor",
+   "name": {
+    "en": "MAF sensor",
+    "vi": "Cảm biến lưu lượng khí (MAF)"
+   },
    "draft": true,
-   "summary": "measures intake air; dirty or faulty sensors cause lean/rich mixture, hesitation and MAF codes",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Measures intake air; dirty or faulty sensors cause lean/rich mixture, hesitation and MAF codes.",
+    "vi": "Đo lượng khí nạp; cảm biến bẩn hoặc hỏng gây hỗn hợp nghèo/giàu, xe hụt ga và báo mã lỗi MAF."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0100-P0103",
-     "meaning": "Mass air flow sensor circuit or range/performance problem"
+     "meaning": {
+      "en": "Mass air flow sensor circuit or range/performance problem",
+      "vi": "Lỗi mạch hoặc dải đo/hiệu suất của cảm biến lưu lượng khí nạp (MAF)"
+     }
     },
     {
      "code": "P0171/P0174",
-     "meaning": "System too lean (bank 1 / bank 2)"
+     "meaning": {
+      "en": "System too lean (bank 1 / bank 2)",
+      "vi": "Hỗn hợp quá nghèo (dãy 1 / dãy 2)"
+     }
     },
     {
      "code": "P0172/P0175",
-     "meaning": "System too rich (bank 1 / bank 2)"
+     "meaning": {
+      "en": "System too rich (bank 1 / bank 2)",
+      "vi": "Hỗn hợp quá giàu (dãy 1 / dãy 2)"
+     }
     }
    ],
    "safety_notes": []
   },
   "throttle_body": {
-   "name_vi": "Cổ họng ga",
-   "name_en": "throttle body",
+   "name": {
+    "en": "Throttle body",
+    "vi": "Cổ họng ga"
+   },
    "draft": true,
-   "summary": "controls intake air; carbon build-up causes rough or high idle and stalling",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Controls intake air; carbon build-up causes rough or high idle and stalling.",
+    "vi": "Điều tiết lượng khí nạp; muội than bám gây không tải rung hoặc cao và chết máy."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0121-P0123/P2135",
-     "meaning": "Throttle position sensor range or correlation problem"
+     "meaning": {
+      "en": "Throttle position sensor range or correlation problem",
+      "vi": "Lỗi dải đo hoặc tương quan của cảm biến vị trí bướm ga"
+     }
     },
     {
      "code": "P0505-P0507",
-     "meaning": "Idle air control system or idle speed problem"
+     "meaning": {
+      "en": "Idle air control system or idle speed problem",
+      "vi": "Lỗi hệ thống điều khiển không tải hoặc tốc độ không tải"
+     }
     }
    ],
    "safety_notes": []
   },
   "alternator": {
-   "name_vi": "Máy phát điện",
-   "name_en": "alternator",
+   "name": {
+    "en": "Alternator",
+    "vi": "Máy phát điện"
+   },
    "draft": true,
-   "summary": "charges the battery while driving; failure causes battery light and low voltage",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Charges the battery while driving; failure causes battery light and low voltage.",
+    "vi": "Sạc ắc quy khi xe chạy; hỏng sẽ làm sáng đèn báo ắc quy và điện áp thấp."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0562/P0563",
-     "meaning": "System voltage low / high"
+     "meaning": {
+      "en": "System voltage low / high",
+      "vi": "Điện áp hệ thống thấp / cao"
+     }
     },
     {
      "code": "P0620-P0622",
-     "meaning": "Generator (alternator) control circuit problem"
+     "meaning": {
+      "en": "Generator (alternator) control circuit problem",
+      "vi": "Lỗi mạch điều khiển máy phát điện"
+     }
     }
    ],
    "safety_notes": []
   },
   "ignition_coil": {
-   "name_vi": "Bô-bin đánh lửa",
-   "name_en": "ignition coils",
+   "name": {
+    "en": "Ignition coil",
+    "vi": "Bô-bin đánh lửa"
+   },
    "draft": true,
-   "summary": "coil-on-plug units that fire the spark plugs; a failed coil causes a misfire on one cylinder",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Coil-on-plug units that fire the spark plugs; a failed coil causes a misfire on one cylinder.",
+    "vi": "Bô-bin gắn trên bugi, tạo tia lửa cho bugi; bô-bin hỏng gây bỏ máy ở một xi-lanh."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0300",
-     "meaning": "Random or multiple cylinder misfire detected"
+     "meaning": {
+      "en": "Random or multiple cylinder misfire detected",
+      "vi": "Phát hiện bỏ máy ngẫu nhiên hoặc ở nhiều xi-lanh"
+     }
     },
     {
      "code": "P0301-P0308",
-     "meaning": "Misfire detected on one specific cylinder"
+     "meaning": {
+      "en": "Misfire detected on one specific cylinder",
+      "vi": "Phát hiện bỏ máy ở một xi-lanh cụ thể"
+     }
     },
     {
      "code": "P0351-P0358",
-     "meaning": "Ignition coil primary/secondary circuit problem"
+     "meaning": {
+      "en": "Ignition coil primary/secondary circuit problem",
+      "vi": "Lỗi mạch sơ cấp/thứ cấp của bô-bin đánh lửa"
+     }
     }
    ],
    "safety_notes": []
   },
   "radiator_hose": {
-   "name_vi": "Ống két nước",
-   "name_en": "radiator hoses",
+   "name": {
+    "en": "Radiator hose",
+    "vi": "Ống két nước"
+   },
    "draft": true,
-   "summary": "the upper and lower coolant hoses between engine and radiator; cracks and leaks cause overheating",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The upper and lower coolant hoses between engine and radiator; cracks and leaks cause overheating.",
+    "vi": "Ống nước làm mát trên và dưới nối động cơ với két nước; nứt hoặc rò rỉ gây quá nhiệt."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0128",
-     "meaning": "Coolant temperature below thermostat regulating temperature"
+     "meaning": {
+      "en": "Coolant temperature below thermostat regulating temperature",
+      "vi": "Nhiệt độ nước làm mát thấp hơn nhiệt độ điều tiết của van hằng nhiệt"
+     }
     },
     {
      "code": "P0217",
-     "meaning": "Engine overheat condition"
+     "meaning": {
+      "en": "Engine overheat condition",
+      "vi": "Động cơ quá nhiệt"
+     }
     }
    ],
    "safety_notes": []
   },
   "ecu_module": {
-   "name_vi": "Hộp ECU",
-   "name_en": "engine control unit (ECU)",
+   "name": {
+    "en": "ECU",
+    "vi": "Hộp ECU"
+   },
    "draft": true,
-   "summary": "the engine computer; relevant for communication codes, water intrusion or connector problems",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The engine computer; relevant for communication codes, water intrusion or connector problems.",
+    "vi": "Máy tính điều khiển động cơ; liên quan đến mã lỗi mất giao tiếp, vào nước hoặc lỗi giắc cắm."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0600-P0606",
-     "meaning": "Engine control module internal or communication problem"
+     "meaning": {
+      "en": "Engine control module internal or communication problem",
+      "vi": "Lỗi bên trong hoặc lỗi giao tiếp của hộp điều khiển động cơ"
+     }
     },
     {
      "code": "P0620-P0622",
-     "meaning": "Generator (alternator) control circuit problem"
+     "meaning": {
+      "en": "Generator (alternator) control circuit problem",
+      "vi": "Lỗi mạch điều khiển máy phát điện"
+     }
     },
     {
      "code": "U0100/U0101",
-     "meaning": "Lost communication with engine / transmission control module"
+     "meaning": {
+      "en": "Lost communication with engine / transmission control module",
+      "vi": "Mất giao tiếp với hộp điều khiển động cơ / hộp số"
+     }
     }
    ],
    "safety_notes": []
   },
   "multimeter_diagnostic_tool": {
-   "name_vi": "Đồng hồ đo / thiết bị chẩn đoán",
-   "name_en": "multimeter diagnostic tool",
+   "name": {
+    "en": "Multimeter / scan tool",
+    "vi": "Đồng hồ đo / thiết bị chẩn đoán"
+   },
    "draft": true,
-   "summary": "",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "A test instrument (multimeter or scan tool) in the photo, not a part of the vehicle.",
+    "vi": "Dụng cụ đo kiểm (đồng hồ vạn năng hoặc máy chẩn đoán) xuất hiện trong ảnh, không phải chi tiết của xe."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [],
    "safety_notes": []
   },
   "intake_manifold": {
-   "name_vi": "Cổ hút",
-   "name_en": "intake manifold",
+   "name": {
+    "en": "Intake manifold",
+    "vi": "Cổ hút"
+   },
    "draft": true,
-   "summary": "distributes air to the cylinders; gasket or hose leaks cause lean codes and rough idle",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "Distributes air to the cylinders; gasket or hose leaks cause lean codes and rough idle.",
+    "vi": "Phân phối khí nạp đến các xi-lanh; rò gioăng hoặc ống gây mã lỗi hỗn hợp nghèo và không tải rung."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0106-P0108",
-     "meaning": "Manifold absolute pressure sensor range/performance or circuit problem"
+     "meaning": {
+      "en": "Manifold absolute pressure sensor range/performance or circuit problem",
+      "vi": "Lỗi dải đo/hiệu suất hoặc mạch của cảm biến áp suất tuyệt đối đường nạp (MAP)"
+     }
     },
     {
      "code": "P0171/P0174",
-     "meaning": "System too lean (bank 1 / bank 2)"
+     "meaning": {
+      "en": "System too lean (bank 1 / bank 2)",
+      "vi": "Hỗn hợp quá nghèo (dãy 1 / dãy 2)"
+     }
     },
     {
      "code": "P0300",
-     "meaning": "Random or multiple cylinder misfire detected"
+     "meaning": {
+      "en": "Random or multiple cylinder misfire detected",
+      "vi": "Phát hiện bỏ máy ngẫu nhiên hoặc ở nhiều xi-lanh"
+     }
     },
     {
      "code": "P0505-P0507",
-     "meaning": "Idle air control system or idle speed problem"
+     "meaning": {
+      "en": "Idle air control system or idle speed problem",
+      "vi": "Lỗi hệ thống điều khiển không tải hoặc tốc độ không tải"
+     }
     }
    ],
    "safety_notes": []
   },
   "oil_filter": {
-   "name_vi": "Lọc dầu",
-   "name_en": "engine oil filter",
+   "name": {
+    "en": "Oil filter",
+    "vi": "Lọc dầu"
+   },
    "draft": true,
-   "summary": "the engine oil filter; leaks here cause oil loss",
-   "function": "",
-   "location_hint": "",
+   "summary": {
+    "en": "The engine oil filter; leaks here cause oil loss.",
+    "vi": "Lọc dầu động cơ; rò rỉ tại đây làm hao dầu."
+   },
    "inspection_checks": [],
    "common_symptoms": [],
    "related_dtcs": [
     {
      "code": "P0520-P0524",
-     "meaning": "Engine oil pressure sensor or low oil pressure"
+     "meaning": {
+      "en": "Engine oil pressure sensor or low oil pressure",
+      "vi": "Lỗi cảm biến áp suất dầu động cơ hoặc áp suất dầu thấp"
+     }
     }
    ],
    "safety_notes": []

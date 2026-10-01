@@ -28,6 +28,7 @@ class ModelConfig(json: JSONObject) {
     val maxSide: Int = json.optInt("max_side", 1600)
     val names: List<String> = json.getJSONArray("names").let { a -> List(a.length()) { a.getString(it) } }
     val namesVi: List<String> = json.getJSONArray("names_vi").let { a -> List(a.length()) { a.getString(it) } }
+    val namesEn: List<String> = json.optJSONArray("names_en")?.let { a -> List(a.length()) { a.getString(it) } } ?: names
     val colors: List<Int> = json.getJSONArray("colors").let { a -> List(a.length()) { Color.parseColor(a.getString(it)) } }
     val thresholds: Map<String, Float> = json.getJSONObject("thresholds").let { o -> o.keys().asSequence().associateWith { o.getDouble(it).toFloat() } }
 
@@ -37,7 +38,8 @@ class ModelConfig(json: JSONObject) {
 }
 
 /** A detection mapped back to the analysed photo. */
-class Part(val det: Detection, val name: String, val nameVi: String, val color: Int, val rect: RectF) {
+class Part(val det: Detection, val name: String, val nameVi: String, val color: Int, val rect: RectF, val nameEn: String = name) {
+    fun label(vietnamese: Boolean) = if (vietnamese) nameVi else nameEn
     val score get() = det.score
     val cls get() = det.cls
 }
@@ -111,7 +113,7 @@ class Detector(context: Context) : Closeable {
                 ((d.box[2] - lb.left) / lb.scale).coerceIn(0f, photo.width.toFloat()),
                 ((d.box[3] - lb.top) / lb.scale).coerceIn(0f, photo.height.toFloat()),
             )
-            Part(d, config.names[d.cls], config.namesVi[d.cls], config.colors[d.cls], r)
+            Part(d, config.names[d.cls], config.namesVi[d.cls], config.colors[d.cls], r, config.namesEn[d.cls])
         }
         return DetectionResult(parts, overlay, index, lb, inferenceMs, (System.nanoTime() - t0) / 1_000_000)
     }
