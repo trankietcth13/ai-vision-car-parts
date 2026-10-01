@@ -1,0 +1,420 @@
+{
+ "schema_version": 1,
+ "language": "vi",
+ "source": "draft from configs/diagnosis_knowledge.yaml",
+ "components": {
+  "battery": {
+   "name_vi": "Ắc quy",
+   "name_en": "12 V battery",
+   "draft": true,
+   "summary": "the 12 V lead-acid battery that powers starting and electronics",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0562/P0563",
+     "meaning": "System voltage low / high"
+    }
+   ],
+   "safety_notes": []
+  },
+  "battery_terminal": {
+   "name_vi": "Cọc bình ắc quy",
+   "name_en": "battery terminals and cable clamps",
+   "draft": true,
+   "summary": "the clamps on the battery posts; corrosion or looseness causes no-crank and voltage faults",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0562/P0563",
+     "meaning": "System voltage low / high"
+    },
+    {
+     "code": "P0600-P0606",
+     "meaning": "Engine control module internal or communication problem"
+    },
+    {
+     "code": "U0100/U0101",
+     "meaning": "Lost communication with engine / transmission control module"
+    }
+   ],
+   "safety_notes": []
+  },
+  "fuse_relay_box": {
+   "name_vi": "Hộp cầu chì / rơ-le",
+   "name_en": "under-hood fuse and relay box",
+   "draft": true,
+   "summary": "fuses and relays for fans, fuel pump, starter, lights and modules",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0130-P0167",
+     "meaning": "Oxygen sensor circuit or heater problem"
+    },
+    {
+     "code": "U0100/U0101",
+     "meaning": "Lost communication with engine / transmission control module"
+    }
+   ],
+   "safety_notes": []
+  },
+  "coolant_reservoir": {
+   "name_vi": "Bình nước làm mát",
+   "name_en": "coolant reservoir",
+   "draft": true,
+   "summary": "the coolant expansion tank; shows coolant level and leaks",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0115-P0119",
+     "meaning": "Engine coolant temperature sensor circuit problem"
+    },
+    {
+     "code": "P0128",
+     "meaning": "Coolant temperature below thermostat regulating temperature"
+    },
+    {
+     "code": "P0217",
+     "meaning": "Engine overheat condition"
+    }
+   ],
+   "safety_notes": []
+  },
+  "radiator_cap": {
+   "name_vi": "Nắp két nước",
+   "name_en": "radiator pressure cap",
+   "draft": true,
+   "summary": "the pressure cap on the radiator; a weak cap causes coolant loss and overheating",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0217",
+     "meaning": "Engine overheat condition"
+    }
+   ],
+   "safety_notes": []
+  },
+  "brake_fluid_reservoir": {
+   "name_vi": "Bình dầu phanh",
+   "name_en": "brake fluid reservoir",
+   "draft": true,
+   "summary": "the brake fluid tank on the master cylinder; low level means pad wear or a leak",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [],
+   "safety_notes": []
+  },
+  "washer_fluid_reservoir": {
+   "name_vi": "Bình nước rửa kính",
+   "name_en": "windshield washer reservoir",
+   "draft": true,
+   "summary": "the washer fluid tank for the windshield sprayers",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [],
+   "safety_notes": []
+  },
+  "engine_cover": {
+   "name_vi": "Nắp che động cơ",
+   "name_en": "engine cover",
+   "draft": true,
+   "summary": "",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [],
+   "safety_notes": []
+  },
+  "oil_filler_cap": {
+   "name_vi": "Nắp châm dầu",
+   "name_en": "engine oil filler cap",
+   "draft": true,
+   "summary": "the cap where engine oil is added; a missing or loose cap causes vacuum leaks and oil smell",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0520-P0524",
+     "meaning": "Engine oil pressure sensor or low oil pressure"
+    }
+   ],
+   "safety_notes": []
+  },
+  "oil_dipstick": {
+   "name_vi": "Que thăm dầu",
+   "name_en": "engine oil dipstick",
+   "draft": true,
+   "summary": "used to check the engine oil level and condition",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0520-P0524",
+     "meaning": "Engine oil pressure sensor or low oil pressure"
+    }
+   ],
+   "safety_notes": []
+  },
+  "air_filter_box": {
+   "name_vi": "Hộp lọc gió",
+   "name_en": "air filter box",
+   "draft": true,
+   "summary": "the housing of the engine air filter; a clogged filter or open clips affect airflow",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0100-P0103",
+     "meaning": "Mass air flow sensor circuit or range/performance problem"
+    },
+    {
+     "code": "P0172/P0175",
+     "meaning": "System too rich (bank 1 / bank 2)"
+    }
+   ],
+   "safety_notes": []
+  },
+  "air_intake_duct": {
+   "name_vi": "Ống hút gió",
+   "name_en": "air intake duct",
+   "draft": true,
+   "summary": "the tube from the air filter to the throttle body; cracks or loose clamps let unmetered air in",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0100-P0103",
+     "meaning": "Mass air flow sensor circuit or range/performance problem"
+    },
+    {
+     "code": "P0171/P0174",
+     "meaning": "System too lean (bank 1 / bank 2)"
+    }
+   ],
+   "safety_notes": []
+  },
+  "maf_sensor": {
+   "name_vi": "Cảm biến lưu lượng khí (MAF)",
+   "name_en": "mass air flow (MAF) sensor",
+   "draft": true,
+   "summary": "measures intake air; dirty or faulty sensors cause lean/rich mixture, hesitation and MAF codes",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0100-P0103",
+     "meaning": "Mass air flow sensor circuit or range/performance problem"
+    },
+    {
+     "code": "P0171/P0174",
+     "meaning": "System too lean (bank 1 / bank 2)"
+    },
+    {
+     "code": "P0172/P0175",
+     "meaning": "System too rich (bank 1 / bank 2)"
+    }
+   ],
+   "safety_notes": []
+  },
+  "throttle_body": {
+   "name_vi": "Cổ họng ga",
+   "name_en": "throttle body",
+   "draft": true,
+   "summary": "controls intake air; carbon build-up causes rough or high idle and stalling",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0121-P0123/P2135",
+     "meaning": "Throttle position sensor range or correlation problem"
+    },
+    {
+     "code": "P0505-P0507",
+     "meaning": "Idle air control system or idle speed problem"
+    }
+   ],
+   "safety_notes": []
+  },
+  "alternator": {
+   "name_vi": "Máy phát điện",
+   "name_en": "alternator",
+   "draft": true,
+   "summary": "charges the battery while driving; failure causes battery light and low voltage",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0562/P0563",
+     "meaning": "System voltage low / high"
+    },
+    {
+     "code": "P0620-P0622",
+     "meaning": "Generator (alternator) control circuit problem"
+    }
+   ],
+   "safety_notes": []
+  },
+  "ignition_coil": {
+   "name_vi": "Bô-bin đánh lửa",
+   "name_en": "ignition coils",
+   "draft": true,
+   "summary": "coil-on-plug units that fire the spark plugs; a failed coil causes a misfire on one cylinder",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0300",
+     "meaning": "Random or multiple cylinder misfire detected"
+    },
+    {
+     "code": "P0301-P0308",
+     "meaning": "Misfire detected on one specific cylinder"
+    },
+    {
+     "code": "P0351-P0358",
+     "meaning": "Ignition coil primary/secondary circuit problem"
+    }
+   ],
+   "safety_notes": []
+  },
+  "radiator_hose": {
+   "name_vi": "Ống két nước",
+   "name_en": "radiator hoses",
+   "draft": true,
+   "summary": "the upper and lower coolant hoses between engine and radiator; cracks and leaks cause overheating",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0128",
+     "meaning": "Coolant temperature below thermostat regulating temperature"
+    },
+    {
+     "code": "P0217",
+     "meaning": "Engine overheat condition"
+    }
+   ],
+   "safety_notes": []
+  },
+  "ecu_module": {
+   "name_vi": "Hộp ECU",
+   "name_en": "engine control unit (ECU)",
+   "draft": true,
+   "summary": "the engine computer; relevant for communication codes, water intrusion or connector problems",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0600-P0606",
+     "meaning": "Engine control module internal or communication problem"
+    },
+    {
+     "code": "P0620-P0622",
+     "meaning": "Generator (alternator) control circuit problem"
+    },
+    {
+     "code": "U0100/U0101",
+     "meaning": "Lost communication with engine / transmission control module"
+    }
+   ],
+   "safety_notes": []
+  },
+  "multimeter_diagnostic_tool": {
+   "name_vi": "Đồng hồ đo / thiết bị chẩn đoán",
+   "name_en": "multimeter diagnostic tool",
+   "draft": true,
+   "summary": "",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [],
+   "safety_notes": []
+  },
+  "intake_manifold": {
+   "name_vi": "Cổ hút",
+   "name_en": "intake manifold",
+   "draft": true,
+   "summary": "distributes air to the cylinders; gasket or hose leaks cause lean codes and rough idle",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0106-P0108",
+     "meaning": "Manifold absolute pressure sensor range/performance or circuit problem"
+    },
+    {
+     "code": "P0171/P0174",
+     "meaning": "System too lean (bank 1 / bank 2)"
+    },
+    {
+     "code": "P0300",
+     "meaning": "Random or multiple cylinder misfire detected"
+    },
+    {
+     "code": "P0505-P0507",
+     "meaning": "Idle air control system or idle speed problem"
+    }
+   ],
+   "safety_notes": []
+  },
+  "oil_filter": {
+   "name_vi": "Lọc dầu",
+   "name_en": "engine oil filter",
+   "draft": true,
+   "summary": "the engine oil filter; leaks here cause oil loss",
+   "function": "",
+   "location_hint": "",
+   "inspection_checks": [],
+   "common_symptoms": [],
+   "related_dtcs": [
+    {
+     "code": "P0520-P0524",
+     "meaning": "Engine oil pressure sensor or low oil pressure"
+    }
+   ],
+   "safety_notes": []
+  }
+ }
+}

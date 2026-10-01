@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.EngineBay" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_dark</item>
+        <item name="colorSecondary">@color/brand_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+    <color name="warn_bg">#3B2A10</color>
+    <color name="warn_fg">#FDE68A</color>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand">#C2410C</color>
+    <color name="brand_dark">#FB923C</color>
+    <color name="ic_bg">#C2410C</color>
+    <color name="warn_bg">#FEF3C7</color>
+    <color name="warn_fg">#78350F</color>
+</resources>

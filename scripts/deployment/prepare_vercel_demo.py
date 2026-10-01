@@ -37,6 +37,40 @@ def vi_names() -> dict[str, str]:
     raise RuntimeError("VI_NAMES not found in apps/engine_bay_web/app.py")
 
 
+def export_model(pt: Path, model_dir: Path) -> dict:
+    """Export the .pt to <model_dir>/<stem>.onnx (static 640, no NMS) and return the inference config shared by the
+    browser demo and the Android app: class names (EN/VI), colours, per-class thresholds of this model, NMS settings."""
+    from ultralytics import YOLO
+    from ultralytics.utils.plotting import colors
+
+    model_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:  # export next to a copy so nothing is written into apps/engine_bay_web
+        src = Path(tmp) / pt.name
+        shutil.copy2(pt, src)
+        model = YOLO(str(src))
+        onnx = Path(model.export(format="onnx", imgsz=640, opset=17, simplify=True, dynamic=False, nms=False))
+        shutil.copy2(onnx, model_dir / f"{pt.stem}.onnx")
+    names = [model.names[i] for i in range(len(model.names))]
+    thr_file = WEB / "config" / "class_thresholds" / f"{pt.stem}.yaml"
+    thr = yaml.safe_load(thr_file.read_text(encoding="utf-8")).get("thresholds", {}) if thr_file.is_file() else {}
+    vi = vi_names()
+    return {
+        "model": f"model/{pt.stem}.onnx",
+        "model_name": pt.stem,
+        "model_md5": hashlib.md5(pt.read_bytes()).hexdigest(),
+        "release": "poc-v1",
+        "imgsz": 640,
+        "iou": 0.7,  # ultralytics default NMS IoU
+        "max_det": 300,
+        "default_conf": 0.35,
+        "max_side": 1600,  # photos are downscaled first, as in the Python app
+        "names": names,
+        "names_vi": [vi.get(n, n) for n in names],
+        "colors": ["#%02x%02x%02x" % colors(i, False) for i in range(len(names))],
+        "thresholds": {k: float(v) for k, v in thr.items()},
+    }
+
+
 def vendor_ort(version: str) -> None:
     dst = OUT / "vendor" / "ort"
     if all((dst / f).exists() for f in ORT_FILES) and (dst / "VERSION").read_text().strip() == version:
@@ -58,35 +92,8 @@ def main():
     ap.add_argument("--ort-version", default="1.30.0")
     a = ap.parse_args()
 
-    from ultralytics import YOLO
-    from ultralytics.utils.plotting import colors
-
     pt = Path(a.model)
-    (OUT / "model").mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory() as tmp:  # export next to a copy so nothing is written into apps/engine_bay_web
-        src = Path(tmp) / pt.name
-        shutil.copy2(pt, src)
-        model = YOLO(str(src))
-        onnx = Path(model.export(format="onnx", imgsz=640, opset=17, simplify=True, dynamic=False, nms=False))
-        shutil.copy2(onnx, OUT / "model" / f"{pt.stem}.onnx")
-    names = [model.names[i] for i in range(len(model.names))]
-    thr_file = WEB / "config" / "class_thresholds" / f"{pt.stem}.yaml"
-    thr = yaml.safe_load(thr_file.read_text(encoding="utf-8")).get("thresholds", {}) if thr_file.is_file() else {}
-    vi = vi_names()
-    config = {
-        "model": f"model/{pt.stem}.onnx",
-        "model_name": pt.stem,
-        "model_md5": hashlib.md5(pt.read_bytes()).hexdigest(),
-        "release": "poc-v1",
-        "imgsz": 640,
-        "iou": 0.7,  # ultralytics default NMS IoU
-        "max_det": 300,
-        "default_conf": 0.35,
-        "names": names,
-        "names_vi": [vi.get(n, n) for n in names],
-        "colors": ["#%02x%02x%02x" % colors(i, False) for i in range(len(names))],
-        "thresholds": {k: float(v) for k, v in thr.items()},
-    }
+    config = export_model(pt, OUT / "model")
     (OUT / "config.json").write_text(json.dumps(config, ensure_ascii=False, indent=1), encoding="utf-8")
 
     ex = OUT / "examples"
@@ -98,7 +105,7 @@ def main():
     vendor_ort(a.ort_version)
     size = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file()) / 2**20
     print(f"ok: {OUT} ({size:.1f} MB), model {config['model']} md5(pt) {config['model_md5']}, "
-          f"{len(names)} classes, {len(config['thresholds'])} thresholds, {len(examples)} examples")
+          f"{len(config['names'])} classes, {len(config['thresholds'])} thresholds, {len(examples)} examples")
 
 
 if __name__ == "__main__":
