@@ -17,7 +17,7 @@ class DtcEntry(
 )
 
 /** A component that can be suggested; [detectorClass] is the model class, or null when the model cannot see it. */
-class ComponentRef(val key: String, val name: Text, val detectorClass: String?)
+class ComponentRef(val key: String, val name: Text, val detectorClass: String?, val description: Text? = null)
 
 class DtcTable(val entries: List<DtcEntry>, val components: Map<String, ComponentRef>)
 

@@ -19,9 +19,15 @@ app/src/main/java/com/enginebay/vision/
 ├── ResultView.kt         vẽ kết quả; chạm để chọn linh kiện
 ├── ComponentInfo.kt      đọc assets/components.json (song ngữ)
 ├── AppState.kt           model, ảnh, kết quả giữ nguyên khi đổi ngôn ngữ
+├── core/ModelBuilder.kt  dựng mô hình 3D ngay trên máy từ bản mô tả JSON (cùng thuật toán với Python)
+├── core/Glb.kt           đọc mô hình 3D dạng GLB (khi có file mô hình thật: CAD, quét 3D)
+├── ModelView.kt          xem 3D bằng OpenGL ES 2.0: xoay, phóng to, chạm chọn chi tiết, tách rời
+├── ModelPanel.kt         khối 3D trong bảng thông tin: mô hình, danh sách chi tiết, nội dung cần kiểm tra
+├── ModelStore.kt         dựng (JSON) hoặc đọc (GLB) mô hình từ assets/models, lưu đệm
 └── MainActivity.kt       chụp (app camera hệ thống), thư viện, ảnh mẫu, danh sách, bảng thông tin
 app/src/main/assets/
 ├── components.json       thông tin linh kiện (trong git; đặc tả: docs/COMPONENT_INFO_SPEC.md)
+├── models/<linh_kiện>.json  34 bản mô tả mô hình 3D, tổng ~230 KB (trong git; sinh bằng scripts/deployment/build_component_models.py)
 ├── model/kd_n_full.onnx, config.json, examples/   sinh ra bằng script, không nằm trong git
 ```
 
@@ -55,6 +61,36 @@ Unit test `UltralyticsParityTest` dùng ảnh thật và kết quả do chính U
   - mã lỗi và lưu ý an toàn: `diagnosis.json`.
 - **Nguồn bản dịch:** `configs/diagnosis_knowledge_vi.yaml`, đi kèm `configs/diagnosis_knowledge.yaml`.
 - **Kiểm tra:** `BilingualDataTest` báo lỗi nếu có đoạn văn bản nào thiếu một ngôn ngữ.
+
+## Mô hình 3D linh kiện
+
+Mỗi linh kiện trong cơ sở tri thức OBD2 (`configs/diagnosis_knowledge.yaml`) có một mô hình 3D. Có tất cả 34 mô hình: 33 linh kiện của bảng tri thức và nắp che động cơ.
+
+**Cách dựng mô hình (ngay trên máy):** script `scripts/deployment/build_component_models.py` mô tả mỗi linh kiện bằng các khối hình học cơ bản và ghi ra `assets/models/<linh_kiện>.json`. Script dùng `tools/model3d/` lấy từ skill `pro-product-video`. Mỗi mô hình gồm:
+- các chi tiết có tên;
+- vật liệu PBR;
+- hướng tách rời của từng chi tiết (thứ tự tháo);
+- tên chi tiết và nội dung cần kiểm tra trên chi tiết đó, song ngữ `{"en", "vi"}`.
+
+App **sinh lưới tam giác ngay trên máy** bằng `ModelBuilder.kt`, khi người dùng mở mô hình. `ModelBuilder.kt` chép lại đúng từng thuật toán Python: lấy mẫu, thứ tự tam giác, hướng mặt, pháp tuyến góc 35°.
+
+`ComponentModelsTest` so từng chi tiết của cả 34 mô hình với hình học do Python sinh (`fixtures/model_stats.json`): số tam giác phải khớp, diện tích, thể tích và khung bao lệch không quá 1e-4. Nếu có file `<linh_kiện>.glb` (mô hình CAD hoặc quét 3D thật), app đọc file đó thay vì tự dựng.
+
+Mô hình là hình minh hoạ chung, không phải đúng chi tiết của một xe cụ thể.
+
+```bash
+python scripts/deployment/build_component_models.py                       # bản mô tả -> assets/models + fixture so khớp
+python scripts/deployment/build_component_models.py --only spark_plug --glb output/models3d/glb --preview output/models3d
+```
+
+**Trong app:**
+- Bảng thông tin của linh kiện có khối 3D. Trên mô hình: kéo để xoay, chụm hai ngón để phóng to, chạm đúp để đặt lại. Chạm vào một chi tiết (trên mô hình hoặc trong danh sách) thì chi tiết đó nhấp nháy và app hiện nội dung cần kiểm tra. Nút **Tách rời** tách các chi tiết theo thứ tự tháo.
+- Trong bảng chẩn đoán theo mã lỗi, mỗi linh kiện cần kiểm tra có nút **3D**. Nút này hữu ích nhất cho các linh kiện mà model chưa nhận diện được trên ảnh (bugi, kim phun, van EGR...).
+- Nút **Linh kiện 3D** trên thanh tiêu đề mở thư viện các mô hình. Thư viện dùng được cả khi chưa chụp ảnh.
+
+**Kiểm thử:**
+- `adb shell am start -n com.enginebay.vision/.MainActivity --es model spark_plug` mở thẳng một mô hình.
+- `ComponentModelsTest` kiểm tra ba điều: mọi linh kiện của bảng tri thức đều có mô hình, mô hình đọc được, và mọi nhãn cùng nội dung kiểm tra đều đủ hai ngôn ngữ.
 
 ## Ghi chú
 

@@ -71,4 +71,21 @@
     <string name="mark_missing" translatable="false">?</string>
     <string name="mark_other" translatable="false">•</string>
     <string name="chevron" translatable="false">›</string>
+    <!-- 3D component models (assets/models, scripts/deployment/build_component_models.py) -->
+    <string name="action_models">3D parts</string>
+    <string name="action_models_desc">Library of 3D component models</string>
+    <string name="models_title">3D component library</string>
+    <string name="models_detectable">%1$s · in photos</string>
+    <string name="model_badge">3D</string>
+    <string name="model_hint">Drag to rotate · pinch to zoom · tap a part · double-tap to reset</string>
+    <string name="model_explode">Take apart</string>
+    <string name="model_reset">Reset</string>
+    <string name="model_pick_hint">Tap a part, on the model or in the list, to see what to check on it.</string>
+    <string name="model_no_check">No specific check for this part.</string>
+    <string name="model_note">3D model: a generic illustration, not the exact part of this vehicle. Checks are drafts; typical values must be confirmed with the manufacturer\'s data.</string>
+    <string name="model3d_load_failed">Could not load the 3D model.</string>
+    <string name="model_view_3d">View in 3D</string>
+    <string name="model_status_detectable">The model can find this component in a photo.</string>
+    <string name="model_status_not_detectable">Not detectable from a photo yet: use the 3D model to recognise it on the vehicle and inspect it directly.</string>
+    <string name="model_status_codes">Pointed to by: %1$s</string>
 </resources>

@@ -42,6 +42,12 @@
             android:textColor="@color/warn_fg"
             android:visibility="gone" />
 
+        <!-- 3D model (ModelPanel), when assets/models has one for this component -->
+        <FrameLayout
+            android:id="@+id/model3d"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <LinearLayout
             android:id="@+id/sections"
             android:layout_width="match_parent"

@@ -9,6 +9,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
@@ -47,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     private var diagnosis: Diagnosis? by AppState::diagnosis
     private var dtcText: String by AppState::dtcText
     private var pendingCapture: Uri? = null
+    /** the 3D view of the open component sheet, paused and resumed with the activity */
+    private var liveModelView: ModelView? = null
     private var runId = 0
 
     private lateinit var resultView: ResultView
@@ -75,7 +78,10 @@ class MainActivity : AppCompatActivity() {
             inflateMenu(R.menu.main)
             menu.findItem(R.id.action_language).isEnabled = false  // until the model is ready (no half-loaded switch)
             setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.action_language) {
+                if (item.itemId == R.id.action_models) {
+                    showModelLibrary()
+                    true
+                } else if (item.itemId == R.id.action_language) {
                     AppState.conf = conf.value
                     AppState.perClass = perClass.isChecked
                     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(if (isVi()) "en" else "vi"))
@@ -137,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 if (isDestroyed) return@runOnUiThread
                 findViewById<View>(R.id.dtc).isEnabled = table != null
                 if (firstStart) intent.getStringExtra("dtc")?.let(::applyCodes)  // adb: --es dtc "P0301 P0171"
+                if (firstStart) intent.getStringExtra("model")?.let { show3D(it) }  // adb: --es model spark_plug
             }
             try {
                 val d = Detector(this)
@@ -277,14 +284,76 @@ class MainActivity : AppCompatActivity() {
     private fun showInfo(part: Part) {
         val info = components[part.name]
         val vi = isVi()
-        val view = layoutInflater.inflate(R.layout.sheet_component, null)
-        // title in the UI language, the other language underneath (technicians look parts up in both)
-        view.findViewById<TextView>(R.id.title).text = info?.name?.get(vi)?.ifBlank { null } ?: part.label(vi)
-        view.findViewById<TextView>(R.id.subtitle).text = info?.name?.get(!vi)?.ifBlank { null } ?: part.label(!vi)
         val same = result?.parts?.count { it.cls == part.cls } ?: 1
         val pct = (part.score * 100).toInt()
-        view.findViewById<TextView>(R.id.detection).text =
-            if (same > 1) getString(R.string.detection_line_multi, pct, same) else getString(R.string.detection_line, pct)
+        // title in the UI language, the other language underneath (technicians look parts up in both)
+        openComponentSheet(
+            modelKey = part.name,
+            title = info?.name?.get(vi)?.ifBlank { null } ?: part.label(vi),
+            subtitle = info?.name?.get(!vi)?.ifBlank { null } ?: part.label(!vi),
+            status = if (same > 1) getString(R.string.detection_line_multi, pct, same) else getString(R.string.detection_line, pct),
+            info = info,
+        )
+    }
+
+    /**
+     * Sheet for a component of the knowledge table (or a detector class) opened from the error-code panel or the 3D
+     * library: works without a photo and for components the model cannot detect, where the 3D model is the main help.
+     */
+    private fun show3D(key: String, codes: List<String> = emptyList()) {
+        val vi = isVi()
+        val lang = lang()
+        val ref = dtcTable?.components?.get(key)
+        val info = components[ref?.detectorClass ?: key]
+        val detectable = ref?.detectorClass != null || (ref == null && detector?.config?.names?.contains(key) == true)
+        val status = getString(if (detectable) R.string.model_status_detectable else R.string.model_status_not_detectable) +
+            if (codes.isEmpty()) "" else "\n" + getString(R.string.model_status_codes, codes.joinToString(", "))
+        val tableCodes = dtcTable?.entries.orEmpty().filter { key in it.components }
+            .map { it.codes.joinToString(", ") to Bilingual(it.meaning.en, it.meaning.vi) }
+        openComponentSheet(
+            modelKey = key,
+            title = ref?.name?.get(lang) ?: info?.name?.get(vi)?.ifBlank { null } ?: key,
+            subtitle = ref?.name?.get(if (vi) "en" else "vi") ?: info?.name?.get(!vi).orEmpty(),
+            status = status,
+            info = info,
+            fallbackSummary = ref?.description?.get(lang),
+            fallbackCodes = tableCodes,
+        )
+    }
+
+    /** All components with a 3D model, in knowledge-table order; tap one to open its sheet. */
+    private fun showModelLibrary() {
+        val vi = isVi()
+        val lang = lang()
+        val table = dtcTable?.components.orEmpty()
+        val keys = (table.keys + ModelStore.available(this).sorted()).distinct().filter { ModelStore.has(this, it) }
+        val labels = keys.map { k ->
+            val ref = table[k]
+            val name = ref?.name?.get(lang) ?: components[k]?.name?.get(vi)?.ifBlank { null } ?: k
+            val detectable = ref?.detectorClass != null || (ref == null && detector?.config?.names?.contains(k) == true)
+            if (detectable) getString(R.string.models_detectable, name) else name
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.models_title)
+            .setItems(labels.toTypedArray()) { _, i -> show3D(keys[i]) }
+            .show()
+    }
+
+    /** Bottom sheet: names, status line, 3D model (when there is one) and the component information sections. */
+    private fun openComponentSheet(
+        modelKey: String?,
+        title: String,
+        subtitle: String,
+        status: String,
+        info: ComponentInfo?,
+        fallbackSummary: String? = null,
+        fallbackCodes: List<Pair<String, Bilingual>> = emptyList(),
+    ) {
+        val vi = isVi()
+        val view = layoutInflater.inflate(R.layout.sheet_component, null)
+        view.findViewById<TextView>(R.id.title).text = title
+        view.findViewById<TextView>(R.id.subtitle).text = subtitle
+        view.findViewById<TextView>(R.id.detection).text = status
         view.findViewById<View>(R.id.draft).visibility = if (info?.draft == true) View.VISIBLE else View.GONE
         val sections = view.findViewById<LinearLayout>(R.id.sections)
         fun section(title: Int, body: String) {
@@ -300,22 +369,45 @@ class MainActivity : AppCompatActivity() {
             })
         }
         fun bullets(items: List<Bilingual>) = items.joinToString("\n") { getString(R.string.bullet, it.get(vi)) }
+        fun codes(list: List<Pair<String, Bilingual>>) = list.joinToString("\n") { (code, meaning) -> getString(R.string.dtc_code_line, code, meaning.get(vi)) }
         if (info == null || info.isEmpty) {
-            section(R.string.sec_summary, getString(R.string.info_missing))
+            section(R.string.sec_summary, fallbackSummary ?: getString(R.string.info_missing))
+            section(R.string.sec_dtcs, codes(fallbackCodes))
         } else {
-            section(R.string.sec_summary, info.summaryText.get(vi))
+            section(R.string.sec_summary, info.summaryText.get(vi).ifBlank { fallbackSummary.orEmpty() })
             section(R.string.sec_function, info.functionText.get(vi))
             section(R.string.sec_location, info.locationText.get(vi))
             section(R.string.sec_checks, bullets(info.checks))
             section(R.string.sec_symptoms, bullets(info.symptoms))
-            section(R.string.sec_dtcs, info.dtcs.joinToString("\n") { (code, meaning) -> getString(R.string.dtc_code_line, code, meaning.get(vi)) })
+            section(R.string.sec_dtcs, codes(info.dtcs.ifEmpty { fallbackCodes }))
             section(R.string.sec_safety, bullets(info.safety))
         }
-        BottomSheetDialog(this).apply {
+        val dialog = BottomSheetDialog(this).apply {
             setContentView(view)
             behavior.skipCollapsed = true  // landscape tablets: the collapsed peek hides almost everything
             behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-        }.show()
+            setOnDismissListener { liveModelView = null }
+        }
+        dialog.show()
+        attachModel(view.findViewById(R.id.model3d), modelKey, dialog)
+    }
+
+    /** Load the component's 3D model (if there is one) into [box] of the open sheet. */
+    private fun attachModel(box: ViewGroup, key: String?, dialog: BottomSheetDialog) {
+        if (key == null || !ModelStore.has(this, key)) return
+        val vi = isVi()
+        ModelStore.load(this, key) { scene ->
+            runOnUiThread {
+                if (isDestroyed || !dialog.isShowing) return@runOnUiThread
+                if (scene == null) {
+                    box.addView(TextView(this).apply { setText(R.string.model3d_load_failed) })
+                    return@runOnUiThread
+                }
+                val panel = ModelPanel(box, scene, vi)
+                box.addView(panel.root)
+                liveModelView = panel.modelView
+            }
+        }
     }
 
     private fun askCodes() {
@@ -418,17 +510,42 @@ class MainActivity : AppCompatActivity() {
             }
             val best = if (st != SuspectStatus.FOUND) null
             else result?.parts?.filter { it.name == s.component.detectorClass }?.maxByOrNull { it.score }
+            val has3d = ModelStore.has(this, s.component.key)
             if (best != null) {
                 row.setBackgroundResource(ripple)
                 row.setOnClickListener { showInfo(best) }
+            } else if (has3d) {  // not in the photo (or not detectable): the 3D model shows what to look for
+                row.setBackgroundResource(ripple)
+                row.setOnClickListener { show3D(s.component.key, s.codes) }
             }
-            panel.addView(row)
+            val line = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                addView(row, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            }
+            if (has3d) line.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                setText(R.string.model_badge)
+                contentDescription = getString(R.string.model_view_3d)
+                setIconResource(R.drawable.ic_cube)
+                setOnClickListener { show3D(s.component.key, s.codes) }
+            })
+            panel.addView(line)
         }
         if (d.safety.isNotEmpty()) {
             panel.addView(text(getString(R.string.dtc_safety), titleStyle, 12))
             panel.addView(text(d.safety.joinToString("\n") { getString(R.string.bullet, it.get(lang)) }, bodyStyle, 4).boxed(true))
         }
         panel.addView(text(getString(R.string.dtc_note), smallStyle, 8))
+    }
+
+    override fun onPause() {
+        liveModelView?.onPause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        liveModelView?.onResume()
     }
 
     override fun onDestroy() {

@@ -44,4 +44,5 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.onnxruntime.android)
     testImplementation(libs.junit)
+    testImplementation(libs.json)
 }

@@ -9,12 +9,20 @@
     "en": "Battery",
     "vi": "Ắc quy"
    },
+   "description": {
+    "en": "The 12 V lead-acid battery that powers starting and electronics",
+    "vi": "Ắc quy axit-chì 12 V cấp điện cho khởi động và các thiết bị điện tử."
+   },
    "detector_class": "battery"
   },
   "battery_terminal": {
    "name": {
     "en": "Battery terminal",
     "vi": "Cọc bình ắc quy"
+   },
+   "description": {
+    "en": "The clamps on the battery posts; corrosion or looseness causes no-crank and voltage faults",
+    "vi": "Kẹp trên cọc ắc quy; cọc bị ăn mòn hoặc lỏng gây không đề được và lỗi điện áp."
    },
    "detector_class": "battery_terminal"
   },
@@ -23,12 +31,20 @@
     "en": "Fuse / relay box",
     "vi": "Hộp cầu chì / rơ-le"
    },
+   "description": {
+    "en": "Fuses and relays for fans, fuel pump, starter, lights and modules",
+    "vi": "Cầu chì và rơ-le cho quạt, bơm xăng, máy khởi động, đèn và các hộp điều khiển."
+   },
    "detector_class": "fuse_relay_box"
   },
   "coolant_reservoir": {
    "name": {
     "en": "Coolant reservoir",
     "vi": "Bình nước làm mát"
+   },
+   "description": {
+    "en": "The coolant expansion tank; shows coolant level and leaks",
+    "vi": "Bình giãn nở nước làm mát; cho biết mức nước làm mát và dấu hiệu rò rỉ."
    },
    "detector_class": "coolant_reservoir"
   },
@@ -37,12 +53,20 @@
     "en": "Radiator cap",
     "vi": "Nắp két nước"
    },
+   "description": {
+    "en": "The pressure cap on the radiator; a weak cap causes coolant loss and overheating",
+    "vi": "Nắp áp suất trên két nước; nắp yếu làm hao nước làm mát và gây quá nhiệt."
+   },
    "detector_class": "radiator_cap"
   },
   "radiator_hose": {
    "name": {
     "en": "Radiator hose",
     "vi": "Ống két nước"
+   },
+   "description": {
+    "en": "The upper and lower coolant hoses between engine and radiator; cracks and leaks cause overheating",
+    "vi": "Ống nước làm mát trên và dưới nối động cơ với két nước; nứt hoặc rò rỉ gây quá nhiệt."
    },
    "detector_class": "radiator_hose"
   },
@@ -51,12 +75,20 @@
     "en": "Brake fluid reservoir",
     "vi": "Bình dầu phanh"
    },
+   "description": {
+    "en": "The brake fluid tank on the master cylinder; low level means pad wear or a leak",
+    "vi": "Bình dầu phanh trên xi-lanh phanh chính; mức dầu thấp cho thấy má phanh mòn hoặc rò rỉ."
+   },
    "detector_class": "brake_fluid_reservoir"
   },
   "washer_fluid_reservoir": {
    "name": {
     "en": "Washer fluid reservoir",
     "vi": "Bình nước rửa kính"
+   },
+   "description": {
+    "en": "The washer fluid tank for the windshield sprayers",
+    "vi": "Bình chứa nước rửa kính cho các vòi phun kính chắn gió."
    },
    "detector_class": "washer_fluid_reservoir"
   },
@@ -65,12 +97,20 @@
     "en": "Oil filler cap",
     "vi": "Nắp châm dầu"
    },
+   "description": {
+    "en": "The cap where engine oil is added; a missing or loose cap causes vacuum leaks and oil smell",
+    "vi": "Nắp đổ dầu động cơ; thiếu nắp hoặc nắp lỏng gây lọt khí chân không và mùi dầu."
+   },
    "detector_class": "oil_filler_cap"
   },
   "oil_dipstick": {
    "name": {
     "en": "Oil dipstick",
     "vi": "Que thăm dầu"
+   },
+   "description": {
+    "en": "Used to check the engine oil level and condition",
+    "vi": "Dùng để kiểm tra mức và tình trạng dầu động cơ."
    },
    "detector_class": "oil_dipstick"
   },
@@ -79,12 +119,20 @@
     "en": "Oil filter",
     "vi": "Lọc dầu"
    },
+   "description": {
+    "en": "The engine oil filter; leaks here cause oil loss",
+    "vi": "Lọc dầu động cơ; rò rỉ tại đây làm hao dầu."
+   },
    "detector_class": "oil_filter"
   },
   "air_filter_box": {
    "name": {
     "en": "Air filter box",
     "vi": "Hộp lọc gió"
+   },
+   "description": {
+    "en": "The housing of the engine air filter; a clogged filter or open clips affect airflow",
+    "vi": "Vỏ chứa lọc gió động cơ; lọc gió bị nghẹt hoặc kẹp bị mở làm ảnh hưởng lưu lượng khí nạp."
    },
    "detector_class": "air_filter_box"
   },
@@ -93,12 +141,20 @@
     "en": "Air intake duct",
     "vi": "Ống hút gió"
    },
+   "description": {
+    "en": "The tube from the air filter to the throttle body; cracks or loose clamps let unmetered air in",
+    "vi": "Ống dẫn khí từ hộp lọc gió đến cổ họng ga; nứt hoặc cổ dê lỏng làm lọt khí không đi qua cảm biến đo."
+   },
    "detector_class": "air_intake_duct"
   },
   "maf_sensor": {
    "name": {
     "en": "MAF sensor",
     "vi": "Cảm biến lưu lượng khí (MAF)"
+   },
+   "description": {
+    "en": "Measures intake air; dirty or faulty sensors cause lean/rich mixture, hesitation and MAF codes",
+    "vi": "Đo lượng khí nạp; cảm biến bẩn hoặc hỏng gây hỗn hợp nghèo/giàu, xe hụt ga và báo mã lỗi MAF."
    },
    "detector_class": "maf_sensor"
   },
@@ -107,12 +163,20 @@
     "en": "Throttle body",
     "vi": "Cổ họng ga"
    },
+   "description": {
+    "en": "Controls intake air; carbon build-up causes rough or high idle and stalling",
+    "vi": "Điều tiết lượng khí nạp; muội than bám gây không tải rung hoặc cao và chết máy."
+   },
    "detector_class": "throttle_body"
   },
   "intake_manifold": {
    "name": {
     "en": "Intake manifold",
     "vi": "Cổ hút"
+   },
+   "description": {
+    "en": "Distributes air to the cylinders; gasket or hose leaks cause lean codes and rough idle",
+    "vi": "Phân phối khí nạp đến các xi-lanh; rò gioăng hoặc ống gây mã lỗi hỗn hợp nghèo và không tải rung."
    },
    "detector_class": "intake_manifold"
   },
@@ -121,12 +185,20 @@
     "en": "Ignition coil",
     "vi": "Bô-bin đánh lửa"
    },
+   "description": {
+    "en": "Coil-on-plug units that fire the spark plugs; a failed coil causes a misfire on one cylinder",
+    "vi": "Bô-bin gắn trên bugi, tạo tia lửa cho bugi; bô-bin hỏng gây bỏ máy ở một xi-lanh."
+   },
    "detector_class": "ignition_coil"
   },
   "alternator": {
    "name": {
     "en": "Alternator",
     "vi": "Máy phát điện"
+   },
+   "description": {
+    "en": "Charges the battery while driving; failure causes battery light and low voltage",
+    "vi": "Sạc ắc quy khi xe chạy; hỏng sẽ làm sáng đèn báo ắc quy và điện áp thấp."
    },
    "detector_class": "alternator"
   },
@@ -135,12 +207,20 @@
     "en": "ECU",
     "vi": "Hộp ECU"
    },
+   "description": {
+    "en": "The engine computer; relevant for communication codes, water intrusion or connector problems",
+    "vi": "Máy tính điều khiển động cơ; liên quan đến mã lỗi mất giao tiếp, vào nước hoặc lỗi giắc cắm."
+   },
    "detector_class": "ecu_module"
   },
   "spark_plug": {
    "name": {
     "en": "Spark plugs",
     "vi": "Bugi"
+   },
+   "description": {
+    "en": "Worn or fouled spark plugs cause misfires and hard starting",
+    "vi": "Bugi mòn hoặc bám muội gây bỏ máy và khó khởi động."
    },
    "detector_class": null
   },
@@ -149,12 +229,20 @@
     "en": "Fuel injectors",
     "vi": "Kim phun nhiên liệu"
    },
+   "description": {
+    "en": "Spray fuel into the cylinders; a clogged or leaking injector causes misfire or rich/lean running",
+    "vi": "Phun nhiên liệu vào xi-lanh; kim phun bị nghẹt hoặc rò gây bỏ máy hoặc hỗn hợp giàu/nghèo."
+   },
    "detector_class": null
   },
   "map_sensor": {
    "name": {
     "en": "Manifold absolute pressure (MAP) sensor",
     "vi": "Cảm biến áp suất tuyệt đối đường nạp (MAP)"
+   },
+   "description": {
+    "en": "Measures intake manifold pressure; faults affect fuel mixture",
+    "vi": "Đo áp suất trong cổ hút; lỗi cảm biến ảnh hưởng tỷ lệ hỗn hợp nhiên liệu."
    },
    "detector_class": null
   },
@@ -163,12 +251,20 @@
     "en": "EVAP purge valve",
     "vi": "Van xả hơi xăng EVAP"
    },
+   "description": {
+    "en": "Controls fuel vapour flow from the charcoal canister; stuck valves cause EVAP codes and hard starting after refuelling",
+    "vi": "Điều khiển dòng hơi xăng từ bình than hoạt tính; van bị kẹt gây mã lỗi EVAP và khó nổ máy sau khi đổ xăng."
+   },
    "detector_class": null
   },
   "gas_cap": {
    "name": {
     "en": "Fuel filler cap (gas cap)",
     "vi": "Nắp bình xăng"
+   },
+   "description": {
+    "en": "A loose or damaged gas cap causes EVAP leak codes; located at the fuel door, not in the engine bay",
+    "vi": "Nắp bình xăng lỏng hoặc hỏng gây mã lỗi rò rỉ EVAP; nằm ở cửa bình xăng, không ở trong khoang máy."
    },
    "detector_class": null
   },
@@ -177,12 +273,20 @@
     "en": "EGR valve",
     "vi": "Van EGR"
    },
+   "description": {
+    "en": "Recirculates exhaust gas; a clogged or stuck valve causes rough idle and EGR codes",
+    "vi": "Đưa một phần khí xả trở lại đường nạp; van bị nghẹt hoặc kẹt gây không tải rung và mã lỗi EGR."
+   },
    "detector_class": null
   },
   "o2_sensor": {
    "name": {
     "en": "Oxygen (O2) sensors",
     "vi": "Cảm biến ô-xy (O2)"
+   },
+   "description": {
+    "en": "Measure oxygen in the exhaust for fuel control and catalyst monitoring",
+    "vi": "Đo lượng ô-xy trong khí xả để điều chỉnh nhiên liệu và giám sát bộ xúc tác."
    },
    "detector_class": null
   },
@@ -191,12 +295,20 @@
     "en": "Thermostat and housing",
     "vi": "Van hằng nhiệt và vỏ"
    },
+   "description": {
+    "en": "A stuck thermostat causes overheating or a cold engine / slow warm-up",
+    "vi": "Van hằng nhiệt bị kẹt gây quá nhiệt hoặc động cơ nguội, lâu ấm máy."
+   },
    "detector_class": null
   },
   "radiator_cooling_fan": {
    "name": {
     "en": "Radiator cooling fan",
     "vi": "Quạt làm mát két nước"
+   },
+   "description": {
+    "en": "Cools the radiator at low speed; a dead fan causes overheating in traffic",
+    "vi": "Làm mát két nước khi xe chạy chậm; quạt hỏng gây quá nhiệt khi kẹt xe."
    },
    "detector_class": null
   },
@@ -205,12 +317,20 @@
     "en": "Serpentine drive belt",
     "vi": "Dây curoa tổng"
    },
+   "description": {
+    "en": "Drives alternator, water pump, A/C and power steering; a worn belt squeals or breaks",
+    "vi": "Dẫn động máy phát, bơm nước, máy nén điều hoà và bơm trợ lực; dây mòn sẽ kêu rít hoặc đứt."
+   },
    "detector_class": null
   },
   "starter_motor": {
    "name": {
     "en": "Starter motor",
     "vi": "Máy khởi động (củ đề)"
+   },
+   "description": {
+    "en": "Cranks the engine; failure causes a click or no crank with a good battery",
+    "vi": "Quay khởi động động cơ; hỏng sẽ chỉ nghe tiếng tách hoặc không đề được dù ắc quy tốt."
    },
    "detector_class": null
   },
@@ -219,6 +339,10 @@
     "en": "PCV valve and hoses",
     "vi": "Van PCV và ống"
    },
+   "description": {
+    "en": "Crankcase ventilation; a broken hose causes vacuum leaks, whistling and lean codes",
+    "vi": "Thông hơi các-te; ống bị vỡ gây lọt khí chân không, tiếng rít và mã lỗi hỗn hợp nghèo."
+   },
    "detector_class": null
   },
   "cam_crank_sensor": {
@@ -226,12 +350,20 @@
     "en": "Camshaft / crankshaft position sensors",
     "vi": "Cảm biến vị trí trục cam / trục khuỷu"
    },
+   "description": {
+    "en": "Engine position sensors; failure causes no-start or stalling",
+    "vi": "Cảm biến vị trí động cơ; hỏng gây không nổ máy hoặc chết máy."
+   },
    "detector_class": null
   },
   "power_steering_reservoir": {
    "name": {
     "en": "Power steering reservoir",
     "vi": "Bình dầu trợ lực lái"
+   },
+   "description": {
+    "en": "Hydraulic power steering fluid tank; low fluid causes whining and heavy steering",
+    "vi": "Bình chứa dầu trợ lực lái thuỷ lực; thiếu dầu gây kêu rít và tay lái nặng."
    },
    "detector_class": null
   }

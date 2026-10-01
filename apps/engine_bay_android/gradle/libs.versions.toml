@@ -5,6 +5,7 @@ material = "1.13.0"
 activity = "1.13.0"
 onnxruntime = "1.30.0"
 junit = "4.13.2"
+json = "20240303"
 
 [libraries]
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -12,6 +13,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 onnxruntime-android = { group = "com.microsoft.onnxruntime", name = "onnxruntime-android", version.ref = "onnxruntime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+json = { group = "org.json", name = "json", version.ref = "json" }  # real org.json for JVM unit tests (android.jar has stubs)
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

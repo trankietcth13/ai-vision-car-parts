@@ -25,7 +25,8 @@ object DiagnosisTable {
         val comps = root.getJSONObject("components")
         val components = comps.keys().asSequence().associateWith { key ->
             val c = comps.getJSONObject(key)
-            ComponentRef(key, text(c.getJSONObject("name")), if (c.isNull("detector_class")) null else c.getString("detector_class"))
+            ComponentRef(key, text(c.getJSONObject("name")), if (c.isNull("detector_class")) null else c.getString("detector_class"),
+                c.optJSONObject("description")?.let(::text))
         }
         val dtc = root.getJSONArray("dtc")
         val entries = List(dtc.length()) { i ->

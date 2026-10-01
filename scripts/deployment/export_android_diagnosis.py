@@ -2,7 +2,7 @@
 
 Reads configs/diagnosis_knowledge.yaml (the same table src/jev/diagnosis_triage.py uses for its exact DTC lookup),
 its Vietnamese companion configs/diagnosis_knowledge_vi.yaml and the app's assets/config.json (class names), and writes:
-  app/src/main/assets/diagnosis.json                       DTC table + component names + detector class or null;
+  app/src/main/assets/diagnosis.json                       DTC table + component names, descriptions, detector class or null;
                                                            every text is {"en": ..., "vi": ...}
   app/src/test/resources/fixtures/dtc_lookup.json          Python lookup_dtc() results for a set of codes; the Kotlin
                                                            unit test checks that the app's lookup gives the same answer
@@ -76,7 +76,8 @@ def build(knowledge: dict, vi: dict, config: dict) -> dict:
             name = dict(vi["display_names"][det])
         else:
             name = {"en": c["name"][:1].upper() + c["name"][1:], "vi": vi["components"][key]["name"]}
-        components[key] = {"name": name, "detector_class": det}
+        desc = {"en": c["description"][:1].upper() + c["description"][1:], "vi": vi["components"][key]["description"]}
+        components[key] = {"name": name, "description": desc, "detector_class": det}
     entries = []
     for d in knowledge["dtc"]:
         missing = [c for c in d["components"] if c not in components]
