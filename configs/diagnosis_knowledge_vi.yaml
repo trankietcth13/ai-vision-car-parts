@@ -1,0 +1,115 @@
+# Vietnamese companion of configs/diagnosis_knowledge.yaml (same keys), plus English/Vietnamese display names.
+# Every user-facing text in the apps must exist in both languages: English comes from diagnosis_knowledge.yaml
+# (or display_names below), Vietnamese from this file. These are translations of the draft knowledge, not reviewed
+# technical content; the reviewed component information lives in apps/engine_bay_android/.../components.json.
+
+# Short names for labels on the photo and in lists (detector classes).
+display_names:
+  battery: {en: "Battery", vi: "Ắc quy"}
+  battery_terminal: {en: "Battery terminal", vi: "Cọc bình ắc quy"}
+  fuse_relay_box: {en: "Fuse / relay box", vi: "Hộp cầu chì / rơ-le"}
+  coolant_reservoir: {en: "Coolant reservoir", vi: "Bình nước làm mát"}
+  radiator_cap: {en: "Radiator cap", vi: "Nắp két nước"}
+  brake_fluid_reservoir: {en: "Brake fluid reservoir", vi: "Bình dầu phanh"}
+  washer_fluid_reservoir: {en: "Washer fluid reservoir", vi: "Bình nước rửa kính"}
+  engine_cover: {en: "Engine cover", vi: "Nắp che động cơ"}
+  oil_filler_cap: {en: "Oil filler cap", vi: "Nắp châm dầu"}
+  oil_dipstick: {en: "Oil dipstick", vi: "Que thăm dầu"}
+  air_filter_box: {en: "Air filter box", vi: "Hộp lọc gió"}
+  air_intake_duct: {en: "Air intake duct", vi: "Ống hút gió"}
+  maf_sensor: {en: "MAF sensor", vi: "Cảm biến lưu lượng khí (MAF)"}
+  throttle_body: {en: "Throttle body", vi: "Cổ họng ga"}
+  alternator: {en: "Alternator", vi: "Máy phát điện"}
+  ignition_coil: {en: "Ignition coil", vi: "Bô-bin đánh lửa"}
+  radiator_hose: {en: "Radiator hose", vi: "Ống két nước"}
+  ecu_module: {en: "ECU", vi: "Hộp ECU"}
+  multimeter_diagnostic_tool: {en: "Multimeter / scan tool", vi: "Đồng hồ đo / thiết bị chẩn đoán"}
+  intake_manifold: {en: "Intake manifold", vi: "Cổ hút"}
+  oil_filter: {en: "Oil filter", vi: "Lọc dầu"}
+
+# Classes that diagnosis_knowledge.yaml does not describe (not vehicle faults, but still need both languages).
+extra_components:
+  engine_cover:
+    en: "Plastic cover over the top of the engine; it has to be removed to reach the parts underneath."
+    vi: "Nắp nhựa che phía trên động cơ; cần tháo ra để tiếp cận các chi tiết bên dưới."
+  multimeter_diagnostic_tool:
+    en: "A test instrument (multimeter or scan tool) in the photo, not a part of the vehicle."
+    vi: "Dụng cụ đo kiểm (đồng hồ vạn năng hoặc máy chẩn đoán) xuất hiện trong ảnh, không phải chi tiết của xe."
+
+systems:
+  air_intake_metering: "Nạp khí và đo lưu lượng khí: lọc gió, ống hút gió, cảm biến MAF/MAP, cổ họng ga, lọt khí chân không, hỗn hợp nghèo/giàu do khí không được đo"
+  fuel_delivery: "Cung cấp nhiên liệu: bơm xăng, áp suất nhiên liệu, kim phun, mùi xăng hoặc rò xăng"
+  ignition_misfire: "Đánh lửa và bỏ máy: bugi, bô-bin, động cơ rung giật, chạy không êm, đèn check-engine nhấp nháy"
+  emissions_control: "Kiểm soát khí thải: hệ thống EVAP, nắp bình xăng, EGR, cảm biến ô-xy, bộ xúc tác"
+  cooling: "Làm mát động cơ: mức nước làm mát hoặc rò rỉ, quá nhiệt, kim nhiệt độ cao hoặc thấp, van hằng nhiệt, két nước, quạt, ống nước"
+  charging_starting: "Sạc và khởi động: ắc quy 12 V, cọc bình, máy phát điện, máy khởi động, đèn báo ắc quy, xe không đề được"
+  lubrication: "Bôi trơn động cơ: mức dầu, đèn áp suất dầu, rò dầu, hao dầu"
+  brakes: "Phanh: cảm giác bàn đạp phanh, dầu phanh, đèn cảnh báo phanh, đèn ABS, tiếng kêu khi phanh"
+  steering: "Lái: tay lái nặng, dầu trợ lực lái, tiếng rít khi đánh lái"
+  transmission: "Hộp số: sang số có vấn đề, trượt số, dầu hộp số"
+  hvac: "Điều hoà và sưởi: điều hoà không lạnh, sưởi không ấm, quạt gió"
+  body_electrical: "Điện thân xe: đèn, kính, khoá, cầu chì và rơ-le cho phụ kiện"
+  unclear: "Mô tả không chỉ ra hệ thống cụ thể nào trên xe"
+
+# name / description of every component in diagnosis_knowledge.yaml
+components:
+  battery: {name: "Ắc quy 12 V", description: "Ắc quy axit-chì 12 V cấp điện cho khởi động và các thiết bị điện tử."}
+  battery_terminal: {name: "Cọc bình và kẹp cáp ắc quy", description: "Kẹp trên cọc ắc quy; cọc bị ăn mòn hoặc lỏng gây không đề được và lỗi điện áp."}
+  fuse_relay_box: {name: "Hộp cầu chì và rơ-le trong khoang máy", description: "Cầu chì và rơ-le cho quạt, bơm xăng, máy khởi động, đèn và các hộp điều khiển."}
+  coolant_reservoir: {name: "Bình nước làm mát", description: "Bình giãn nở nước làm mát; cho biết mức nước làm mát và dấu hiệu rò rỉ."}
+  radiator_cap: {name: "Nắp áp suất két nước", description: "Nắp áp suất trên két nước; nắp yếu làm hao nước làm mát và gây quá nhiệt."}
+  radiator_hose: {name: "Ống két nước", description: "Ống nước làm mát trên và dưới nối động cơ với két nước; nứt hoặc rò rỉ gây quá nhiệt."}
+  brake_fluid_reservoir: {name: "Bình dầu phanh", description: "Bình dầu phanh trên xi-lanh phanh chính; mức dầu thấp cho thấy má phanh mòn hoặc rò rỉ."}
+  washer_fluid_reservoir: {name: "Bình nước rửa kính", description: "Bình chứa nước rửa kính cho các vòi phun kính chắn gió."}
+  oil_filler_cap: {name: "Nắp châm dầu động cơ", description: "Nắp đổ dầu động cơ; thiếu nắp hoặc nắp lỏng gây lọt khí chân không và mùi dầu."}
+  oil_dipstick: {name: "Que thăm dầu động cơ", description: "Dùng để kiểm tra mức và tình trạng dầu động cơ."}
+  oil_filter: {name: "Lọc dầu động cơ", description: "Lọc dầu động cơ; rò rỉ tại đây làm hao dầu."}
+  air_filter_box: {name: "Hộp lọc gió", description: "Vỏ chứa lọc gió động cơ; lọc gió bị nghẹt hoặc kẹp bị mở làm ảnh hưởng lưu lượng khí nạp."}
+  air_intake_duct: {name: "Ống hút gió", description: "Ống dẫn khí từ hộp lọc gió đến cổ họng ga; nứt hoặc cổ dê lỏng làm lọt khí không đi qua cảm biến đo."}
+  maf_sensor: {name: "Cảm biến lưu lượng khí nạp (MAF)", description: "Đo lượng khí nạp; cảm biến bẩn hoặc hỏng gây hỗn hợp nghèo/giàu, xe hụt ga và báo mã lỗi MAF."}
+  throttle_body: {name: "Cổ họng ga", description: "Điều tiết lượng khí nạp; muội than bám gây không tải rung hoặc cao và chết máy."}
+  intake_manifold: {name: "Cổ hút", description: "Phân phối khí nạp đến các xi-lanh; rò gioăng hoặc ống gây mã lỗi hỗn hợp nghèo và không tải rung."}
+  ignition_coil: {name: "Bô-bin đánh lửa", description: "Bô-bin gắn trên bugi, tạo tia lửa cho bugi; bô-bin hỏng gây bỏ máy ở một xi-lanh."}
+  alternator: {name: "Máy phát điện", description: "Sạc ắc quy khi xe chạy; hỏng sẽ làm sáng đèn báo ắc quy và điện áp thấp."}
+  ecu_module: {name: "Hộp điều khiển động cơ (ECU)", description: "Máy tính điều khiển động cơ; liên quan đến mã lỗi mất giao tiếp, vào nước hoặc lỗi giắc cắm."}
+  spark_plug: {name: "Bugi", description: "Bugi mòn hoặc bám muội gây bỏ máy và khó khởi động."}
+  fuel_injector: {name: "Kim phun nhiên liệu", description: "Phun nhiên liệu vào xi-lanh; kim phun bị nghẹt hoặc rò gây bỏ máy hoặc hỗn hợp giàu/nghèo."}
+  map_sensor: {name: "Cảm biến áp suất tuyệt đối đường nạp (MAP)", description: "Đo áp suất trong cổ hút; lỗi cảm biến ảnh hưởng tỷ lệ hỗn hợp nhiên liệu."}
+  evap_purge_valve: {name: "Van xả hơi xăng EVAP", description: "Điều khiển dòng hơi xăng từ bình than hoạt tính; van bị kẹt gây mã lỗi EVAP và khó nổ máy sau khi đổ xăng."}
+  gas_cap: {name: "Nắp bình xăng", description: "Nắp bình xăng lỏng hoặc hỏng gây mã lỗi rò rỉ EVAP; nằm ở cửa bình xăng, không ở trong khoang máy."}
+  egr_valve: {name: "Van EGR", description: "Đưa một phần khí xả trở lại đường nạp; van bị nghẹt hoặc kẹt gây không tải rung và mã lỗi EGR."}
+  o2_sensor: {name: "Cảm biến ô-xy (O2)", description: "Đo lượng ô-xy trong khí xả để điều chỉnh nhiên liệu và giám sát bộ xúc tác."}
+  thermostat_housing: {name: "Van hằng nhiệt và vỏ", description: "Van hằng nhiệt bị kẹt gây quá nhiệt hoặc động cơ nguội, lâu ấm máy."}
+  radiator_cooling_fan: {name: "Quạt làm mát két nước", description: "Làm mát két nước khi xe chạy chậm; quạt hỏng gây quá nhiệt khi kẹt xe."}
+  serpentine_belt: {name: "Dây curoa tổng", description: "Dẫn động máy phát, bơm nước, máy nén điều hoà và bơm trợ lực; dây mòn sẽ kêu rít hoặc đứt."}
+  starter_motor: {name: "Máy khởi động (củ đề)", description: "Quay khởi động động cơ; hỏng sẽ chỉ nghe tiếng tách hoặc không đề được dù ắc quy tốt."}
+  pcv_valve: {name: "Van PCV và ống", description: "Thông hơi các-te; ống bị vỡ gây lọt khí chân không, tiếng rít và mã lỗi hỗn hợp nghèo."}
+  cam_crank_sensor: {name: "Cảm biến vị trí trục cam / trục khuỷu", description: "Cảm biến vị trí động cơ; hỏng gây không nổ máy hoặc chết máy."}
+  power_steering_reservoir: {name: "Bình dầu trợ lực lái", description: "Bình chứa dầu trợ lực lái thuỷ lực; thiếu dầu gây kêu rít và tay lái nặng."}
+
+# DTC meanings, keyed by the codes of the diagnosis_knowledge.yaml entry joined with "/"
+dtc:
+  "P0100-P0103": "Lỗi mạch hoặc dải đo/hiệu suất của cảm biến lưu lượng khí nạp (MAF)"
+  "P0106-P0108": "Lỗi dải đo/hiệu suất hoặc mạch của cảm biến áp suất tuyệt đối đường nạp (MAP)"
+  "P0115-P0119": "Lỗi mạch cảm biến nhiệt độ nước làm mát động cơ"
+  "P0121-P0123/P2135": "Lỗi dải đo hoặc tương quan của cảm biến vị trí bướm ga"
+  "P0128": "Nhiệt độ nước làm mát thấp hơn nhiệt độ điều tiết của van hằng nhiệt"
+  "P0130-P0167": "Lỗi mạch hoặc bộ sấy của cảm biến ô-xy"
+  "P0171/P0174": "Hỗn hợp quá nghèo (dãy 1 / dãy 2)"
+  "P0172/P0175": "Hỗn hợp quá giàu (dãy 1 / dãy 2)"
+  "P0201-P0208": "Lỗi mạch kim phun ở một xi-lanh"
+  "P0217": "Động cơ quá nhiệt"
+  "P0300": "Phát hiện bỏ máy ngẫu nhiên hoặc ở nhiều xi-lanh"
+  "P0301-P0308": "Phát hiện bỏ máy ở một xi-lanh cụ thể"
+  "P0335-P0349": "Lỗi mạch cảm biến vị trí trục khuỷu hoặc trục cam"
+  "P0351-P0358": "Lỗi mạch sơ cấp/thứ cấp của bô-bin đánh lửa"
+  "P0400-P0404": "Lỗi lưu lượng hoặc mạch của hệ thống tuần hoàn khí xả (EGR)"
+  "P0420/P0430": "Hiệu suất bộ xúc tác dưới ngưỡng"
+  "P0440-P0446/P0449/P0451-P0453": "Hệ thống kiểm soát hơi xăng (EVAP) hoạt động không đúng"
+  "P0455/P0456/P0457": "Phát hiện rò rỉ hệ thống EVAP (rò lớn / rò nhỏ / nắp bình xăng lỏng)"
+  "P0505-P0507": "Lỗi hệ thống điều khiển không tải hoặc tốc độ không tải"
+  "P0520-P0524": "Lỗi cảm biến áp suất dầu động cơ hoặc áp suất dầu thấp"
+  "P0562/P0563": "Điện áp hệ thống thấp / cao"
+  "P0600-P0606": "Lỗi bên trong hoặc lỗi giao tiếp của hộp điều khiển động cơ"
+  "P0620-P0622": "Lỗi mạch điều khiển máy phát điện"
+  "U0100/U0101": "Mất giao tiếp với hộp điều khiển động cơ / hộp số"

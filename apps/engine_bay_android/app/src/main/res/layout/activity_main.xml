@@ -110,6 +110,23 @@
                     android:text="@string/samples" />
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dtc"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:enabled="false"
+                android:text="@string/dtc_button" />
+
+            <!-- filled by MainActivity.renderDiagnosis() -->
+            <LinearLayout
+                android:id="@+id/diagnosis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/partsTitle"
                 android:layout_width="match_parent"

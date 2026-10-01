@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vietnamese UI strings (English defaults in values/strings.xml). -->
+<resources>
+    <string name="dtc_button">Nhập mã lỗi (DTC)</string>
+    <string name="dtc_title">Chẩn đoán theo mã lỗi</string>
+    <string name="dtc_title_codes">Chẩn đoán theo mã lỗi: %1$s</string>
+    <string name="dtc_hint">Ví dụ: P0301, P0171</string>
+    <string name="dtc_help">Nhập một hoặc nhiều mã lỗi đọc từ máy chẩn đoán OBD2. Tra cứu chạy ngay trên máy, không cần mạng.</string>
+    <string name="dtc_lookup">Tra cứu</string>
+    <string name="dtc_clear">Xoá</string>
+    <string name="cancel">Huỷ</string>
+    <string name="dtc_inspect">Cần kiểm tra</string>
+    <string name="dtc_safety">Lưu ý an toàn</string>
+    <string name="dtc_urgency_stop">Nên dừng xe / tắt máy và kiểm tra trước khi chạy tiếp</string>
+    <string name="dtc_urgency_soon">Nên kiểm tra sớm, trong vài ngày</string>
+    <string name="dtc_urgency_check">Kiểm tra khi thuận tiện</string>
+    <string name="dtc_found">có trong ảnh · chạm để xem</string>
+    <string name="dtc_not_found">chưa thấy trong ảnh · chụp gần hơn, góc khác hoặc hạ ngưỡng tin cậy</string>
+    <string name="dtc_not_detectable">model chưa nhận diện được từ ảnh · kiểm tra trực tiếp</string>
+    <string name="dtc_no_photo">chụp ảnh khoang máy để định vị</string>
+    <string name="dtc_unknown">Không có trong bảng mã: %1$s (có thể là mã riêng của hãng)</string>
+    <string name="dtc_none">Không có mã nào trong bảng mã chung.</string>
+    <string name="dtc_note">Bảng mã OBD-II chung cho động cơ xăng. Mức khẩn cấp và lưu ý an toàn là bản nháp, chưa được chuyên gia duyệt.</string>
+    <string name="dtc_part_tagged">%1$s · cần kiểm tra</string>
+</resources>

@@ -1,0 +1,687 @@
+{
+ "schema_version": 2,
+ "source": "configs/diagnosis_knowledge.yaml via scripts/deployment/export_android_diagnosis.py",
+ "draft": true,
+ "note": "Generic OBD-II meanings for gasoline engines; urgency and safety notes are drafts to be reviewed.",
+ "components": {
+  "battery": {
+   "name": {
+    "en": "Battery",
+    "vi": "Ắc quy"
+   },
+   "detector_class": "battery"
+  },
+  "battery_terminal": {
+   "name": {
+    "en": "Battery terminal",
+    "vi": "Cọc bình ắc quy"
+   },
+   "detector_class": "battery_terminal"
+  },
+  "fuse_relay_box": {
+   "name": {
+    "en": "Fuse / relay box",
+    "vi": "Hộp cầu chì / rơ-le"
+   },
+   "detector_class": "fuse_relay_box"
+  },
+  "coolant_reservoir": {
+   "name": {
+    "en": "Coolant reservoir",
+    "vi": "Bình nước làm mát"
+   },
+   "detector_class": "coolant_reservoir"
+  },
+  "radiator_cap": {
+   "name": {
+    "en": "Radiator cap",
+    "vi": "Nắp két nước"
+   },
+   "detector_class": "radiator_cap"
+  },
+  "radiator_hose": {
+   "name": {
+    "en": "Radiator hose",
+    "vi": "Ống két nước"
+   },
+   "detector_class": "radiator_hose"
+  },
+  "brake_fluid_reservoir": {
+   "name": {
+    "en": "Brake fluid reservoir",
+    "vi": "Bình dầu phanh"
+   },
+   "detector_class": "brake_fluid_reservoir"
+  },
+  "washer_fluid_reservoir": {
+   "name": {
+    "en": "Washer fluid reservoir",
+    "vi": "Bình nước rửa kính"
+   },
+   "detector_class": "washer_fluid_reservoir"
+  },
+  "oil_filler_cap": {
+   "name": {
+    "en": "Oil filler cap",
+    "vi": "Nắp châm dầu"
+   },
+   "detector_class": "oil_filler_cap"
+  },
+  "oil_dipstick": {
+   "name": {
+    "en": "Oil dipstick",
+    "vi": "Que thăm dầu"
+   },
+   "detector_class": "oil_dipstick"
+  },
+  "oil_filter": {
+   "name": {
+    "en": "Oil filter",
+    "vi": "Lọc dầu"
+   },
+   "detector_class": "oil_filter"
+  },
+  "air_filter_box": {
+   "name": {
+    "en": "Air filter box",
+    "vi": "Hộp lọc gió"
+   },
+   "detector_class": "air_filter_box"
+  },
+  "air_intake_duct": {
+   "name": {
+    "en": "Air intake duct",
+    "vi": "Ống hút gió"
+   },
+   "detector_class": "air_intake_duct"
+  },
+  "maf_sensor": {
+   "name": {
+    "en": "MAF sensor",
+    "vi": "Cảm biến lưu lượng khí (MAF)"
+   },
+   "detector_class": "maf_sensor"
+  },
+  "throttle_body": {
+   "name": {
+    "en": "Throttle body",
+    "vi": "Cổ họng ga"
+   },
+   "detector_class": "throttle_body"
+  },
+  "intake_manifold": {
+   "name": {
+    "en": "Intake manifold",
+    "vi": "Cổ hút"
+   },
+   "detector_class": "intake_manifold"
+  },
+  "ignition_coil": {
+   "name": {
+    "en": "Ignition coil",
+    "vi": "Bô-bin đánh lửa"
+   },
+   "detector_class": "ignition_coil"
+  },
+  "alternator": {
+   "name": {
+    "en": "Alternator",
+    "vi": "Máy phát điện"
+   },
+   "detector_class": "alternator"
+  },
+  "ecu_module": {
+   "name": {
+    "en": "ECU",
+    "vi": "Hộp ECU"
+   },
+   "detector_class": "ecu_module"
+  },
+  "spark_plug": {
+   "name": {
+    "en": "Spark plugs",
+    "vi": "Bugi"
+   },
+   "detector_class": null
+  },
+  "fuel_injector": {
+   "name": {
+    "en": "Fuel injectors",
+    "vi": "Kim phun nhiên liệu"
+   },
+   "detector_class": null
+  },
+  "map_sensor": {
+   "name": {
+    "en": "Manifold absolute pressure (MAP) sensor",
+    "vi": "Cảm biến áp suất tuyệt đối đường nạp (MAP)"
+   },
+   "detector_class": null
+  },
+  "evap_purge_valve": {
+   "name": {
+    "en": "EVAP purge valve",
+    "vi": "Van xả hơi xăng EVAP"
+   },
+   "detector_class": null
+  },
+  "gas_cap": {
+   "name": {
+    "en": "Fuel filler cap (gas cap)",
+    "vi": "Nắp bình xăng"
+   },
+   "detector_class": null
+  },
+  "egr_valve": {
+   "name": {
+    "en": "EGR valve",
+    "vi": "Van EGR"
+   },
+   "detector_class": null
+  },
+  "o2_sensor": {
+   "name": {
+    "en": "Oxygen (O2) sensors",
+    "vi": "Cảm biến ô-xy (O2)"
+   },
+   "detector_class": null
+  },
+  "thermostat_housing": {
+   "name": {
+    "en": "Thermostat and housing",
+    "vi": "Van hằng nhiệt và vỏ"
+   },
+   "detector_class": null
+  },
+  "radiator_cooling_fan": {
+   "name": {
+    "en": "Radiator cooling fan",
+    "vi": "Quạt làm mát két nước"
+   },
+   "detector_class": null
+  },
+  "serpentine_belt": {
+   "name": {
+    "en": "Serpentine drive belt",
+    "vi": "Dây curoa tổng"
+   },
+   "detector_class": null
+  },
+  "starter_motor": {
+   "name": {
+    "en": "Starter motor",
+    "vi": "Máy khởi động (củ đề)"
+   },
+   "detector_class": null
+  },
+  "pcv_valve": {
+   "name": {
+    "en": "PCV valve and hoses",
+    "vi": "Van PCV và ống"
+   },
+   "detector_class": null
+  },
+  "cam_crank_sensor": {
+   "name": {
+    "en": "Camshaft / crankshaft position sensors",
+    "vi": "Cảm biến vị trí trục cam / trục khuỷu"
+   },
+   "detector_class": null
+  },
+  "power_steering_reservoir": {
+   "name": {
+    "en": "Power steering reservoir",
+    "vi": "Bình dầu trợ lực lái"
+   },
+   "detector_class": null
+  }
+ },
+ "dtc": [
+  {
+   "codes": [
+    "P0100-P0103"
+   ],
+   "meaning": {
+    "en": "Mass air flow sensor circuit or range/performance problem",
+    "vi": "Lỗi mạch hoặc dải đo/hiệu suất của cảm biến lưu lượng khí nạp (MAF)"
+   },
+   "components": [
+    "maf_sensor",
+    "air_intake_duct",
+    "air_filter_box"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0106-P0108"
+   ],
+   "meaning": {
+    "en": "Manifold absolute pressure sensor range/performance or circuit problem",
+    "vi": "Lỗi dải đo/hiệu suất hoặc mạch của cảm biến áp suất tuyệt đối đường nạp (MAP)"
+   },
+   "components": [
+    "map_sensor",
+    "intake_manifold",
+    "pcv_valve"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0115-P0119"
+   ],
+   "meaning": {
+    "en": "Engine coolant temperature sensor circuit problem",
+    "vi": "Lỗi mạch cảm biến nhiệt độ nước làm mát động cơ"
+   },
+   "components": [
+    "thermostat_housing",
+    "coolant_reservoir"
+   ],
+   "urgency": "check",
+   "safety": [
+    {
+     "en": "Open the radiator or coolant reservoir cap only when the engine is cold: hot coolant under pressure can spray out and burn.",
+     "vi": "Chỉ mở nắp két nước hoặc bình nước phụ khi máy đã nguội: nước làm mát nóng có áp suất có thể phun ra gây bỏng."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0121-P0123",
+    "P2135"
+   ],
+   "meaning": {
+    "en": "Throttle position sensor range or correlation problem",
+    "vi": "Lỗi dải đo hoặc tương quan của cảm biến vị trí bướm ga"
+   },
+   "components": [
+    "throttle_body"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0128"
+   ],
+   "meaning": {
+    "en": "Coolant temperature below thermostat regulating temperature",
+    "vi": "Nhiệt độ nước làm mát thấp hơn nhiệt độ điều tiết của van hằng nhiệt"
+   },
+   "components": [
+    "thermostat_housing",
+    "coolant_reservoir",
+    "radiator_hose"
+   ],
+   "urgency": "check",
+   "safety": [
+    {
+     "en": "Open the radiator or coolant reservoir cap only when the engine is cold: hot coolant under pressure can spray out and burn.",
+     "vi": "Chỉ mở nắp két nước hoặc bình nước phụ khi máy đã nguội: nước làm mát nóng có áp suất có thể phun ra gây bỏng."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0130-P0167"
+   ],
+   "meaning": {
+    "en": "Oxygen sensor circuit or heater problem",
+    "vi": "Lỗi mạch hoặc bộ sấy của cảm biến ô-xy"
+   },
+   "components": [
+    "o2_sensor",
+    "fuse_relay_box"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0171",
+    "P0174"
+   ],
+   "meaning": {
+    "en": "System too lean (bank 1 / bank 2)",
+    "vi": "Hỗn hợp quá nghèo (dãy 1 / dãy 2)"
+   },
+   "components": [
+    "air_intake_duct",
+    "intake_manifold",
+    "pcv_valve",
+    "maf_sensor",
+    "fuel_injector"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0172",
+    "P0175"
+   ],
+   "meaning": {
+    "en": "System too rich (bank 1 / bank 2)",
+    "vi": "Hỗn hợp quá giàu (dãy 1 / dãy 2)"
+   },
+   "components": [
+    "maf_sensor",
+    "fuel_injector",
+    "evap_purge_valve",
+    "air_filter_box"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0201-P0208"
+   ],
+   "meaning": {
+    "en": "Fuel injector circuit problem on one cylinder",
+    "vi": "Lỗi mạch kim phun ở một xi-lanh"
+   },
+   "components": [
+    "fuel_injector"
+   ],
+   "urgency": "soon",
+   "safety": [
+    {
+     "en": "The fuel line is under pressure: do not open it before relieving the pressure; if you smell or see leaking fuel, do not start the engine and keep sparks and flames away.",
+     "vi": "Đường nhiên liệu có áp suất: không tháo ống khi chưa xả áp; thấy mùi xăng hoặc rò xăng thì không nổ máy, tránh lửa và tia điện."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0217"
+   ],
+   "meaning": {
+    "en": "Engine overheat condition",
+    "vi": "Động cơ quá nhiệt"
+   },
+   "components": [
+    "coolant_reservoir",
+    "radiator_hose",
+    "radiator_cap",
+    "radiator_cooling_fan",
+    "thermostat_housing"
+   ],
+   "urgency": "stop",
+   "safety": [
+    {
+     "en": "Engine overheating: stop in a safe place and switch the engine off.",
+     "vi": "Máy quá nhiệt: dừng xe ở chỗ an toàn và tắt máy."
+    },
+    {
+     "en": "Open the radiator or coolant reservoir cap only when the engine is cold: hot coolant under pressure can spray out and burn.",
+     "vi": "Chỉ mở nắp két nước hoặc bình nước phụ khi máy đã nguội: nước làm mát nóng có áp suất có thể phun ra gây bỏng."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0300"
+   ],
+   "meaning": {
+    "en": "Random or multiple cylinder misfire detected",
+    "vi": "Phát hiện bỏ máy ngẫu nhiên hoặc ở nhiều xi-lanh"
+   },
+   "components": [
+    "spark_plug",
+    "ignition_coil",
+    "intake_manifold",
+    "fuel_injector"
+   ],
+   "urgency": "soon",
+   "safety": [
+    {
+     "en": "If the check-engine light is flashing: reduce load and stop soon; unburnt fuel can damage the catalytic converter.",
+     "vi": "Nếu đèn check engine nhấp nháy: giảm tải và dừng xe sớm, nhiên liệu chưa cháy có thể làm hỏng bộ xúc tác."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0301-P0308"
+   ],
+   "meaning": {
+    "en": "Misfire detected on one specific cylinder",
+    "vi": "Phát hiện bỏ máy ở một xi-lanh cụ thể"
+   },
+   "components": [
+    "ignition_coil",
+    "spark_plug",
+    "fuel_injector"
+   ],
+   "urgency": "soon",
+   "safety": [
+    {
+     "en": "If the check-engine light is flashing: reduce load and stop soon; unburnt fuel can damage the catalytic converter.",
+     "vi": "Nếu đèn check engine nhấp nháy: giảm tải và dừng xe sớm, nhiên liệu chưa cháy có thể làm hỏng bộ xúc tác."
+    },
+    {
+     "en": "Switch the engine off before removing ignition coils or spark plugs: the ignition high voltage can give a shock.",
+     "vi": "Tắt máy trước khi tháo bô-bin hoặc bugi: điện cao áp đánh lửa có thể gây giật."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0335-P0349"
+   ],
+   "meaning": {
+    "en": "Crankshaft or camshaft position sensor circuit problem",
+    "vi": "Lỗi mạch cảm biến vị trí trục khuỷu hoặc trục cam"
+   },
+   "components": [
+    "cam_crank_sensor"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0351-P0358"
+   ],
+   "meaning": {
+    "en": "Ignition coil primary/secondary circuit problem",
+    "vi": "Lỗi mạch sơ cấp/thứ cấp của bô-bin đánh lửa"
+   },
+   "components": [
+    "ignition_coil"
+   ],
+   "urgency": "soon",
+   "safety": [
+    {
+     "en": "Switch the engine off before removing ignition coils or spark plugs: the ignition high voltage can give a shock.",
+     "vi": "Tắt máy trước khi tháo bô-bin hoặc bugi: điện cao áp đánh lửa có thể gây giật."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0400-P0404"
+   ],
+   "meaning": {
+    "en": "Exhaust gas recirculation flow or circuit problem",
+    "vi": "Lỗi lưu lượng hoặc mạch của hệ thống tuần hoàn khí xả (EGR)"
+   },
+   "components": [
+    "egr_valve"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0420",
+    "P0430"
+   ],
+   "meaning": {
+    "en": "Catalyst system efficiency below threshold",
+    "vi": "Hiệu suất bộ xúc tác dưới ngưỡng"
+   },
+   "components": [
+    "o2_sensor"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0440-P0446",
+    "P0449",
+    "P0451-P0453"
+   ],
+   "meaning": {
+    "en": "Evaporative emission system malfunction",
+    "vi": "Hệ thống kiểm soát hơi xăng (EVAP) hoạt động không đúng"
+   },
+   "components": [
+    "evap_purge_valve",
+    "gas_cap"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0455",
+    "P0456",
+    "P0457"
+   ],
+   "meaning": {
+    "en": "Evaporative emission system leak detected (large / small / fuel cap loose)",
+    "vi": "Phát hiện rò rỉ hệ thống EVAP (rò lớn / rò nhỏ / nắp bình xăng lỏng)"
+   },
+   "components": [
+    "gas_cap",
+    "evap_purge_valve"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0505-P0507"
+   ],
+   "meaning": {
+    "en": "Idle air control system or idle speed problem",
+    "vi": "Lỗi hệ thống điều khiển không tải hoặc tốc độ không tải"
+   },
+   "components": [
+    "throttle_body",
+    "pcv_valve",
+    "intake_manifold"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "P0520-P0524"
+   ],
+   "meaning": {
+    "en": "Engine oil pressure sensor or low oil pressure",
+    "vi": "Lỗi cảm biến áp suất dầu động cơ hoặc áp suất dầu thấp"
+   },
+   "components": [
+    "oil_dipstick",
+    "oil_filler_cap",
+    "oil_filter"
+   ],
+   "urgency": "stop",
+   "safety": [
+    {
+     "en": "If the red oil-pressure light is on with the engine running: stop the engine at once and check the oil level; driving on can destroy the engine.",
+     "vi": "Nếu đèn áp suất dầu (màu đỏ) sáng khi máy chạy: tắt máy ngay và kiểm tra mức dầu, chạy tiếp có thể phá hỏng động cơ."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0562",
+    "P0563"
+   ],
+   "meaning": {
+    "en": "System voltage low / high",
+    "vi": "Điện áp hệ thống thấp / cao"
+   },
+   "components": [
+    "battery",
+    "battery_terminal",
+    "alternator",
+    "serpentine_belt"
+   ],
+   "urgency": "check",
+   "safety": [
+    {
+     "en": "When disconnecting the battery: remove the negative (−) terminal first and reconnect it last; never let a metal tool touch both terminals.",
+     "vi": "Khi tháo ắc quy: tháo cọc âm (−) trước, lắp cọc âm sau cùng; không để dụng cụ kim loại chạm cùng lúc hai cọc."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0600-P0606"
+   ],
+   "meaning": {
+    "en": "Engine control module internal or communication problem",
+    "vi": "Lỗi bên trong hoặc lỗi giao tiếp của hộp điều khiển động cơ"
+   },
+   "components": [
+    "ecu_module",
+    "battery_terminal"
+   ],
+   "urgency": "check",
+   "safety": [
+    {
+     "en": "When disconnecting the battery: remove the negative (−) terminal first and reconnect it last; never let a metal tool touch both terminals.",
+     "vi": "Khi tháo ắc quy: tháo cọc âm (−) trước, lắp cọc âm sau cùng; không để dụng cụ kim loại chạm cùng lúc hai cọc."
+    }
+   ]
+  },
+  {
+   "codes": [
+    "P0620-P0622"
+   ],
+   "meaning": {
+    "en": "Generator (alternator) control circuit problem",
+    "vi": "Lỗi mạch điều khiển máy phát điện"
+   },
+   "components": [
+    "alternator",
+    "ecu_module"
+   ],
+   "urgency": "check",
+   "safety": []
+  },
+  {
+   "codes": [
+    "U0100",
+    "U0101"
+   ],
+   "meaning": {
+    "en": "Lost communication with engine / transmission control module",
+    "vi": "Mất giao tiếp với hộp điều khiển động cơ / hộp số"
+   },
+   "components": [
+    "ecu_module",
+    "fuse_relay_box",
+    "battery_terminal"
+   ],
+   "urgency": "check",
+   "safety": [
+    {
+     "en": "When disconnecting the battery: remove the negative (−) terminal first and reconnect it last; never let a metal tool touch both terminals.",
+     "vi": "Khi tháo ắc quy: tháo cọc âm (−) trước, lắp cọc âm sau cùng; không để dụng cụ kim loại chạm cùng lúc hai cọc."
+    }
+   ]
+  }
+ ]
+}

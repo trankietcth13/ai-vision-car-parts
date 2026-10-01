@@ -7,4 +7,6 @@
     </style>
     <color name="warn_bg">#3B2A10</color>
     <color name="warn_fg">#FDE68A</color>
+    <color name="danger_bg">#3F1414</color>
+    <color name="danger_fg">#FECACA</color>
 </resources>

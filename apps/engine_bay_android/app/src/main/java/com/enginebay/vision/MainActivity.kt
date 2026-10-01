@@ -4,7 +4,9 @@ import android.content.ActivityNotFoundException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -12,6 +14,7 @@ import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -21,6 +24,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.slider.Slider
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.enginebay.vision.core.Diagnosis
+import com.enginebay.vision.core.DtcLookup
+import com.enginebay.vision.core.DtcTable
+import com.enginebay.vision.core.SuspectStatus
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -33,6 +42,9 @@ class MainActivity : AppCompatActivity() {
     private var result: DetectionResult? = null
     private var pendingCapture: Uri? = null
     private var runId = 0
+    private var dtcTable: DtcTable? = null
+    private var diagnosis: Diagnosis? = null
+    private var dtcText = ""
 
     private lateinit var resultView: ResultView
     private lateinit var status: TextView
@@ -80,8 +92,15 @@ class MainActivity : AppCompatActivity() {
             pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
         findViewById<MaterialButton>(R.id.samples).setOnClickListener { chooseSample() }
+        findViewById<MaterialButton>(R.id.dtc).setOnClickListener { askCodes() }
 
         worker.execute {  // model load takes a moment; keep the UI responsive
+            val table = DiagnosisTable.load(this)  // small; the error-code lookup works even if the model fails
+            runOnUiThread {
+                dtcTable = table
+                findViewById<View>(R.id.dtc).isEnabled = table != null
+                intent.getStringExtra("dtc")?.let(::applyCodes)  // adb: --es dtc "P0301 P0171"
+            }
             try {
                 val d = Detector(this)
                 val info = ComponentInfo.loadAll(this)
@@ -176,13 +195,16 @@ class MainActivity : AppCompatActivity() {
                 status.text = if (r.parts.isEmpty()) "Không tìm thấy linh kiện ở ngưỡng này · ${r.totalMs} ms"
                 else "${r.parts.size} linh kiện · ${r.totalMs} ms"
                 renderParts(r)
+                renderDiagnosis()
             }
         }
     }
 
     private fun renderParts(r: DetectionResult) {
         parts.removeAllViews()
-        val groups = r.parts.groupBy { it.cls }.values.sortedByDescending { g -> g.maxOf { it.score } }
+        val targets = diagnosis?.detectorTargets.orEmpty()
+        val groups = r.parts.groupBy { it.cls }.values
+            .sortedWith(compareByDescending<List<Part>> { it[0].name in targets }.thenByDescending { g -> g.maxOf { it.score } })
         findViewById<View>(R.id.partsTitle).visibility = if (groups.isEmpty()) View.GONE else View.VISIBLE
         findViewById<View>(R.id.tapHint).visibility = if (groups.isEmpty()) View.GONE else View.VISIBLE
         val inflater = LayoutInflater.from(this)
@@ -190,7 +212,8 @@ class MainActivity : AppCompatActivity() {
             val best = g.maxBy { it.score }
             val row = inflater.inflate(R.layout.item_part, parts, false)
             row.findViewById<View>(R.id.dot).setBackgroundColor(best.color)
-            row.findViewById<TextView>(R.id.name).text = best.nameVi + if (g.size > 1) " ×${g.size}" else ""
+            val label = best.nameVi + if (g.size > 1) " ×${g.size}" else ""
+            row.findViewById<TextView>(R.id.name).text = if (best.name in targets) getString(R.string.dtc_part_tagged, label) else label
             val pct = (best.score * 100).toInt()
             row.findViewById<LinearProgressIndicator>(R.id.meter).progress = pct
             row.findViewById<TextView>(R.id.pct).text = "$pct%"
@@ -238,6 +261,119 @@ class MainActivity : AppCompatActivity() {
             behavior.skipCollapsed = true  // landscape tablets: the collapsed peek hides almost everything
             behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
         }.show()
+    }
+
+    private fun askCodes() {
+        if (dtcTable == null) return
+        val input = TextInputEditText(this).apply {
+            setText(dtcText)
+            setSingleLine()
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad / 2, pad, 0)
+            addView(TextView(this@MainActivity).apply { setText(R.string.dtc_help) })
+            addView(TextInputLayout(this@MainActivity).apply { hint = getString(R.string.dtc_hint); addView(input) })
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dtc_title)
+            .setView(box)
+            .setPositiveButton(R.string.dtc_lookup) { _, _ -> applyCodes(input.text?.toString().orEmpty()) }
+            .setNeutralButton(R.string.dtc_clear) { _, _ -> applyCodes("") }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /** UI language for the bilingual data files: "vi" or anything else (English). */
+    private fun lang(): String = resources.configuration.locales[0].language
+
+    /** Look the codes up (offline), emphasise the target components in the photo and list what to inspect. */
+    private fun applyCodes(text: String) {
+        val table = dtcTable ?: return
+        dtcText = text.trim()
+        diagnosis = if (dtcText.isEmpty()) null else DtcLookup.diagnose(dtcText, table)
+        Log.i(TAG, "dtc '$dtcText': matched ${diagnosis?.matches?.map { it.code }} unknown ${diagnosis?.unknown} " +
+            "targets ${diagnosis?.detectorTargets}")
+        resultView.highlight = diagnosis?.detectorTargets
+        result?.let(::renderParts)
+        renderDiagnosis()
+    }
+
+    /** The error-code panel: urgency, code meanings, components to inspect (found in the photo or not), safety notes. */
+    private fun renderDiagnosis() {
+        val panel = findViewById<LinearLayout>(R.id.diagnosis)
+        panel.removeAllViews()
+        val d = diagnosis
+        panel.visibility = if (d == null) View.GONE else View.VISIBLE
+        if (d == null) return
+        val dp = resources.displayMetrics.density
+        val titleStyle = com.google.android.material.R.style.TextAppearance_Material3_TitleSmall
+        val bodyStyle = com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+        val smallStyle = com.google.android.material.R.style.TextAppearance_Material3_BodySmall
+        fun text(body: CharSequence, style: Int, top: Int = 0) = TextView(this).apply {
+            text = body
+            setTextAppearance(style)
+            setPadding(0, (top * dp).toInt(), 0, 0)
+        }
+        fun TextView.boxed(danger: Boolean) = apply {
+            setBackgroundResource(if (danger) R.drawable.bg_danger else R.drawable.bg_note)
+            setTextColor(ContextCompat.getColor(this@MainActivity, if (danger) R.color.danger_fg else R.color.warn_fg))
+            val p = (10 * dp).toInt()
+            setPadding(p, p, p, p)
+        }
+
+        val lang = lang()
+        panel.addView(text(getString(R.string.dtc_title_codes, (d.matches.map { it.code } + d.unknown).joinToString(", ")), titleStyle, 16))
+        if (d.matches.isNotEmpty()) {
+            val urgency = when (d.urgency) {
+                "stop" -> R.string.dtc_urgency_stop
+                "soon" -> R.string.dtc_urgency_soon
+                else -> R.string.dtc_urgency_check
+            }
+            panel.addView(text(getString(urgency), bodyStyle, 8).boxed(d.urgency == "stop"))
+        }
+        for (m in d.matches) panel.addView(text(getString(R.string.dtc_code_line, m.code, m.entry.meaning.get(lang)), bodyStyle, 4))
+        if (d.unknown.isNotEmpty()) panel.addView(text(getString(R.string.dtc_unknown, d.unknown.joinToString(", ")), smallStyle, 4))
+        if (d.matches.isEmpty()) panel.addView(text(getString(R.string.dtc_none), bodyStyle, 4))
+
+        if (d.suspects.isNotEmpty()) panel.addView(text(getString(R.string.dtc_inspect), titleStyle, 12))
+        val detected = result?.parts?.mapTo(HashSet()) { it.name }
+        val ripple = TypedValue().also { theme.resolveAttribute(android.R.attr.selectableItemBackground, it, true) }.resourceId
+        for (s in d.suspects) {
+            val st = d.status(s, detected)
+            val note = getString(when (st) {
+                SuspectStatus.FOUND -> R.string.dtc_found
+                SuspectStatus.NOT_FOUND -> R.string.dtc_not_found
+                SuspectStatus.NOT_DETECTABLE -> R.string.dtc_not_detectable
+                SuspectStatus.NO_PHOTO -> R.string.dtc_no_photo
+            })
+            val mark = getString(when (st) {
+                SuspectStatus.FOUND -> R.string.mark_found
+                SuspectStatus.NOT_FOUND -> R.string.mark_missing
+                else -> R.string.mark_other
+            })
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                minimumHeight = (48 * dp).toInt()
+                setPadding(0, (6 * dp).toInt(), 0, (6 * dp).toInt())
+                addView(text(getString(R.string.dtc_suspect_line, mark, s.component.name.get(lang)), bodyStyle))
+                addView(text(getString(R.string.dtc_suspect_note, note, s.codes.joinToString(", ")), smallStyle))
+            }
+            val best = if (st != SuspectStatus.FOUND) null
+            else result?.parts?.filter { it.name == s.component.detectorClass }?.maxByOrNull { it.score }
+            if (best != null) {
+                row.setBackgroundResource(ripple)
+                row.setOnClickListener { showInfo(best) }
+            }
+            panel.addView(row)
+        }
+        if (d.safety.isNotEmpty()) {
+            panel.addView(text(getString(R.string.dtc_safety), titleStyle, 12))
+            panel.addView(text(d.safety.joinToString("\n") { getString(R.string.bullet, it.get(lang)) }, bodyStyle, 4).boxed(true))
+        }
+        panel.addView(text(getString(R.string.dtc_note), smallStyle, 8))
     }
 
     override fun onDestroy() {

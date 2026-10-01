@@ -19,6 +19,10 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private var result: DetectionResult? = null
     var showOriginal = false
         set(v) { field = v; invalidate() }
+    /** Model classes to emphasise (error-code diagnosis); the other components are drawn faded. null or empty: no emphasis. */
+    var highlight: Set<String>? = null
+        set(v) { field = v; focusOverlay = null; invalidate() }
+    private var focusOverlay: Bitmap? = null
 
     private val dst = RectF()
     private val src = Rect()
@@ -31,6 +35,7 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     fun show(photo: Bitmap, result: DetectionResult?) {
         this.photo = photo
         this.result = result
+        focusOverlay = null
         requestLayout()
         invalidate()
     }
@@ -63,15 +68,22 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         val lb = r.letterbox
         // overlay covers the letterboxed photo region of the model input
         src.set(lb.left, lb.top, lb.left + lb.newW, lb.top + lb.newH)
-        canvas.drawBitmap(r.overlay, src, dst, bitmapPaint)
+        val focus = highlight?.takeIf { it.isNotEmpty() }
+        canvas.drawBitmap(if (focus == null) r.overlay else focusOverlay(r, focus), src, dst, bitmapPaint)
         val lw = max(2f, 1.5f * density)
         val fs = 11f * density
-        boxPaint.strokeWidth = lw
         textPaint.textSize = fs
-        for (part in r.parts.asReversed()) {
+        // with a focus, faded components first (box only), then the emphasised ones on top
+        val ordered = if (focus == null) r.parts.asReversed()
+        else r.parts.filter { it.name !in focus } + r.parts.filter { it.name in focus }.asReversed()
+        for (part in ordered) {
             val b = RectF(ox + part.rect.left * k, part.rect.top * k, ox + part.rect.right * k, part.rect.bottom * k)
+            val dim = focus != null && part.name !in focus
             boxPaint.color = part.color
+            boxPaint.alpha = if (dim) 70 else 255
+            boxPaint.strokeWidth = if (focus != null && !dim) 2 * lw else lw
             canvas.drawRect(b, boxPaint)
+            if (dim) continue
             val label = "${part.nameVi} ${(part.score * 100).toInt()}%"
             val tw = textPaint.measureText(label) + 8 * density
             val th = fs + 6 * density
@@ -83,6 +95,17 @@ class ResultView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             textPaint.color = if (lum > 150) Color.BLACK else Color.WHITE
             canvas.drawText(label, left + 4 * density, top + fs + 1 * density, textPaint)
         }
+    }
+
+    /** The mask overlay with the [focus] classes stronger and the rest faint; cached until the result or focus changes. */
+    private fun focusOverlay(r: DetectionResult, focus: Set<String>): Bitmap {
+        focusOverlay?.let { return it }
+        val size = kotlin.math.sqrt(r.maskIndex.size.toDouble()).toInt()
+        val colors = IntArray(r.maskIndex.size) { i ->
+            val d = r.maskIndex[i]
+            if (d < 0) 0 else r.parts[d].let { (it.color and 0x00FFFFFF) or ((if (it.name in focus) 0x90 else 0x1C) shl 24) }
+        }
+        return Bitmap.createBitmap(colors, size, size, Bitmap.Config.ARGB_8888).also { focusOverlay = it }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

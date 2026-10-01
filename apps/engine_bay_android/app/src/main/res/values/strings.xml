@@ -28,5 +28,33 @@
     <string name="sec_symptoms">Triệu chứng thường gặp</string>
     <string name="sec_dtcs">Mã lỗi liên quan</string>
     <string name="sec_safety">An toàn</string>
+    <string name="dtc_button">Enter error codes (DTC)</string>
+    <string name="dtc_title">Diagnosis by error code</string>
+    <string name="dtc_title_codes">Diagnosis by error code: %1$s</string>
+    <string name="dtc_hint">e.g. P0301, P0171</string>
+    <string name="dtc_help">Enter one or more error codes read with an OBD2 scan tool. The lookup runs on this device, no network needed.</string>
+    <string name="dtc_lookup">Look up</string>
+    <string name="dtc_clear">Clear</string>
+    <string name="cancel">Cancel</string>
+    <string name="dtc_inspect">Inspect</string>
+    <string name="dtc_safety">Safety notes</string>
+    <string name="dtc_urgency_stop">Stop driving / switch the engine off and inspect before driving on</string>
+    <string name="dtc_urgency_soon">Have it inspected soon, within a few days</string>
+    <string name="dtc_urgency_check">Inspect when convenient</string>
+    <string name="dtc_code_line" translatable="false">• %1$s: %2$s</string>
+    <string name="dtc_suspect_line" translatable="false">%1$s %2$s</string>
+    <string name="dtc_suspect_note" translatable="false">%1$s · %2$s</string>
+    <string name="dtc_found">in the photo · tap to view</string>
+    <string name="dtc_not_found">not seen in the photo · move closer, try another angle or lower the confidence threshold</string>
+    <string name="dtc_not_detectable">the model cannot detect this from a photo yet · inspect it directly</string>
+    <string name="dtc_no_photo">take a photo of the engine bay to locate it</string>
+    <string name="dtc_unknown">Not in the code table: %1$s (possibly manufacturer-specific)</string>
+    <string name="dtc_none">None of the codes is in the generic code table.</string>
+    <string name="dtc_note">Generic OBD-II codes for gasoline engines. Urgency and safety notes are drafts, not yet reviewed by an expert.</string>
+    <string name="dtc_part_tagged">%1$s · inspect</string>
+    <string name="bullet" translatable="false">• %1$s</string>
+    <string name="mark_found" translatable="false">✓</string>
+    <string name="mark_missing" translatable="false">?</string>
+    <string name="mark_other" translatable="false">•</string>
     <string name="chevron" translatable="false">›</string>
 </resources>
