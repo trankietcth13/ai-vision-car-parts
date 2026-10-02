@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Engine Bay Vision</title>
-<meta name="description" content="Demo nhận diện linh kiện khoang máy, chạy ngay trên trình duyệt">
+<meta name="description" content="In-browser engine bay component recognition and segmentation demo">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><path d='M8 20h16M10 20v-6h12v6M13 14v-3h6v3' stroke='white' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <style>
   :root {
@@ -61,46 +61,45 @@
 </head>
 <body>
 <header>
-  <h1>Nhận diện linh kiện khoang máy</h1>
-  <span class="badge">Demo POC v1</span>
-  <p class="sub">Model chạy ngay trên trình duyệt của bạn: ảnh không được gửi lên server.</p>
+  <h1 id="t-title">Engine Bay Component Vision</h1>
+  <span class="badge" id="t-badge">POC v1 Demo</span>
+  <p class="sub" id="t-sub">The model runs directly in your browser: photos are never sent to a server.</p>
 </header>
 <main>
   <section class="side">
     <div class="panel">
-      <div id="drop" role="button" tabindex="0" aria-label="Chọn ảnh khoang máy">
-        <b>Chọn ảnh</b> hoặc kéo thả vào đây<br><span class="hint">Có thể dán ảnh (Ctrl+V) hoặc chụp bằng điện thoại</span>
+      <div id="drop" role="button" tabindex="0" aria-label="Select an engine bay photo">
+        <span id="t-drop-main"><b>Choose a photo</b> or drag &amp; drop here</span><br><span class="hint" id="t-drop-hint">Paste from clipboard (Ctrl+V) or snap with camera</span>
       </div>
       <input id="file" type="file" accept="image/*" hidden>
     </div>
     <div class="panel">
-      <h2>Ảnh mẫu</h2>
+      <h2 id="t-samples">Sample Photos</h2>
       <div class="examples" id="examples"></div>
     </div>
     <div class="panel">
-      <h2>Tùy chọn</h2>
-      <label class="row"><input type="checkbox" id="perclass" checked> Ngưỡng riêng từng loại linh kiện</label>
-      <p class="hint">Hiệu chỉnh bằng cross-validation. Khi bật, thanh ngưỡng bên dưới chỉ áp cho loại chưa hiệu chỉnh.</p>
-      <label class="row">Ngưỡng tin cậy <input type="range" id="conf" min="0.05" max="0.9" step="0.05"> <span id="confv"></span></label>
+      <h2 id="t-options">Options</h2>
+      <label class="row"><input type="checkbox" id="perclass" checked> <span id="t-perclass">Calibrated per-class thresholds</span></label>
+      <p class="hint" id="t-perclass-hint">Calibrated via cross-validation. When enabled, the slider below only applies to uncalibrated classes.</p>
+      <label class="row"><span id="t-conf">Confidence threshold</span> <input type="range" id="conf" min="0.05" max="0.9" step="0.05"> <span id="confv"></span></label>
     </div>
   </section>
   <section class="panel stage">
     <div class="bar">
-      <span id="status">Đang tải model…</span>
+      <span id="status">Loading model…</span>
       <div style="display:flex;gap:8px;align-items:center;">
-        <select id="lang" class="btn" style="padding:4px 8px;font-size:12.5px;" aria-label="Ngôn ngữ / Language">
-          <option value="vi" selected>Tiếng Việt</option>
-          <option value="en">English</option>
+        <select id="lang" class="btn" style="padding:4px 8px;font-size:12.5px;" aria-label="Language / Ngôn ngữ">
+          <option value="en" selected>English</option>
+          <option value="vi">Tiếng Việt</option>
         </select>
-        <button class="btn" id="orig" aria-pressed="false" disabled title="Phím O">Ảnh gốc</button>
+        <button class="btn" id="orig" aria-pressed="false" disabled title="Shortcut: O">Original photo</button>
       </div>
     </div>
     <div class="progress" id="prog"><i></i></div>
-    <canvas id="view" aria-label="Kết quả nhận diện"></canvas>
-    <div class="empty" id="empty"><div>Tải ảnh khoang máy lên, hoặc chọn một ảnh mẫu.</div></div>
+    <canvas id="view" aria-label="Detection result"></canvas>
+    <div class="empty" id="empty"><div id="t-empty">Upload an engine bay photo, or pick a sample photo.</div></div>
     <ul class="parts" id="parts"></ul>
-    <div class="note">Kết quả là <b>gợi ý</b> để kỹ thuật viên xác nhận. Model đạt mask mAP50-95 khoảng 0,38 trên các xe
-      có trong dữ liệu và 0,27–0,30 trên xe mới chưa từng thấy. Các linh kiện nhận kém: máy phát điện, ống két nước, hộp ECU, bình nước làm mát.</div>
+    <div class="note" id="t-note">Results are <b>suggestions</b> for technician verification. Model achieves mask mAP50-95 of ~0.38 on known vehicle types and 0.27–0.30 on unseen vehicles. Lower-performing components: alternator, radiator hose, ECU module, coolant reservoir.</div>
   </section>
 </main>
 <footer id="foot"></footer>
@@ -113,21 +112,104 @@ const cfg = await (await fetch("config.json")).json();
 const rgb = cfg.colors.map((h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
 const MAX_SIDE = 1600;
 let det = null, current = null, showOrig = false, busy = false, pending = false;
-let lang = $("lang") ? $("lang").value : "vi";
-if ($("lang")) $("lang").onchange = () => { lang = $("lang").value; draw(); };
+let lang = $("lang") ? $("lang").value : "en";
+
+const T = {
+  en: {
+    title: "Engine Bay Component Vision",
+    badge: "POC v1 Demo",
+    sub: "The model runs directly in your browser: photos are never sent to a server.",
+    dropMain: "<b>Choose a photo</b> or drag & drop here",
+    dropHint: "Paste from clipboard (Ctrl+V) or snap with camera",
+    samples: "Sample Photos",
+    options: "Options",
+    perclass: "Calibrated per-class thresholds",
+    perclassHint: "Calibrated via cross-validation. When enabled, the slider below only applies to uncalibrated classes.",
+    conf: "Confidence threshold",
+    loading: (pct) => `Loading model… ${pct}%`,
+    ready: "Ready. Select a photo to begin.",
+    orig: "Original photo",
+    origTitle: "Shortcut: O",
+    empty: "Upload an engine bay photo, or pick a sample photo.",
+    note: "Results are <b>suggestions</b> for technician verification. Model achieves mask mAP50-95 of ~0.38 on known vehicle types and 0.27–0.30 on unseen vehicles. Lower-performing components: alternator, radiator hose, ECU module, coolant reservoir.",
+    analyzing: "Analyzing…",
+    noDets: (ms) => `No components detected at this threshold · ${ms} ms`,
+    dets: (n, ms, th) => `${n} component${n > 1 ? "s" : ""} · ${ms} ms · ${th} thread${th > 1 ? "s" : ""}`,
+    notImg: "Selected file is not an image.",
+    cantRead: "Unable to read this image.",
+    errAnalysis: (msg) => `Analysis error: ${msg}`,
+    errLoad: (msg) => `Failed to load model: ${msg}`,
+    foot: (m, r, c, md5) => `Model ${m} (${r}, yolo11n-seg, ${c} classes) · md5 ${md5} · onnxruntime-web`,
+  },
+  vi: {
+    title: "Nhận diện linh kiện khoang máy",
+    badge: "Demo POC v1",
+    sub: "Model chạy ngay trên trình duyệt của bạn: ảnh không được gửi lên server.",
+    dropMain: "<b>Chọn ảnh</b> hoặc kéo thả vào đây",
+    dropHint: "Có thể dán ảnh (Ctrl+V) hoặc chụp bằng điện thoại",
+    samples: "Ảnh mẫu",
+    options: "Tùy chọn",
+    perclass: "Ngưỡng riêng từng loại linh kiện",
+    perclassHint: "Hiệu chỉnh bằng cross-validation. Khi bật, thanh ngưỡng bên dưới chỉ áp cho loại chưa hiệu chỉnh.",
+    conf: "Ngưỡng tin cậy",
+    loading: (pct) => `Đang tải model… ${pct}%`,
+    ready: "Sẵn sàng. Chọn ảnh để bắt đầu.",
+    orig: "Ảnh gốc",
+    origTitle: "Phím O",
+    empty: "Tải ảnh khoang máy lên, hoặc chọn một ảnh mẫu.",
+    note: "Kết quả là <b>gợi ý</b> để kỹ thuật viên xác nhận. Model đạt mask mAP50-95 khoảng 0,38 trên các xe có trong dữ liệu và 0,27–0,30 trên xe mới chưa từng thấy. Các linh kiện nhận kém: máy phát điện, ống két nước, hộp ECU, bình nước làm mát.",
+    analyzing: "Đang phân tích…",
+    noDets: (ms) => `Không tìm thấy linh kiện nào ở ngưỡng này · ${ms} ms`,
+    dets: (n, ms, th) => `${n} linh kiện · ${ms} ms · ${th} luồng`,
+    notImg: "Tệp không phải ảnh.",
+    cantRead: "Không đọc được ảnh này.",
+    errAnalysis: (msg) => `Lỗi khi phân tích: ${msg}`,
+    errLoad: (msg) => `Không tải được model: ${msg}`,
+    foot: (m, r, c, md5) => `Model ${m} (${r}, yolo11n-seg, ${c} loại) · md5 ${md5} · onnxruntime-web`,
+  }
+};
+
+function applyLanguage() {
+  const t = T[lang] || T.en;
+  document.documentElement.lang = lang;
+  $("t-title").textContent = t.title;
+  $("t-badge").textContent = t.badge;
+  $("t-sub").textContent = t.sub;
+  $("t-drop-main").innerHTML = t.dropMain;
+  $("t-drop-hint").textContent = t.dropHint;
+  $("t-samples").textContent = t.samples;
+  $("t-options").textContent = t.options;
+  $("t-perclass").textContent = t.perclass;
+  $("t-perclass-hint").textContent = t.perclassHint;
+  $("t-conf").textContent = t.conf;
+  $("orig").textContent = t.orig;
+  $("orig").title = t.origTitle;
+  $("t-empty").textContent = t.empty;
+  $("t-note").innerHTML = t.note;
+  $("foot").textContent = t.foot(cfg.model_name, cfg.release, cfg.names.length, cfg.model_md5.slice(0, 8));
+  if (current && current.result) {
+    const r = current.result, n = r.dets.length;
+    status(n ? t.dets(n, Math.round(r.ms), det ? det.threads : 1) : t.noDets(Math.round(r.ms)));
+  } else if (det) {
+    status(t.ready);
+  }
+  draw();
+}
+
+if ($("lang")) $("lang").onchange = () => { lang = $("lang").value; applyLanguage(); };
 
 $("conf").value = cfg.default_conf;
 $("confv").textContent = Number(cfg.default_conf).toFixed(2);
 const hasThr = Object.keys(cfg.thresholds).length > 0;
 $("perclass").checked = hasThr; $("perclass").disabled = !hasThr;
 
-function status(t, err = false) { $("status").textContent = t; $("status").className = err ? "err" : ""; }
+function status(text, err = false) { $("status").textContent = text; $("status").className = err ? "err" : ""; }
 
 // examples
 const examples = await (await fetch("examples/index.json")).json();
 for (const name of examples) {
   const b = document.createElement("button");
-  b.title = name; b.setAttribute("aria-label", `Ảnh mẫu ${name}`);
+  b.title = name; b.setAttribute("aria-label", `Sample photo ${name}`);
   const im = document.createElement("img");
   im.src = `examples/${encodeURIComponent(name)}`; im.alt = ""; im.loading = "lazy";
   b.append(im);
@@ -158,8 +240,9 @@ async function loadImage(src) {
   return img;
 }
 async function openFile(f) {
-  if (!f.type.startsWith("image/")) return status("Tệp không phải ảnh.", true);
-  try { await setImage(await loadImage(URL.createObjectURL(f))); } catch { status("Không đọc được ảnh này.", true); }
+  const t = T[lang] || T.en;
+  if (!f.type.startsWith("image/")) return status(t.notImg, true);
+  try { await setImage(await loadImage(URL.createObjectURL(f))); } catch { status(t.cantRead, true); }
 }
 async function openUrl(u) { await setImage(await loadImage(u)); }
 async function setImage(img) {
@@ -178,7 +261,8 @@ async function run() {
   if (!current || !det) return;
   if (busy) { pending = true; return; }
   busy = true;
-  status("Đang phân tích…");
+  const t = T[lang] || T.en;
+  status(t.analyzing);
   await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));  // let the status paint
   try {
     const s = settings();
@@ -188,10 +272,10 @@ async function run() {
     current.result = r;
     draw();
     const n = r.dets.length;
-    status(n ? `${n} linh kiện · ${Math.round(r.ms)} ms · ${det.threads} luồng` : `Không tìm thấy linh kiện nào ở ngưỡng này · ${Math.round(r.ms)} ms`);
+    status(n ? t.dets(n, Math.round(r.ms), det.threads) : t.noDets(Math.round(r.ms)));
   } catch (e) {
     console.error(e);
-    status(`Lỗi khi phân tích: ${e.message}`, true);
+    status(t.errAnalysis(e.message), true);
   } finally {
     busy = false;
     if (pending) { pending = false; run(); }
@@ -215,9 +299,7 @@ function draw() {
   for (const d of [...r.dets].reverse()) {
     const [x1, y1, x2, y2] = d.xyxy.map((v) => v * k), col = cfg.colors[d.cls];
     ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-    const nameStr = (lang === "en" && (d.name_en || (cfg.names_en && cfg.names_en[d.cls])))
-      ? (d.name_en || cfg.names_en[d.cls])
-      : d.name_vi;
+    const nameStr = (lang === "vi" ? d.name_vi : (d.name_en || (cfg.names_en && cfg.names_en[d.cls]) || d.name_vi));
     const label = `${nameStr} ${Math.round(d.score * 100)}%`, tw = ctx.measureText(label).width + 8, th = fs + 6;
     const ty = y1 - th >= 0 ? y1 - th : y1;
     ctx.fillStyle = col; ctx.fillRect(x1 - lw / 2, ty, tw, th);
@@ -235,21 +317,27 @@ function renderParts(dets) {
     const li = document.createElement("li"), pct = Math.round(e.best * 100);
     li.innerHTML = `<span class="dot" style="background:${cfg.colors[c]}"></span><span></span>`
       + `<span class="meter"><i style="width:${pct}%"></i></span><span class="pct">${pct}%</span>`;
-    const nameStr = (lang === "en" && cfg.names_en ? cfg.names_en[c] : cfg.names_vi[c]) || cfg.names[c];
+    const nameStr = (lang === "vi" ? cfg.names_vi[c] : (cfg.names_en && cfg.names_en[c] ? cfg.names_en[c] : cfg.names_vi[c])) || cfg.names[c];
     li.children[1].textContent = nameStr + (e.n > 1 ? ` ×${e.n}` : "");
     $("parts").append(li);
   }
 }
 
-$("foot").textContent = `Model ${cfg.model_name} (${cfg.release}, yolo11n-seg, ${cfg.names.length} loại) · md5 ${cfg.model_md5.slice(0, 8)} · onnxruntime-web`;
+applyLanguage();
+
 try {
-  det = await Detector.load(cfg, (p) => { $("prog").firstElementChild.style.width = `${Math.round(p * 100)}%`; status(`Đang tải model… ${Math.round(p * 100)}%`); });
+  const t = T[lang] || T.en;
+  det = await Detector.load(cfg, (p) => {
+    $("prog").firstElementChild.style.width = `${Math.round(p * 100)}%`;
+    status(t.loading(Math.round(p * 100)));
+  });
   $("prog").style.display = "none";
-  status(current ? "" : "Sẵn sàng. Chọn ảnh để bắt đầu.");
+  status(current ? "" : t.ready);
   if (current) run();
 } catch (e) {
   console.error(e);
-  status(`Không tải được model: ${e.message}`, true);
+  const t = T[lang] || T.en;
+  status(t.errLoad(e.message), true);
 }
 
 // test hook: detections for an image URL, in original-image pixels
