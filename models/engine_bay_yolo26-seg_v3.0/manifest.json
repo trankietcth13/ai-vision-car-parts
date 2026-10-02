@@ -1,0 +1,131 @@
+{
+ "name": "engine_bay_yolo26-seg",
+ "version": "v3.0",
+ "date": "2026-10-02",
+ "files": [
+  {
+   "role": "teacher",
+   "file": "teacher_yolo26l-seg_v3.0.pt",
+   "arch": "yolo26l-seg",
+   "params_M": 27.92,
+   "nms_free": true,
+   "md5": "6d348fbfe100f23d976f7e07c50efb1e",
+   "size_mb": 60.6,
+   "source": "C:/Program Files/Git/home/admin/distillation_workspace/runs/segment/engine_teacher_v26l/weights/avg5.pt",
+   "qa_name": "teacher_v26l_avg5",
+   "test_metrics": {
+    "weights": "/home/admin/distillation_workspace/runs/segment/engine_teacher_v26l/weights/avg5.pt",
+    "imgsz": 640,
+    "params_M": 27.92,
+    "box_map50": 0.596,
+    "box_map50_95": 0.36,
+    "mask_map50": 0.57,
+    "mask_map50_95": 0.356,
+    "mask_precision": 0.676,
+    "mask_recall": 0.527,
+    "latency_ms_bs1": 9.3,
+    "weak_classes": [
+     "coolant_reservoir",
+     "ecu_module",
+     "radiator_hose"
+    ]
+   }
+  },
+  {
+   "role": "teacher",
+   "arch": "yolo26l-seg",
+   "params_M": 27.92,
+   "nms_free": true,
+   "file": "teacher_yolo26l-seg_v3.0.onnx",
+   "md5": "c20b9614920b130a4be7d313ad94530b",
+   "size_mb": 106.9,
+   "source": "teacher_yolo26l-seg_v3.0.pt"
+  },
+  {
+   "role": "student_base",
+   "file": "student_base_yolo26s-seg_v3.0.pt",
+   "arch": "yolo26s-seg",
+   "params_M": 10.37,
+   "nms_free": true,
+   "md5": "4e25ff1b169ae797a8a71b5d5e72a22b",
+   "size_mb": 22.3,
+   "source": "C:/Program Files/Git/home/admin/distillation_workspace/runs/train_kd/base_26s_v26_s0/weights/avg5.pt",
+   "qa_name": "base_26s_v26_s0_avg5",
+   "test_metrics": {
+    "weights": "/home/admin/distillation_workspace/runs/train_kd/base_26s_v26_s0/weights/avg5.pt",
+    "imgsz": 640,
+    "params_M": 10.37,
+    "box_map50": 0.562,
+    "box_map50_95": 0.338,
+    "mask_map50": 0.533,
+    "mask_map50_95": 0.332,
+    "mask_precision": 0.712,
+    "mask_recall": 0.488,
+    "latency_ms_bs1": 4.6,
+    "weak_classes": [
+     "coolant_reservoir",
+     "ecu_module",
+     "radiator_hose"
+    ]
+   }
+  },
+  {
+   "role": "student_base",
+   "arch": "yolo26s-seg",
+   "params_M": 10.37,
+   "nms_free": true,
+   "file": "student_base_yolo26s-seg_v3.0.onnx",
+   "md5": "7ab212e315d0effcccfab4931c1fa868",
+   "size_mb": 39.9,
+   "source": "student_base_yolo26s-seg_v3.0.pt"
+  },
+  {
+   "role": "student_kd",
+   "file": "student_kd_yolo26s-seg_v3.0.pt",
+   "arch": "yolo26s-seg",
+   "params_M": 10.37,
+   "nms_free": true,
+   "md5": "08eecd35e4fe00b2f96947c419b74a12",
+   "size_mb": 22.3,
+   "source": "C:/Program Files/Git/home/admin/distillation_workspace/runs/train_kd/kd_26s_v26_s1/weights/avg5.pt",
+   "qa_name": "kd_26s_v26_s1_avg5",
+   "test_metrics": {
+    "weights": "/home/admin/distillation_workspace/runs/train_kd/kd_26s_v26_s1/weights/avg5.pt",
+    "imgsz": 640,
+    "params_M": 10.37,
+    "box_map50": 0.45,
+    "box_map50_95": 0.262,
+    "mask_map50": 0.426,
+    "mask_map50_95": 0.259,
+    "mask_precision": 0.461,
+    "mask_recall": 0.46,
+    "latency_ms_bs1": 4.7,
+    "weak_classes": [
+     "coolant_reservoir",
+     "ecu_module",
+     "fuse_relay_box",
+     "intake_manifold",
+     "oil_filler_cap",
+     "radiator_hose"
+    ]
+   }
+  },
+  {
+   "role": "student_kd",
+   "arch": "yolo26s-seg",
+   "params_M": 10.37,
+   "nms_free": true,
+   "file": "student_kd_yolo26s-seg_v3.0.onnx",
+   "md5": "71c5d6760812944b3ec9a037ebe5da83",
+   "size_mb": 39.9,
+   "source": "student_kd_yolo26s-seg_v3.0.pt"
+  }
+ ],
+ "qa": {
+  "report": "C:/Users/trank/AppData/Local/Temp/claude/e--Research-GEN-AI-AI-Vision-Distillation/75c46c64-f512-4e99-9d8d-685de53e735f/scratchpad/v26/QA_REPORT.json",
+  "split": "test",
+  "n_images": 118,
+  "data": "/home/admin/distillation_workspace/data/engine_bay_full_v10/data_vehicle.yaml"
+ },
+ "benchmarks": {}
+}
