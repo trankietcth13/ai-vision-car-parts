@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Architecture: Knowledge Distillation &amp; Android Edge AI · AI Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --primary: #2563EB;
+      --teacher-peach: #FEE9DE;
+      --teacher-border: #F4A582;
+      --student-mint: #E2F3E5;
+      --student-border: #82C78E;
+      --metric-blue: #E4EFFB;
+      --metric-border: #B8D5F4;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-serif: 'Newsreader', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 32px 24px 80px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-content {
+      max-width: 900px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EFF6FF;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      background: #E2E8F0;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    p.subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      max-width: 860px;
+    }
+
+    /* Tabs Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 12px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 2px;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: #EFF6FF;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .diagram-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+      position: relative;
+    }
+
+    .diagram-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .diagram-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #E2E8F0;
+      padding: 12px;
+    }
+
+    .svg-wrapper svg, .svg-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 900px;
+    }
+
+    /* Explanation Breakdown */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .card-icon.peach {
+      background: var(--teacher-peach);
+      border: 1px solid var(--teacher-border);
+      color: #9C4217;
+    }
+
+    .card-icon.mint {
+      background: var(--student-mint);
+      border: 1px solid var(--student-border);
+      color: #166534;
+    }
+
+    .card-icon.blue {
+      background: var(--metric-blue);
+      border: 1px solid var(--metric-border);
+      color: #1E40AF;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .formula-display {
+      background: #0F172A;
+      color: #F8FAFC;
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-family: var(--font-serif);
+      font-size: 19px;
+      letter-spacing: 0.02em;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .meta-table th, .meta-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meta-table th {
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 32%;
+    }
+
+    .meta-table td {
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .specs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .specs-list li {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .specs-list li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="badge">Academic Architecture Design · YOLOv10 Style</div>
+        <h1>Engine-Bay AI Vision System Architecture</h1>
+        <p class="subtitle">Publication-ready architectural diagrams illustrating Server-Side Knowledge Distillation (DGX) and 100% On-Device Android Edge Deployment, designed following the visual aesthetics of the YOLOv10 paper.</p>
+      </div>
+      <div class="lang-switcher">
+        <a href="architecture_diagram.html" class="lang-btn">VI (Tiếng Việt)</a>
+        <a href="architecture_diagram_en.html" class="lang-btn active">EN (English)</a>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-android')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        End-to-End System: Cloud KD to Android App
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-core')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Core Model: Dual-Stream Distillation Network
+      </button>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: INTEGRATED ANDROID APP DIAGRAM                     -->
+    <!-- ======================================================== -->
+    <div id="tab-android" class="tab-content active">
+      <div class="diagram-card">
+        <div class="diagram-header">
+          <div class="diagram-title">End-to-End Architecture: DGX Knowledge Distillation ➔ Android Edge App (YOLOv10 Style)</div>
+          <div class="actions">
+            <a href="architecture_android_integrated.svg" download="engine_bay_android_architecture.svg" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Integrated SVG
+            </a>
+            <a href="architecture_android_integrated.jpg" target="_blank" class="btn">
+              View High-Res Image
+            </a>
+          </div>
+        </div>
+
+        <div class="svg-wrapper">
+          <img src="architecture_android_integrated.jpg" alt="Integrated Android Edge Architecture" style="border-radius: 8px;">
+        </div>
+      </div>
+
+      <!-- Android Integration Architecture Cards -->
+      <div class="grid-3">
+        <!-- Card 1: Server Training & Packaging -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon peach">DGX</div>
+            <div>
+              <div class="card-title">Server KD &amp; Export</div>
+              <div style="font-size:12px; color:var(--text-muted)">scripts/deployment/</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Model Distillation:</strong> Teacher yolo11l (56MB) transfers multi-task representations to Student yolo11n (6MB).</li>
+            <li><strong>Top-5 Checkpoint Avg:</strong> Smooths weights via Exponential Moving Average (EMA) and strips the Teacher branch (`--strip-kd`).</li>
+            <li><strong>ONNX Export:</strong> Exports to standard ONNX format with opset 17 (`kd_n_full.onnx`).</li>
+            <li><strong>Zero-Cloud Dependency:</strong> Bundles the model, DTC knowledge base, and 3D assets directly into the APK (`assets/`).</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: On-Device Vision Engine -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon mint">ORT</div>
+            <div>
+              <div class="card-title">ONNX Runtime Android</div>
+              <div style="font-size:12px; color:var(--text-muted)">apps/engine_bay_android/</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Preprocess.kt:</strong> Pixel-accurate Letterbox (numerical deviation &lt; 1/255 vs Python OpenCV half-even rounding).</li>
+            <li><strong>Detector.kt:</strong> ONNX Runtime executes directly on device CPU (4 threads, 3.1 ms latency).</li>
+            <li><strong>Postprocess.kt:</strong> YOLO11-seg decoding, class-wise NMS, prototype mask upsampling. Mask IoU = 1.000 vs Python.</li>
+            <li><strong>Zero Network Dependency:</strong> Strips `INTERNET` and `ACCESS_NETWORK_STATE` permissions from the manifest.</li>
+          </ul>
+        </div>
+
+        <!-- Card 3: Multimodal & 3D OpenGL -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">3D</div>
+            <div>
+              <div class="card-title">Interactive &amp; Triage</div>
+              <div style="font-size:12px; color:var(--text-muted)">Bilingual &amp; OpenGL ES 2.0</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Bundled ML Kit OCR:</strong> Scans OBD2 DTC error codes (P/C/B/U) offline directly from diagnostic scanner screens.</li>
+            <li><strong>DTC ↔ Triage:</strong> Offline knowledge lookup identifying candidate components to inspect.</li>
+            <li><strong>OpenGL ES 2.0:</strong> Generates dynamic 3D meshes on device for 34 components with Exploded Assembly View.</li>
+            <li><strong>Self-Contained Report:</strong> Exports offline HTML reports containing embedded JPEG images, AI masks, and technician observations.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: CORE DISTILLATION MODEL ARCHITECTURE               -->
+    <!-- ======================================================== -->
+    <div id="tab-core" class="tab-content">
+      <div class="diagram-card">
+        <div class="diagram-header">
+          <div class="diagram-title">Core Model Architecture: Dual-Stream Distillation Network</div>
+          <div class="actions">
+            <a href="architecture_diagram.svg" download="engine_bay_kd_architecture.svg" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Core SVG
+            </a>
+            <a href="architecture_diagram.jpg" target="_blank" class="btn">
+              View High-Res Image
+            </a>
+          </div>
+        </div>
+        
+        <div class="svg-wrapper">
+          <img src="architecture_diagram.jpg" alt="Core Dual-Stream Distillation Network" style="border-radius: 8px;">
+        </div>
+      </div>
+
+      <!-- Comparative Breakdown Cards -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon peach">T</div>
+            <div>
+              <div class="card-title">Teacher Branch (yolo11l-seg)</div>
+              <div style="font-size:12.5px; color:var(--text-muted)">Frozen Parameters (θ_T) · Source Knowledge</div>
+            </div>
+          </div>
+          <table class="meta-table">
+            <tr><th>Size &amp; Params</th><td>56 MB (27.6 million parameters)</td></tr>
+            <tr><th>DGX Latency</th><td>9.2 ms (batch size 1)</td></tr>
+            <tr><th>Accuracy</th><td>mask mAP50-95 = 0.354 (on unseen held-out vehicles)</td></tr>
+            <tr><th>Backbone/Neck</th><td>256–512 channels (C3k2, SPPF, C2PSA)</td></tr>
+            <tr><th>Distillation Role</th><td>Produces soft logits, DFL variance, and attention maps</td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon mint">S</div>
+            <div>
+              <div class="card-title">Student Branch (yolo11n-seg)</div>
+              <div style="font-size:12.5px; color:var(--text-muted)">Trainable Parameters (θ_S) · Edge Deployment Model</div>
+            </div>
+          </div>
+          <table class="meta-table">
+            <tr><th>Size &amp; Params</th><td>6 MB (2.84 million parameters · 10x smaller)</td></tr>
+            <tr><th>DGX Latency</th><td>3.1 ms (4.0 ms full pipeline latency)</td></tr>
+            <tr><th>Accuracy</th><td>mask mAP50-95 = 0.302 (closes 85% of teacher gap)</td></tr>
+            <tr><th>Feature Adapter</th><td>1×1 Conv projects channels from 64–256 to 256–512</td></tr>
+            <tr><th>Gradient Flow</th><td>Gradients backpropagate exclusively to Student + Adapter</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Loss Functions Breakdown -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">∑</div>
+          <div>
+            <div class="card-title">Joint Distillation Metric (Multi-Loss Objective)</div>
+            <div style="font-size:12.5px; color:var(--text-muted)">Multi-level supervision: Spatial Feature Maps, Soft Logits, and Localization Uncertainty</div>
+          </div>
+        </div>
+        
+        <div class="formula-display">
+          ℒ<sub>total</sub> = ℒ<sub>task</sub> + 1.0 · ℒ<sub>FGD</sub> + 1.0 · ℒ<sub>cls</sub>(τ=2) + 1.0 · ℒ<sub>loc</sub>(τ=10)
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <ul class="specs-list">
+            <li><strong>ℒ<sub>task</sub> (Ground Truth Segmentation Loss):</strong> Standard Ultralytics multi-task loss against reviewed annotations (Box IoU, Class BCE, Distribution Focal Loss, and Mask prototype/coefficients).</li>
+            <li><strong>ℒ<sub>FGD</sub> (Focal &amp; Global Feature Distillation):</strong> Partitions Neck P3, P4, P5 features into Foreground (automotive components, α=1.0) and Background (engine bay chassis, α=0.5), aligning spatial attention and global cross-region relations.</li>
+          </ul>
+          <ul class="specs-list">
+            <li><strong>ℒ<sub>cls</sub> (Soft Logit KL Divergence):</strong> Mimics teacher class posterior distribution with temperature τ = 2.0 and background discount weight 0.05, capturing dark knowledge across visually similar components.</li>
+            <li><strong>ℒ<sub>loc</sub> (Localization Distillation):</strong> Distills the 4-boundary bounding box distribution (DFL) with temperature τ = 10.0, teaching the student teacher boundary uncertainty under partial occlusion.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Engine-Bay Component Knowledge Distillation &amp; Android App Project · AI Vision Research · Publication-ready aesthetics inspired by the YOLOv10 paper.
+    </footer>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<polygon points="65 215, 82 266, 137 273, 173 318, 282 318, 330 279, 391 265, 402 215" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<polygon points="145 279, 179 309, 226 309, 226 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<polygon points="237 309, 279 309, 316 279, 237 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<path d="M 229,279 L 229,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 315,277 L 315,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<circle cx="122" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="122" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="180" y="223" width="105" height="17" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="75" y="235" width="50" height="22" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="108.8369140625" y="443" style="font-family: PatentVI-Bold; font-size: 12px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,886) scale(1,-1)">PHẠM VI VÙNG KIỂM TRA TOÀN XE (100)</text>
+			<rect x="12" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="20.34716796875" y="388.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Khoang hệ truyền động (160)</text>
+			<rect x="163" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="176.90380859375" y="394.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,788) scale(1,-1)">Khoang hành khách / hàng</text>
+			<text x="219.669921875" y="382.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,764) scale(1,-1)">(130)</text>
+			<rect x="313" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="328.986328125" y="388.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Ngoại thất / thân xe (120)</text>
+			<path d="M 79,368 L 97,258 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="97 258, 98.98691 264.7121, 92.97732 263.7287" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,368 L 235,300 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="235 300, 237.5743 306.5094, 231.5012 306.0629" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 382,368 L 367,273 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="367 273, 370.9906 278.7511, 364.9756 279.7009" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="12" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="40.6181640625" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Bánh xe / lốp (140)</text>
+			<rect x="163" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="186.34228515625" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Gầm / khung xe (150)</text>
+			<rect x="313" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="332.09912109375" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Điện / năng lượng (170)</text>
+			<path d="M 80,149 L 118,187 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="118 187, 111.39 184.696, 115.696 180.39" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,149 L 230,219 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 219, 226.9552 212.6969, 233.0448 212.6969" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 380,149 L 286,230 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="286 230, 288.7874 223.5789, 292.7625 228.192" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="99.40112304687497" y="62" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,124) scale(1,-1)">Tên vùng và vị trí linh kiện là minh họa; cấu hình xác định tính áp dụng.</text>
+			<text x="125.04760742187499" y="31" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,62) scale(1,-1)">Đốt trong / lai / điện | Xe con / thương mại / buýt / xe máy</text>
+		</g>
+	</g>
+</svg>

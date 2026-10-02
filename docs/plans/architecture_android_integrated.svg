@@ -1,0 +1,278 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 560" width="100%" height="100%" style="background:#ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'DejaVu Sans', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/>
+    </marker>
+
+    <!-- Shadows & Gradients -->
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05"/>
+    </filter>
+    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!-- LEFT PANEL: Server-Side Distillation (DGX Host)              -->
+  <!-- ============================================================ -->
+  <g id="server-panel">
+    <!-- Outer light gray container (YOLOv10 left container style) -->
+    <rect x="15" y="15" width="585" height="530" rx="14" fill="#EEF1F4" stroke="#D3D9E0" stroke-width="1.8"/>
+    <text x="35" y="50" font-size="22" font-weight="800" fill="#0f172a" letter-spacing="-0.4">Knowledge Distillation Pipeline (DGX)</text>
+    <text x="35" y="68" font-size="12" font-weight="600" fill="#64748b">Teacher-to-Student Multi-Task Transfer &amp; ONNX Export</text>
+
+    <!-- Input Image -->
+    <g id="server-input" transform="translate(45, 140)">
+      <rect x="0" y="0" width="85" height="75" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#cardShadow)"/>
+      <!-- Engine bay mini preview -->
+      <rect x="8" y="8" width="69" height="42" rx="4" fill="#E2E8F0"/>
+      <circle cx="30" cy="28" r="8" fill="#F59E0B" opacity="0.8"/>
+      <circle cx="55" cy="32" r="6" fill="#3B82F6" opacity="0.8"/>
+      <text x="42" y="66" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Input 640px</text>
+    </g>
+
+    <!-- Backbone Trapezoid -->
+    <g id="server-backbone" transform="translate(160, 95)" filter="url(#cardShadow)">
+      <polygon points="20,0 60,0 75,160 5,160" fill="#ffffff" stroke="#1e293b" stroke-width="2"/>
+      <text x="40" y="80" font-size="15" font-weight="800" fill="#0f172a" text-anchor="middle">YOLO11</text>
+      <text x="40" y="98" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">Backbone</text>
+    </g>
+    <line x1="130" y1="175" x2="162" y2="175" stroke="#1e293b" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- Arrows Backbone -> Branches -->
+    <g stroke="#1e293b" stroke-width="2" fill="none">
+      <path d="M 235 140 C 255 140 260 120 280 120" marker-end="url(#arr)"/>
+      <path d="M 235 210 C 255 210 260 230 280 230" marker-end="url(#arr)"/>
+    </g>
+
+    <!-- Teacher Card (Peach) -->
+    <g id="server-teacher" transform="translate(285, 80)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="295" height="85" rx="10" fill="#FEE9DE" stroke="#F4A582" stroke-width="1.8"/>
+      <text x="14" y="24" font-size="14" font-weight="800" fill="#7C2D12">Teacher (yolo11l-seg · Frozen)</text>
+      <text x="14" y="38" font-size="10" font-weight="600" fill="#9A3412">56 MB · 27.6M params · 9.2 ms</text>
+      
+      <!-- Output Pills -->
+      <rect x="14" y="48" width="80" height="24" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="54" y="64" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">Soft Logits</text>
+      
+      <rect x="100" y="48" width="85" height="24" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="142" y="64" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">DFL Bounds</text>
+      
+      <rect x="191" y="48" width="90" height="24" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="236" y="64" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">F_T Features</text>
+    </g>
+
+    <!-- Student Card (Mint Green) -->
+    <g id="server-student" transform="translate(285, 185)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="295" height="95" rx="10" fill="#E2F3E5" stroke="#82C78E" stroke-width="1.8"/>
+      <text x="14" y="24" font-size="14" font-weight="800" fill="#14532D">Student (yolo11n-seg · Trainable)</text>
+      <text x="14" y="38" font-size="10" font-weight="600" fill="#166534">6 MB · 2.84M params · 3.1 ms</text>
+
+      <rect x="14" y="48" width="80" height="24" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="54" y="64" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">Box / Cls</text>
+      
+      <rect x="100" y="48" width="85" height="24" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="142" y="64" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">Mask Proto</text>
+
+      <rect x="191" y="48" width="90" height="24" rx="12" fill="#D1EBD6" stroke="#4AA762" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="236" y="64" font-size="10" font-weight="700" fill="#14532D" text-anchor="middle">1×1 Adapter</text>
+      <text x="14" y="85" font-size="9.5" font-weight="600" fill="#15803D">Backprop Gradient Only to Student + Adapter</text>
+    </g>
+
+    <!-- Distillation Supervision Metric Box -->
+    <g id="distill-bridge" transform="translate(45, 295)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="535" height="85" rx="10" fill="#ffffff" stroke="#93C5FD" stroke-width="1.6"/>
+      <text x="18" y="24" font-size="12.5" font-weight="800" fill="#1e3a8a">Multi-Loss Distillation Metric:</text>
+      <text x="200" y="24" font-size="14.5" font-weight="800" font-style="italic" fill="#0f172a" font-family="'Times New Roman', serif">
+        L<tspan font-size="11" font-style="normal" dy="2">total</tspan><tspan font-size="14" font-style="normal" dy="-2"> = </tspan>L<tspan font-size="11" font-style="normal" dy="2">task</tspan><tspan font-size="14" font-style="normal" dy="-2"> + 1.0·</tspan>L<tspan font-size="11" font-style="normal" dy="2">FGD</tspan><tspan font-size="14" font-style="normal" dy="-2"> + 1.0·</tspan>L<tspan font-size="11" font-style="normal" dy="2">cls</tspan><tspan font-size="14" font-style="normal" dy="-2">(τ=2) + 1.0·</tspan>L<tspan font-size="11" font-style="normal" dy="2">loc</tspan><tspan font-size="14" font-style="normal" dy="-2">(τ=10)</tspan>
+      </text>
+      
+      <!-- 3 Badges -->
+      <g transform="translate(18, 42)">
+        <rect x="0" y="0" width="155" height="30" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+        <text x="8" y="19" font-size="10" font-weight="700" fill="#334155">FGD: α_fg=1.0, α_bg=0.5</text>
+      </g>
+      <g transform="translate(185, 42)">
+        <rect x="0" y="0" width="155" height="30" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+        <text x="8" y="19" font-size="10" font-weight="700" fill="#334155">Soft KL: Dark Knowledge</text>
+      </g>
+      <g transform="translate(352, 42)">
+        <rect x="0" y="0" width="165" height="30" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="8" y="19" font-size="10" font-weight="700" fill="#1D4ED8">DFL: Boundary Uncertainty</text>
+      </g>
+    </g>
+
+    <!-- Dashed supervision feedback to Distillation Box -->
+    <path d="M 432 165 L 432 295" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#arr-blue)"/>
+    <path d="M 432 280 L 432 295" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="4 3"/>
+
+    <!-- Deployment Packaging (Export ONNX) -->
+    <g id="export-package" transform="translate(45, 400)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="535" height="125" rx="10" fill="#F8FAFC" stroke="#64748B" stroke-width="1.4"/>
+      <text x="18" y="24" font-size="13" font-weight="800" fill="#0f172a">Edge Deployment Packaging (Python Build Pipeline)</text>
+      
+      <!-- Steps in export -->
+      <g transform="translate(18, 38)">
+        <!-- Step 1: Strip KD & EMA -->
+        <rect x="0" y="0" width="155" height="70" rx="8" fill="#ffffff" stroke="#E2E8F0" stroke-width="1.2"/>
+        <text x="10" y="20" font-size="11" font-weight="700" fill="#0f172a">1. Checkpoint Avg</text>
+        <text x="10" y="36" font-size="9.5" font-weight="500" fill="#64748b">average_checkpoints.py</text>
+        <text x="10" y="52" font-size="9.5" font-weight="600" fill="#059669">Top-5 EMA · Strip KD</text>
+
+        <!-- Step 2: Export ONNX -->
+        <rect x="170" y="0" width="165" height="70" rx="8" fill="#ffffff" stroke="#E2E8F0" stroke-width="1.2"/>
+        <text x="10" y="20" font-size="11" font-weight="700" fill="#0f172a" transform="translate(170,0)">2. ONNX Export</text>
+        <text x="10" y="36" font-size="9.5" font-weight="500" fill="#64748b" transform="translate(170,0)">opset 17 · dynamic axes</text>
+        <text x="10" y="52" font-size="9.5" font-weight="600" fill="#2563eb" transform="translate(170,0)">kd_n_full.onnx (6 MB)</text>
+
+        <!-- Step 3: Bundle Assets -->
+        <rect x="350" y="0" width="150" height="70" rx="8" fill="#ffffff" stroke="#E2E8F0" stroke-width="1.2"/>
+        <text x="10" y="20" font-size="11" font-weight="700" fill="#0f172a" transform="translate(350,0)">3. Knowledge Sync</text>
+        <text x="10" y="36" font-size="9.5" font-weight="500" fill="#64748b" transform="translate(350,0)">prepare_android_app.py</text>
+        <text x="10" y="52" font-size="9.5" font-weight="600" fill="#D97706" transform="translate(350,0)">34 3D Models + DTCs</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- CROSS-BOUNDARY CONNECTOR: Deploy to Android (Zero-Network)  -->
+  <!-- ============================================================ -->
+  <g id="deploy-transfer" stroke="#16a34a" stroke-width="2.4" fill="none">
+    <path d="M 580 460 C 615 460 615 280 650 280" marker-end="url(#arr-green)"/>
+  </g>
+  <g transform="translate(565, 345)">
+    <rect x="0" y="0" width="95" height="38" rx="6" fill="#DCFCE7" stroke="#16a34a" stroke-width="1.2"/>
+    <text x="47" y="16" font-size="9.5" font-weight="800" fill="#14532D" text-anchor="middle">ASSETS BUNDLE</text>
+    <text x="47" y="30" font-size="8.5" font-weight="700" fill="#15803D" text-anchor="middle">Offline APK Sync</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT PANEL: Android Edge Application (On-Device Mobile)     -->
+  <!-- ============================================================ -->
+  <g id="android-panel">
+    <!-- Outer light blue container (YOLOv10 right container style) -->
+    <rect x="660" y="15" width="605" height="530" rx="14" fill="#E4EFFB" stroke="#B8D5F4" stroke-width="1.8"/>
+    <text x="680" y="50" font-size="22" font-weight="800" fill="#0f172a" letter-spacing="-0.4">Android Edge Vision App (com.enginebay.vision)</text>
+    <text x="680" y="68" font-size="12" font-weight="600" fill="#64748b">100% Offline On-Device Inference · ML Kit OCR · OpenGL 3D Interactive Inspection</text>
+
+    <!-- Multi-modal On-Device Inputs -->
+    <g id="android-inputs" transform="translate(685, 95)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="555" height="75" rx="10" fill="#ffffff" stroke="#93C5FD" stroke-width="1.4"/>
+      <text x="16" y="22" font-size="12.5" font-weight="800" fill="#1e3a8a">Edge Input Multimodality (Camera &amp; Scanner Screen)</text>
+
+      <!-- Input 1: Engine Bay Photo -->
+      <g transform="translate(16, 32)">
+        <rect x="0" y="0" width="250" height="34" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <circle cx="16" cy="17" r="7" fill="#0284C7"/>
+        <text x="16" y="21" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">CAM</text>
+        <text x="32" y="16" font-size="11" font-weight="700" fill="#0f172a">Engine-Bay Camera Photo</text>
+        <text x="32" y="28" font-size="9.5" font-weight="500" fill="#64748b">PhotoLoader · EXIF orientation · max 1600px</text>
+      </g>
+
+      <!-- Input 2: OBD2 DTC Screen OCR -->
+      <g transform="translate(285, 32)">
+        <rect x="0" y="0" width="255" height="34" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <circle cx="16" cy="17" r="7" fill="#8B5CF6"/>
+        <text x="16" y="21" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">OCR</text>
+        <text x="32" y="16" font-size="11" font-weight="700" fill="#0f172a">Bundled ML Kit Text Recognition</text>
+        <text x="32" y="28" font-size="9.5" font-weight="500" fill="#64748b">P/C/B/U Scanner Codes · No Play Services req.</text>
+      </g>
+    </g>
+
+    <!-- ONNX Runtime Android Pipeline -->
+    <g id="ort-pipeline" transform="translate(685, 185)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="555" height="95" rx="10" fill="#ffffff" stroke="#60A5FA" stroke-width="1.6"/>
+      <text x="16" y="24" font-size="13" font-weight="800" fill="#1e3a8a">ONNX Runtime Android Core (Detector.kt · 3.1 ms CPU Latency)</text>
+      
+      <!-- Stage 1: Letterbox Preprocess -->
+      <g transform="translate(16, 36)">
+        <rect x="0" y="0" width="160" height="46" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+        <text x="10" y="18" font-size="11" font-weight="700" fill="#0f172a">Preprocess.kt</text>
+        <text x="10" y="32" font-size="9" font-weight="500" fill="#64748b">Letterbox 640×640</text>
+        <text x="10" y="42" font-size="8" font-weight="600" fill="#059669">Parity err &lt; 1/255 vs cv2</text>
+      </g>
+
+      <line x1="180" y1="59" x2="202" y2="59" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr)"/>
+
+      <!-- Stage 2: ORT Session -->
+      <g transform="translate(205, 36)">
+        <rect x="0" y="0" width="160" height="46" rx="6" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.2"/>
+        <text x="10" y="18" font-size="11" font-weight="700" fill="#1E40AF">ONNX Runtime (CPU)</text>
+        <text x="10" y="32" font-size="9" font-weight="500" fill="#64748b">4-thread · FP16 / INT8</text>
+        <text x="10" y="42" font-size="8" font-weight="600" fill="#2563eb">kd_n_full.onnx (6 MB)</text>
+      </g>
+
+      <line x1="368" y1="59" x2="390" y2="59" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr)"/>
+
+      <!-- Stage 3: Postprocess Seg & Mask -->
+      <g transform="translate(393, 36)">
+        <rect x="0" y="0" width="145" height="46" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+        <text x="10" y="18" font-size="11" font-weight="700" fill="#0f172a">Postprocess.kt</text>
+        <text x="10" y="32" font-size="9" font-weight="500" fill="#64748b">NMS + Proto Upsample</text>
+        <text x="10" y="42" font-size="8" font-weight="600" fill="#059669">Mask IoU = 1.000 vs Py</text>
+      </g>
+    </g>
+
+    <!-- Dual Edge Interactive Subsystems (UI & 3D OpenGL) -->
+    <g id="android-subsystems" transform="translate(685, 295)">
+      <!-- Left Subsystem: Interactive ResultView & Touch -->
+      <g transform="translate(0, 0)" filter="url(#cardShadow)">
+        <rect x="0" y="0" width="265" height="135" rx="10" fill="#ffffff" stroke="#93C5FD" stroke-width="1.4"/>
+        <text x="14" y="24" font-size="12.5" font-weight="800" fill="#0f172a">Vision Overlay &amp; Triage</text>
+        
+        <rect x="14" y="36" width="235" height="26" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="24" y="53" font-size="10" font-weight="700" fill="#0f172a">ResultView: 20 Mask Overlays</text>
+        
+        <rect x="14" y="68" width="235" height="26" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="24" y="85" font-size="10" font-weight="700" fill="#0f172a">DTC ↔ Component Lookup</text>
+        
+        <rect x="14" y="100" width="235" height="26" rx="4" fill="#F0FDF4" stroke="#BBF7D0"/>
+        <text x="24" y="117" font-size="10" font-weight="700" fill="#166534">Bilingual EN/VI (Zero-Loss Switch)</text>
+      </g>
+
+      <!-- Right Subsystem: OpenGL ES 2.0 3D Component Models -->
+      <g transform="translate(285, 0)" filter="url(#cardShadow)">
+        <rect x="0" y="0" width="270" height="135" rx="10" fill="#ffffff" stroke="#93C5FD" stroke-width="1.4"/>
+        <text x="14" y="24" font-size="12.5" font-weight="800" fill="#0f172a">3D Component Inspection</text>
+        
+        <rect x="14" y="36" width="240" height="26" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="24" y="53" font-size="10" font-weight="700" fill="#0f172a">OpenGL ES 2.0 (ModelView.kt)</text>
+        
+        <rect x="14" y="68" width="240" height="26" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="24" y="85" font-size="10" font-weight="700" fill="#0f172a">Exploded Assembly View</text>
+        
+        <rect x="14" y="100" width="240" height="26" rx="4" fill="#FEF3C7" stroke="#FDE68A"/>
+        <text x="24" y="117" font-size="10" font-weight="700" fill="#92400E">34 Models · On-Device Mesh Gen</text>
+      </g>
+    </g>
+
+    <!-- Inspection Output & Offline Report -->
+    <g id="android-output" transform="translate(685, 445)" filter="url(#cardShadow)">
+      <rect x="0" y="0" width="555" height="80" rx="10" fill="#ffffff" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="16" y="24" font-size="13" font-weight="800" fill="#1D4ED8">Self-Contained Offline Inspection Report (ReportExporter.kt)</text>
+      
+      <!-- Metrics row -->
+      <g transform="translate(16, 36)">
+        <rect x="0" y="0" width="165" height="32" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="10" y="20" font-size="10" font-weight="700" fill="#0f172a">Embedded JPEG + Masks</text>
+      </g>
+      <g transform="translate(190, 36)">
+        <rect x="0" y="0" width="165" height="32" rx="6" fill="#F8FAFC" stroke="#E2E8F0"/>
+        <text x="10" y="20" font-size="10" font-weight="700" fill="#0f172a">Checklist &amp; Tech Notes</text>
+      </g>
+      <g transform="translate(365, 36)">
+        <rect x="0" y="0" width="175" height="32" rx="6" fill="#ECFDF5" stroke="#A7F3D0"/>
+        <text x="10" y="20" font-size="10" font-weight="800" fill="#065F46">Zero-Permission HTML Export</text>
+      </g>
+    </g>
+  </g>
+</svg>

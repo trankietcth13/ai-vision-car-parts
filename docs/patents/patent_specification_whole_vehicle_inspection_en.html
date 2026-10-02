@@ -1,0 +1,526 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Revised patent specification</title><style>body{max-width:850px;margin:40px auto;font:16px/1.5 Georgia;color:#111}table{border-collapse:collapse;width:100%;font-size:13px}td{border:1px solid #555;padding:7px;overflow-wrap:anywhere}tr:first-child{background:#eee}pre{font-size:12px;white-space:pre-wrap}.figure{break-before:page;margin-top:50px}.block{border:1px solid #222;padding:14px;text-align:center;margin:12px}h2,h3{break-after:avoid}@media print{body{margin:0}h2{font-size:18px}}</style><body><h1>PATENT SPECIFICATION - WHOLE-VEHICLE WORKING DRAFT</h1>
+<p>Revision date: 30 September 2026. The engine bay is a representative embodiment within a vehicle-wide inspection architecture. Broader embodiments described below are proposed disclosures; historical measurements concern engine bay data only.</p>
+<h2>1. TITLE OF THE INVENTION</h2>
+<p>METHOD AND SYSTEM FOR HIERARCHICAL MULTI-SCALE VISUAL INSPECTION AND EVIDENCE-BASED ASSESSMENT OF VEHICLE COMPONENTS AND REGIONS</p>
+<h2>2. FIELD OF THE INVENTION</h2>
+<p>The disclosure relates to computer-implemented inspection of vehicles using images, hierarchical region and component representations, multi-scale visual analysis, observation coverage, confidence-based review, and optional diagnostic information. Inspection can encompass exterior surfaces, passenger and cargo interiors, engine or propulsion compartments, wheels and tires, underbody structures, electrical systems, and accessible service components. Embodiments include combustion, hybrid, and electric vehicles, passenger vehicles, commercial vehicles, buses, and motorcycles, with the region hierarchy adapted to vehicle configuration.</p>
+<h2>3. BACKGROUND OF THE INVENTION</h2>
+<p>Vehicle inspection frequently involves separate processes for exterior appearance, interior equipment, tires, mechanical components, and diagnostic information. Captured views differ in scale, viewpoint, visibility, acquisition device, and vehicle configuration. A local detail may be detectable in a close-up while its relationship to a vehicle region is ambiguous. Conversely, a wide view can identify a region while obscuring small components or surface conditions. Combining these views can duplicate observations or incorrectly merge distinct components.</p>
+<p>Vehicle-wide assessment also requires distinguishing a region that has not been inspected from an inspected region in which a component was not detected. A component may be absent from the vehicle configuration, outside the captured views, occluded, or unresolved by visual analysis. A diagnostic code or maintenance record supplies additional context but does not itself establish a visually confirmed defect.</p>
+<p>Multi-scale detection, segmentation, image association, hierarchical classification, confidence estimation, and synthetic domain randomization are known technique families. The disclosed architecture coordinates these operations through evidence records associated with vehicle regions, component identities, and observation coverage. No claim that all existing systems lack any individual operation is made. The claims are proposed for prior-art comparison and jurisdiction-specific review.</p>
+<h2>4. SUMMARY OF THE INVENTION</h2>
+<p>An inspection processor receives one or more views associated with a vehicle and identifies a region represented by each view. It analyzes a view at a contextual scale and at one or more local scales, resolves repeated observations within a view using a shared image coordinate system, and associates resulting evidence with a vehicle hierarchy. Evidence from separate views may subsequently be associated with a common component using region, appearance, configuration, and geometric context.</p>
+<p>The resulting inspection representation separates observed component or surface findings from the evidence coverage of applicable regions. A region can be observed, partially observed, or not inspected; an expected component can be observed, unresolved, or expected but not observed. These states govern whether the system reports a finding, requests a targeted additional view, or retains uncertainty. A hierarchical representation can use a tree for ownership and a graph for shared functions or relationships.</p>
+<p>Optional embodiments add region-specific models, condition assessment, multi-view association, change tracking, diagnostic information, review-trained confidence scoring, class-promotion hysteresis, and synthetic training. Any such operation uses the same region/component evidence records. The method need not receive views of every region to inspect a vehicle region, and it does not require a particular grid size, model vendor, vehicle-system count, score threshold, or three-dimensional reconstruction.</p>
+<h2>5. BRIEF DESCRIPTION OF THE DRAWINGS</h2>
+<p>FIG. 1 illustrates the vehicle-wide coverage concept: exterior and body (120), cabin and cargo (130), wheels and tires (140), underbody and chassis (150), propulsion compartment (160), and electrical/energy components (170).</p>
+<p>FIG. 2 illustrates acquisition (202), region routing (204), contextual/local analysis (206), evidence resolution (208), hierarchy and coverage store (210), assessment (212), and output or targeted recapture (214).</p>
+<p>FIG. 3 illustrates a vehicle-region-system-component hierarchy (300) with a separate relationship graph (320).</p>
+<p>FIG. 4 illustrates contextual analysis (402), local-region analysis (404), common-coordinate resolution (406), and optional association of evidence across separate views (408).</p>
+<p>FIG. 5 illustrates observation coverage (502), applicability (504), evidence states (506), and targeted additional capture (508).</p>
+<p>FIG. 6 illustrates review and training feedback (600), including separate class and geometry review, admission gates, and real-review-supported class states.</p>
+<p>FIG. 7 illustrates component-linked condition evidence (700), optional diagnostic context (720), and evidence-preserving longitudinal comparison (740).</p>
+<p>FIG. 8 illustrates an optional synthetic-data engine (800) with assets from multiple vehicle regions and offline training for deployed inspection.</p>
+<p>The drawings are schematic vector graphics. Dimensions, component placements, and illustrated view counts are not physical measurements or limits of the claims.</p>
+<h2>6. DESCRIPTION OF REPRESENTATIVE EMBODIMENTS</h2>
+<h3>6.1 Inspection scope and region profiles</h3>
+<p>A vehicle profile defines applicable regions, systems, component types, and optionally equipment variants. Vehicle metadata can include VIN-derived configuration, year/make/model, propulsion type, axle arrangement, trim, or fleet asset identifier. An unresolved profile is retained as unknown or conditional rather than replaced by an assumed configuration.</p>
+<p>Table 1 gives representative inspection regions. A region is a semantic acquisition and ownership context; it need not be a fixed rectangle. A vehicle may have more than one propulsion compartment or cargo region, and different region names may map to the same hierarchy node. A motorcycle profile can omit a passenger cabin while retaining exposed drivetrain, wheels, frame, and rider controls. A bus or truck profile can include multiple axles and separate cargo or equipment compartments.</p>
+<table><tr><td>Region family</td><td>Representative targets</td><td>View-dependent limitations</td></tr><tr><td>Exterior/body</td><td>Panels, bumpers, doors, glazing, lights, mirrors, trim, visible surface conditions</td><td>Reflections, lighting and viewpoints affect apparent surface condition</td></tr><tr><td>Interior/cargo</td><td>Seats, restraints, dashboard, controls, displays, trim, accessible cargo fixtures</td><td>Hidden mechanisms and internal electronics are not established from appearance</td></tr><tr><td>Wheels/tires/brakes</td><td>Tires, rims, valve areas, wheel fasteners, visible brake parts</td><td>Internal wear and calibrated dimensions need appropriate views or measurements</td></tr><tr><td>Underbody/chassis</td><td>Frame, suspension, steering links, exhaust, shields, accessible lines</td><td>Access, road contamination and occlusion limit coverage</td></tr><tr><td>Propulsion compartment</td><td>Engine, intake, cooling, lubrication, accessories, service points</td><td>A covered or internal part may remain expected but unobserved</td></tr><tr><td>Electrical/energy</td><td>Visible wiring, connectors, charge port, battery enclosure, energy-system housings</td><td>Appearance does not establish internal battery health or electrical isolation</td></tr></table>
+<p>Whole-vehicle coverage means the architecture can represent these applicable regions. A complete-inspection indication is emitted only when the configured coverage criteria for that vehicle and inspection task are satisfied. It is not inferred from one image or from the mere existence of a whole-vehicle hierarchy.</p>
+<h3>6.2 Acquisition and region routing</h3>
+<p>Inputs include still images, selected video frames, or views from handheld, fixed, drive-through, underbody, robotic, or accessible borescope cameras. A view record retains vehicle/session identifier, view identifier, acquisition time, image orientation, source, and region assignment. A region assignment may be supplied by the operator, inferred from visual landmarks, or determined by a known capture station. Ambiguous assignments can remain candidates until reviewed.</p>
+<p>Image quality and coverage are checked separately from component inference. Blur, glare, excessive distance, cropping, or an unopened compartment can reduce the observation status of a region. Region routing selects an applicable detector, segmenter, condition model, or shared model with region context. Images need not be jointly reconstructed into a three-dimensional vehicle model.</p>
+<h3>6.3 Contextual and local visual analysis</h3>
+<p>A contextual branch evaluates a full view or region overview. Local branches evaluate overlapping subregions, selected regions of interest, or a higher-detail image pyramid. These branches may execute sequentially or concurrently. Their purpose is to preserve both region context and visual detail; a fixed two-by-two tiling scheme is one embodiment.</p>
+<p>Each resulting candidate carries a class or generic identity, score, box or mask, branch/view provenance, and region context. Local results are transformed into the coordinates of their parent view using the stored crop offset and inverse resize. Masks, when used, undergo the same transform as their boxes. Candidates truncated at internal crop boundaries can be flagged or excluded in favor of more complete observations.</p>
+<p>Within-view resolution uses overlap and compatible instance evidence to suppress repeated candidates or retain the best-supported box/mask. Class-wise and class-agnostic NMS are examples; compatible mask fusion is an alternative. Distinct nested targets, such as a wheel and a brake component, are preserved through a hierarchy-aware compatibility rule rather than automatically merged because their boxes overlap. Region-specific count limits and position evidence can flag implausible candidates, while unsupported limits are disabled. Viewpoint-dependent spatial priors are used as soft evidence unless image registration justifies stronger constraints.</p>
+<h3>6.4 Hierarchical evidence and association across views</h3>
+<p>The evidence store associates findings with a hierarchy such as vehicle -&gt; region -&gt; functional system -&gt; component group -&gt; component instance. Ownership can use a tree, while edges such as connected_to, part_of, serves_system, adjacent_to, and possible_same_instance express additional relationships. An electrical connector can belong to a physical harness while serving a propulsion or lighting subsystem. A condition finding is attached to its component or surface region, not treated as an unrelated vehicle-level label.</p>
+<p>For separate views, pixel overlap alone is insufficient for identity matching. An optional association unit compares vehicle/session identity, region and side, component class, appearance embeddings, visible landmarks, and available geometric correspondence. A left-front wheel is not merged with a right-front wheel solely because they look alike. Known station/view labels, landmark matches, or operator-confirmed positions resolve that distinction. An ambiguous match remains an association hypothesis with provenance rather than a confirmed physical identity.</p>
+<p>The common-coordinate operation in Section 6.3 applies within each parent view. Cross-view association instead links view-local evidence to a shared semantic instance; it does not assume every image has a shared pixel frame. Independent observations and contradictions are retained for review. This separation permits cameras with different perspectives to contribute evidence without mandatory 3D registration.</p>
+<h3>6.5 Coverage, applicability, and expected components</h3>
+<p>For each applicable region, the processor stores observation coverage derived from accepted view quality, view/region overlap, and visibility of task-relevant landmarks or target surfaces. A policy can require multiple viewpoints, a sufficiently complete surface mask, or operator-confirmed access. The policy distinguishes observed, partially observed, not inspected, and not applicable. These states concern evidence coverage rather than physical component condition.</p>
+<p>Expected component records are selected from a resolved vehicle profile or inspection template and compared with retained evidence. A component can be observed, unresolved_generic_match, expected_not_observed, or applicability_unknown. The identifier expected_not_visible may be retained for compatibility, but means expected and not observed in the available views. It does not confirm concealment, absence, or failure. A generic detection that could represent the component is linked as unresolved evidence.</p>
+<p>If a target lacks acceptable coverage, the processor generates a targeted recapture instruction. An instruction identifies the region or landmark, required viewpoint or detail, and the reason: glare, missing side, unresolved component, or possible occlusion. A location overlay for a non-observed target requires supported landmarks, a matched configuration diagram, or an established station coordinate model; otherwise guidance remains textual. After recapture the system updates coverage and reconciles evidence, retaining prior view provenance.</p>
+<h3>6.6 Component condition and diagnostic context</h3>
+<p>An optional condition unit classifies visible findings such as a panel dent, surface crack, fluid trace, connector separation, corrosion, missing visible trim, or tire surface anomaly. It can use segmentation, a trained image model, a configuration rule, or reviewed visual evidence. A record stores finding type, target instance or region, supporting view, localization, confidence, and assessment state. Uncertain findings remain suspected or review_required. A visual anomaly is not automatically translated into an internal mechanical failure.</p>
+<p>An optional severity field is qualitative unless a supported measurement or calibrated model establishes a quantitative scale. Tire tread depth, deformation dimensions, and similar measurements require scale references or a validated measurement arrangement. Internal battery capacity, electrical isolation, and hidden brake thickness are not asserted solely from RGB appearance.</p>
+<p>Optional OBD/DTC input, maintenance history, mileage, or supported sensor observations remain separately typed evidence with timestamps and provenance. A configured relation can connect that evidence to a component and suggest an inspection step. Conflicting visual and diagnostic evidence is explicitly retained. No DTC is asserted from non-detection alone, and high-voltage disassembly guidance is not inferred from recognition of an enclosure.</p>
+<h3>6.7 Review, uncertainty, and training feedback</h3>
+<p>A review-trained model can score class correctness using detector or vision-language confidence, reference-crop appearance similarity, geometry, spatial context, overlap, and region-specific features. Similarity can use the difference between agreement with reviewed class-right references and agreement with rejected references. Class correctness, localization acceptance, condition correctness, and duplicate status are separately defined review targets. A high class score does not certify all targets.</p>
+<p>Candidate labels are admitted, reviewed, or excluded according to supported score thresholds and geometry/uniqueness gates. Optional probability calibration is fitted for a defined target using separate validation vehicles. Reference banks and learned priors in each evaluation fold are built from training vehicles only; final threshold evaluation uses untouched vehicles. The system retains reviewer decisions and can withdraw a previously admitted label.</p>
+<p>Fine identities remain available in annotation records even where the training label uses a generic fallback, such as other enclosure, other line, other fastener, or other surface anomaly. An independent class is promoted only when eligible expert-reviewed real support and vehicle diversity reach configured thresholds. A lower retention threshold governs demotion, preserving identity and changing the training mapping. Changes enter a versioned training manifest and take effect in a corresponding updated model. Synthetic examples do not increment real-review support. Thresholds and region catalogs are configurable rather than fixed vehicle-wide counts.</p>
+<h3>6.8 Longitudinal evidence and report generation</h3>
+<p>An optional longitudinal embodiment links sessions to the same vehicle and matches corresponding region/component identities. It compares normalized finding states or registered corresponding surfaces, accounting for viewpoint, lighting, replacement, and capture-quality differences. A new visual mark is reported as a candidate change until evidence supports association and condition comparison. Replaced parts create an identity/version event rather than an assumed persistent instance.</p>
+<p>Outputs include a region/system tree or graph, observation coverage, localized findings, uncertainty, linked diagnostic context, and requested additional views. Reports retain model/taxonomy versions, source-view references, vehicle-profile status, and review history. A fleet or maintenance interface can receive the structured records without becoming a required element of the inspection method. Execution may be local, on a server, or split between acquisition and processing devices.</p>
+<h3>6.9 Optional vehicle-wide synthetic training</h3>
+<p>An offline asset library associates exterior panels, interior fixtures, wheels, chassis parts, propulsion components, and electrical enclosures with the same region and component identifiers used by inspection. Region scenes, individual components, and proposed visual conditions can be rendered under randomized camera pose, illumination, material appearance, contamination, and occlusion. The renderer outputs color images and instance/surface identifiers from which boxes, masks, region labels, and configured condition labels are derived.</p>
+<p>Labels follow the final rendered visibility and compositing operations. Unobserved instances do not receive visible-instance masks. Synthetic records preserve asset, region, configuration, and render provenance. Sampling can concentrate on rare components or conditions, while real-reviewed counts alone control class promotion. Pretraining or mixed training is followed by adaptation to reviewed real images. Real held-out vehicles evaluate transfer; the present draft supplies no invented whole-vehicle or synthetic-transfer measurements. Offline scene rendering does not require online 3D reconstruction.</p>
+<h3>6.10 Representative inspection scenarios</h3>
+<p>Scenario A - propulsion compartment: an overview resolves major housings while local crops identify a small service cap. Shared parent-view coordinates resolve duplicates. A covered expected spark plug remains unobserved with uncertainty, and a cap whose identity is plausible but box geometry is unresolved remains in review. This preserves the original engine bay embodiment.</p>
+<p>Scenario B - exterior and wheels: a left-side overview and a detail view provide evidence for a front door surface and a left-front wheel. The door condition is linked to its surface region; the wheel is associated using the left-front position and viewpoint evidence. A missing right-side view keeps that side not inspected and triggers a right-side capture request. The system does not report an uninspected side as defect-free.</p>
+<p>Scenario C - underbody: an accepted underbody view identifies an accessible suspension link and a fluid-like visual trace. The trace is a localized suspected condition associated with nearby components. Occluded brake surfaces remain partially observed; a closer view is requested. The trace alone does not establish a leak source or internal brake wear.</p>
+<p>Scenario D - electric vehicle and cabin: the profile makes a combustion engine inapplicable and identifies charge-port and battery-enclosure regions. Visible enclosure findings and a supplied diagnostic code remain separate evidence. Cabin images resolve seats and controls; a covered restraint mounting remains unobserved. Battery state of health is not inferred from enclosure appearance. These scenarios are illustrative proposed embodiments, not reported trials.</p>
+<h3>6.11 Existing evidence and applicability limits</h3>
+<p>The repository&#x27;s engine bay teacher report records 125 test images at network input size 640 and class-matched box IoU &gt;=0.5. Full-image recall/precision is 0.582/0.632; tiled inference plus duplicate processing and count caps yields 0.614/0.581. This is a recall gain of 3.2 percentage points with precision loss of 5.1 points. It establishes no exterior, cabin, wheel, underbody, or electric-vehicle performance.</p>
+<p>The historical verdict report records 4627 reviewed boxes from 177 vehicles and AUROC 0.844 versus 0.617 for raw VLM confidence. At score &gt;=0.9, reported coverage is 21.8% and class precision is 0.941. Its target counts bad_geometry as class-right, and crop references were computed before the vehicle-fold model split. Accordingly these are exploratory class-scoring observations, not fully isolated calibration, localization-admission, or vehicle-wide validation. No empirical ROC curve is reconstructed in the drawings.</p>
+<p>Vehicle-wide validation should separately measure region coverage errors, cross-view false merges, class and condition errors, recapture usefulness, uncertainty, and transfer across vehicle profiles. The method can inspect all applicable regions over an accepted view set, but hidden internal functions remain outside visual evidence unless supported by separately identified measurements.</p>
+<h2>7. PROPOSED PATENT CLAIMS</h2>
+<p>1. A computer-implemented method for visual inspection of a vehicle, comprising: (a) receiving one or more images associated with the vehicle; (b) assigning each image to one or more vehicle regions represented in a hierarchical vehicle representation; (c) analyzing at least one image at a contextual scale and one or more local scales to generate candidate component or surface observations; (d) transforming local-scale observation locations into coordinates of their parent image and resolving repeated observations within that image; (e) associating retained observations with region and component or surface identities in the hierarchical vehicle representation; (f) determining an observation-coverage state for a represented region from accepted image evidence; and (g) generating a structured inspection output distinguishing observed findings from unresolved or uninspected regions according to the observation-coverage state.</p>
+<p>2. The method of claim 1, wherein represented regions include exterior body regions, interior or cargo regions, wheels or tires, underbody or chassis regions, propulsion compartments, and electrical or energy-system regions, and the method is applicable to a subset or all of the regions applicable to a vehicle configuration.</p>
+<p>3. The method of claim 1, wherein a vehicle profile determines region and component applicability for a combustion, hybrid, or electric vehicle, and a component not applicable to the profile is distinguished from an applicable component not observed in available images.</p>
+<p>4. The method of claim 1, wherein acquisition comprises handheld imaging, fixed-station imaging, selected video frames, underbody imaging, robotic imaging, or accessible borescope imaging, with a retained view/session identifier and region assignment.</p>
+<p>5. The method of claim 1, wherein a region routing unit selects a region-specific visual model or supplies region context to a shared visual model.</p>
+<p>6. The method of claim 1, wherein local-scale analysis comprises overlapping tiles, selected regions of interest, or a multi-resolution image representation, and contextual and local branches are executed sequentially or concurrently.</p>
+<p>7. The method of claim 1, wherein observations include segmentation masks, and the masks and corresponding boxes are transformed using the same crop offset and inverse resize before duplicate resolution.</p>
+<p>8. The method of claim 1, wherein repeated-observation resolution comprises class-wise or class-agnostic non-maximum suppression or compatible mask fusion, and a component relationship prevents distinct nested targets from being merged solely because their locations overlap.</p>
+<p>9. The method of claim 1, wherein position evidence or component-count constraints are conditioned on a region or vehicle profile, and an unsupported constraint is disabled or treated as soft evidence.</p>
+<p>10. The method of claim 1, further comprising associating observations from separate images with a shared component identity using vehicle/session identity, region or side, appearance, landmarks, or geometric correspondence, while retaining ambiguous associations as hypotheses.</p>
+<p>11. The method of claim 10, wherein within-image coordinate resolution is separate from semantic instance association across images, and the association does not require a shared pixel coordinate frame or a three-dimensional vehicle reconstruction.</p>
+<p>12. The method of claim 1, wherein the hierarchical representation comprises vehicle, region, system, component group, and instance nodes, with relationship edges identifying shared functions, connectivity, or ownership.</p>
+<p>13. The method of claim 1, wherein observation-coverage states distinguish observed, partially observed, not inspected, and not applicable according to an inspection policy and accepted view quality.</p>
+<p>14. The method of claim 1, further comprising comparing retained observations with vehicle-profile expectations and representing an expected but unobserved component with uncertainty distinguishing non-observation from confirmed physical absence or malfunction.</p>
+<p>15. The method of claim 14, wherein a generic observation is linked to an unresolved expected fine component, and a location overlay for an unobserved component is generated only when supported by landmarks, a configuration diagram, or a station coordinate model.</p>
+<p>16. The method of claim 1, further comprising generating a targeted additional-capture instruction identifying a region, required viewpoint or detail, and deficient evidence, and updating the observation-coverage state after receiving a further image.</p>
+<p>17. The method of claim 1, further comprising associating a localized visible condition finding with a retained component or surface identity and storing supporting view provenance and a condition-assessment state.</p>
+<p>18. The method of claim 17, wherein a supplied diagnostic code, maintenance record, or sensor observation is retained as separately typed evidence linked to the component or region, and contradictions between that evidence and visual findings are preserved.</p>
+<p>19. The method of claim 1, further comprising comparing evidence from different sessions associated with the same vehicle using corresponding region or component identities and recording a condition change or component replacement with view provenance.</p>
+<p>20. The method of claim 1, further comprising scoring proposed training labels using reviewed-verdict evidence and admitting a label only when class-score, geometry, and uniqueness conditions satisfy a configured policy.</p>
+<p>21. The method of claim 20, wherein a fine component retains its annotation identity while its training label maps to a generic fallback, promotion to an independent training class requires reviewed real-instance support and vehicle diversity, and demotion uses a lower retention threshold.</p>
+<p>22. The method of claim 1, wherein a deployed visual model is trained using offline synthetic images from taxonomy-linked assets representing multiple vehicle regions, rendered under randomized viewpoint, lighting, material, and occlusion, and adapted to expert-reviewed real images, synthetic instances being excluded from real-review support for class promotion.</p>
+<p>23. A vehicle visual inspection system comprising an acquisition interface, memory storing a hierarchical vehicle representation and region-coverage records, and one or more processors configured to: associate received vehicle images with vehicle regions; generate component or surface observations through contextual and local-scale analysis; transform and resolve local observations in their parent-image coordinates; associate retained observations with region and component or surface identities; determine region observation coverage from accepted image evidence; and output observed findings separately from unresolved or uninspected regions according to the coverage, together with a display or output interface for the resulting structured inspection representation.</p>
+<p>24. A non-transitory computer-readable storage medium storing instructions that, when executed by one or more processors, cause the processors to perform the method of claim 1.</p>
+<p>25. A computer-implemented method for curating visual inspection training labels across vehicle regions, comprising: receiving reviewed component or surface candidate records with separately defined class and localization verdicts; computing region-contextual candidate features including visual confidence and a margin between embedding similarity to reviewed class-right references and similarity to rejected references; fitting a verdict-scoring model using those features; selecting a routing threshold using vehicle-separated validation data with reference banks restricted to training vehicles; and routing a new candidate to admission, review, or exclusion based on the score and separate localization and uniqueness conditions while retaining review provenance.</p>
+<p>26. The method of claim 25, further comprising fitting a probability-calibration mapping for a defined review target using separate validation vehicles and evaluating the mapping on vehicle-held-out data.</p>
+<p>27. The method of claim 25, further comprising maintaining fine identities with generic fallback training labels and changing independent-class state according to reviewed real-instance and vehicle counts using distinct promotion and retention thresholds, without counting synthetic instances.</p>
+<p>28. A training-label curation system comprising memory storing region-associated reviewed candidate records and reference embeddings, and one or more processors configured to perform the method of claim 25.</p>
+<p>29. A non-transitory computer-readable storage medium storing instructions that, when executed by one or more processors, cause the processors to perform the method of claim 25.</p>
+<p>30. The method of claim 1, wherein an inspection-completion indicator is issued only when configured observation-coverage criteria for the applicable regions of the vehicle profile and inspection task are satisfied.</p>
+<h2>8. ABSTRACT</h2>
+<p>A computer-implemented system visually inspects vehicle regions using contextual and local-scale analysis of one or more images. Local observations are transformed into their parent-image coordinates and repeated observations are resolved. Retained component and surface evidence is associated with a hierarchical vehicle representation spanning applicable exterior, interior, wheel, underbody, propulsion, and electrical regions. Observation coverage distinguishes inspected, partially observed, and uninspected regions. Vehicle-profile expectations identify applicable but unobserved components with uncertainty, and deficient evidence can trigger targeted additional capture. Optional embodiments associate instances across views, link localized condition findings with diagnostic context, compare inspection sessions, and curate labels using review-trained confidence with separate localization and uniqueness gates. Generic fallback training states use reviewed real support and promotion hysteresis. Offline synthetic training supplies region-linked examples without satisfying real-review promotion counts. The output preserves evidence provenance and separates observations from unresolved assessments.</p><section class="figure"><h2>FIG. 1. Vehicle-wide region coverage</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<polygon points="65 215, 82 266, 137 273, 173 318, 282 318, 330 279, 391 265, 402 215" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<polygon points="145 279, 179 309, 226 309, 226 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<polygon points="237 309, 279 309, 316 279, 237 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<path d="M 229,279 L 229,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 315,277 L 315,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<circle cx="122" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="122" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="180" y="223" width="105" height="17" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="75" y="235" width="50" height="22" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="125.82799999999999" y="443" style="font-family: Times-Bold; font-size: 12px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,886) scale(1,-1)">VEHICLE REGION COVERAGE (100)</text>
+			<rect x="12" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="18.114999999999995" y="388.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Propulsion compartment (160)</text>
+			<rect x="163" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="191.48" y="388.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Cabin / cargo (130)</text>
+			<rect x="313" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="338.145" y="388.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Exterior / body (120)</text>
+			<path d="M 79,368 L 97,258 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="97 258, 98.98691 264.7121, 92.97732 263.7287" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,368 L 235,300 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="235 300, 237.5743 306.5094, 231.5012 306.0629" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 382,368 L 367,273 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="367 273, 370.9906 278.7511, 364.9756 279.7009" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="12" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="39.925" y="123.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Wheels / tires (140)</text>
+			<rect x="163" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="177.87" y="123.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Underbody / chassis (150)</text>
+			<rect x="313" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="331.765" y="123.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Electrical / energy (170)</text>
+			<path d="M 80,149 L 118,187 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="118 187, 111.39 184.696, 115.696 180.39" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,149 L 230,219 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 219, 226.9552 212.6969, 233.0448 212.6969" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 380,149 L 286,230 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="286 230, 288.7874 223.5789, 292.7625 228.192" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="83.7635" y="62" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,124) scale(1,-1)">Region names and component positions are illustrative; configuration determines</text>
+			<text x="206.375" y="50" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,100) scale(1,-1)">applicability.</text>
+			<text x="98.24000000000001" y="31" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,62) scale(1,-1)">ICE / HYBRID / EV | Passenger / commercial / bus / motorcycle profiles</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 2. Inspection architecture and recapture loop</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="20" y="386" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="79.58500000000001" y="417.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,834) scale(1,-1)">Acquisition (202)</text>
+			<text x="57.605" y="405.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">Views + session / vehicle ID</text>
+			<rect x="250" y="386" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="302.78" y="417.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,834) scale(1,-1)">Region routing (204)</text>
+			<text x="301.21" y="405.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">Profile + view quality</text>
+			<rect x="250" y="275" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="286.115" y="306.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Context / local analysis (206)</text>
+			<text x="279.875" y="294.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,588) scale(1,-1)">Region-specific or shared model</text>
+			<rect x="20" y="275" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="63.065" y="306.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Evidence resolution (208)</text>
+			<text x="45.10499999999999" y="294.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,588) scale(1,-1)">Within-view + optional cross-view</text>
+			<rect x="20" y="160" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="60.995" y="191.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">Hierarchy / coverage (210)</text>
+			<text x="49.135000000000005" y="179.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,358) scale(1,-1)">Identity + applicable region state</text>
+			<rect x="250" y="160" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="309.31" y="191.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">Assessment (212)</text>
+			<text x="299.68" y="179.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,358) scale(1,-1)">Findings + uncertainty</text>
+			<rect x="133" y="52" width="194" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="181.54" y="83.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,166) scale(1,-1)">Output / recapture (214)</text>
+			<text x="178.755" y="71.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,142) scale(1,-1)">Report or additional view</text>
+			<path d="M 210,414 L 250,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 414, 243.6969 417.0448, 243.6969 410.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,386 L 345,331 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="345 331, 348.0448 337.3031, 341.9552 337.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 250,303 L 210,303 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="210 303, 216.3031 299.9552, 216.3031 306.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 115,275 L 115,216 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="115 216, 118.0448 222.3031, 111.9552 222.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 210,188 L 250,188 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 188, 243.6969 191.0448, 243.6969 184.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,160 L 290,108 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="290 108, 296.6719 110.1179, 292.4884 114.5428" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 170,108 L 115,160 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="115 160, 117.4884 153.4572, 121.6719 157.8821" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 133,80 L 5,80 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 5,80 L 5,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 5,414 L 20,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="20 414, 13.69687 417.0448, 13.69687 410.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="87.4085" y="23" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,46) scale(1,-1)">Dashed path: targeted recapture returns new evidence to the inspection session.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 3. Hierarchy, evidence nodes and relationship graph</h2><svg width="460" height="470" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 470" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="470"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-470)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="165" y="395" width="130" height="40" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="202.37" y="412.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Vehicle (302)</text>
+			<rect x="10" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="32.510000000000005" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Exterior region (304)</text>
+			<path d="M 230,395 L 75,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 349, 81.9089 347.8744, 80.17638 353.7122" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="180.29" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Wheel / tire region (304)</text>
+			<path d="M 230,395 L 230,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 349, 233.0448 355.3031, 226.9552 355.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="337.225" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Propulsion region (304)</text>
+			<path d="M 230,395 L 385,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 349, 379.8236 353.7122, 378.0911 347.8744" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="36.945" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Body system (306)</text>
+			<path d="M 75,304 L 75,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 264, 78.04476 270.3031, 71.95524 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="186.67000000000002" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Braking system (306)</text>
+			<path d="M 230,304 L 230,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 264, 233.0448 270.3031, 226.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="341.665" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Cooling system (306)</text>
+			<path d="M 385,304 L 385,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 264, 388.0448 270.3031, 381.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="36.959999999999994" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Door surface (308)</text>
+			<path d="M 75,222 L 75,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 181, 78.04476 187.3031, 71.95524 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="182.51" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Brake component (308)</text>
+			<path d="M 230,222 L 230,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 181, 233.0448 187.3031, 226.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="348.335" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Coolant line (308)</text>
+			<path d="M 385,222 L 385,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 181, 388.0448 187.3031, 381.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 320,160 L 295,160 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="295 160, 301.3031 156.9552, 301.3031 163.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="294.78" y="185" style="font-family: Times-Roman; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,370) scale(1,-1)">relation</text>
+			<rect x="44" y="38" width="372" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="75.03999999999999" y="67.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,135) scale(1,-1)">Evidence nodes (310): view ID, location, score, finding, review and coverage</text>
+			<text x="220.835" y="55.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,111) scale(1,-1)">state</text>
+			<path d="M 75,139 L 75,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 91, 78.04476 97.30313, 71.95524 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,139 L 230,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 91, 233.0448 97.30313, 226.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 385,139 L 385,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 91, 388.0448 97.30313, 381.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="84.02449999999999" y="10" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">Solid: ownership tree. Dashed: shared-function / connected-to relationship (320).</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 4. Contextual/local analysis and view association</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="95" y="414" width="270" height="40" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="164.04" y="431.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,862) scale(1,-1)">Parent image / region view (400)</text>
+			<path d="M 175,414 L 107,369 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="107 369, 113.9367 369.9394, 110.5761 375.0176" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 285,414 L 352,369 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="352 369, 348.4651 375.0419, 345.0699 369.9868" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="15" y="305" width="180" height="64" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="62.23" y="340.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,680) scale(1,-1)">Context branch (402)</text>
+			<text x="56.81999999999999" y="328.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,656) scale(1,-1)">Overview / large targets</text>
+			<rect x="265" y="305" width="180" height="64" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="312.515" y="340.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,680) scale(1,-1)">Local branches (404)</text>
+			<text x="312.645" y="328.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,656) scale(1,-1)">Tiles / selected detail</text>
+			<rect x="62" y="232" width="87" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="79" y="242" width="26" height="23" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="306" y="257" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="337" y="257" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="306" y="232" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="337" y="232" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<path d="M 106,232 L 172,190 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="172 190, 168.3169 195.9527, 165.0476 190.8153" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 354,232 L 288,190 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="288 190, 294.9524 190.8153, 291.6831 195.9527" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="70" y="132" width="320" height="58" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="147.375" y="164.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,328) scale(1,-1)">Common parent-image coordinates (406)</text>
+			<text x="128.20999999999998" y="152.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,304) scale(1,-1)">Resolve duplicates; preserve nested distinct targets</text>
+			<path d="M 230,132 L 230,93 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 93, 233.0448 99.30313, 226.9552 99.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="70" y="36" width="320" height="57" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="154.04" y="67.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,135) scale(1,-1)">Optional cross-view association (408)</text>
+			<text x="128.435" y="55.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,111) scale(1,-1)">Region / side + identity evidence; retain ambiguity</text>
+			<text x="88.4075" y="11" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,22) scale(1,-1)">Different views are linked semantically; they need not share a pixel coordinate</text>
+			<text x="218.381" y="-1" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,-2) scale(1,-1)">frame.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 5. Coverage states and targeted additional capture</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="20" y="396" width="190" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="51.550000000000004" y="424.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,848) scale(1,-1)">Accepted image evidence (502)</text>
+			<text x="64.26" y="412.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Quality + target visibility</text>
+			<rect x="250" y="396" width="190" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="291.12" y="424.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,848) scale(1,-1)">Vehicle applicability (504)</text>
+			<text x="291.765" y="412.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Profile + inspection policy</text>
+			<path d="M 115,396 L 170,348 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="170 348, 167.2531 354.4385, 163.249 349.8505" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,396 L 290,348 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="290 348, 296.751 349.8505, 292.7469 354.4385" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="93" y="298" width="274" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="183.065" y="326.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,652) scale(1,-1)">Observation state (506)</text>
+			<text x="157.515" y="314.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,628) scale(1,-1)">Coverage is separate from condition</text>
+			<rect x="10" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="55.84" y="214.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Observed</text>
+			<path d="M 230,298 L 75,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 244, 81.95395 243.1984, 79.95054 248.949" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="191.115" y="214.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Partial / unresolved</text>
+			<path d="M 230,298 L 230,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 244, 233.0448 250.3031, 226.9552 250.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="357.365" y="214.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Not inspected</text>
+			<path d="M 230,298 L 385,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 244, 380.0495 248.949, 378.046 243.1984" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="22" y="84" width="180" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="61.45" y="113.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,226) scale(1,-1)">Report observed findings</text>
+			<text x="53.125" y="101.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,202) scale(1,-1)">Preserve supporting evidence</text>
+			<rect x="258" y="84" width="180" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="302.185" y="113.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,226) scale(1,-1)">Targeted capture (508)</text>
+			<text x="300.145" y="101.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,202) scale(1,-1)">Region + view + reason</text>
+			<path d="M 75,190 L 112,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="112 136, 110.949 142.9206, 105.9256 139.4787" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,190 L 348,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="348 136, 343.5355 141.3915, 341.0015 135.8543" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 385,190 L 348,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="348 136, 354.0744 139.4787, 349.051 142.9206" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 438,110 L 452,110 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="452 110, 445.6969 113.0448, 445.6969 106.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 452,110 L 452,423 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,423 L 452,466 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,466 L 115,466 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 115,466 L 115,446 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="115 446, 118.0448 452.3031, 111.9552 452.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="109.139" y="48" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,96) scale(1,-1)">Not applicable is a profile state, not a failed or missing component.</text>
+			<text x="93.15950000000001" y="22" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,44) scale(1,-1)">Completion requires the configured coverage criteria for applicable regions.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 6. Verdict review and class-state feedback</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="15" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="73.19999999999999" y="426.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Candidates (602)</text>
+			<text x="49.175" y="414.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Component / surface / region</text>
+			<rect x="260" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="298.635" y="426.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Reviewed references (604)</text>
+			<text x="295.935" y="414.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Class + localization verdicts</text>
+			<path d="M 107,398 L 175,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="175 355, 171.2999 360.9422, 168.0453 355.7954" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 352,398 L 285,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="285 355, 291.9492 355.842, 288.6601 360.9669" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="103" y="302" width="254" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="189.175" y="331.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,663) scale(1,-1)">Verdict model (606)</text>
+			<text x="150.96" y="319.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,639) scale(1,-1)">Class score + separate acceptance gates</text>
+			<rect x="10" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="62.22" y="226.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Admit</text>
+			<path d="M 230,302 L 75,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 251, 81.93899 250.0778, 80.03572 255.8623" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="201.815" y="226.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Expert review</text>
+			<path d="M 230,302 L 230,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 251, 233.0448 257.3031, 226.9552 257.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="368.615" y="226.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Exclude</text>
+			<path d="M 230,302 L 385,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 251, 379.9643 255.8623, 378.061 250.0778" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="110" width="312" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="157.515" y="139.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,278) scale(1,-1)">Eligible reviewed real support (608)</text>
+			<text x="125.02499999999999" y="127.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,254) scale(1,-1)">Fine identity retained; generic fallback when needed</text>
+			<path d="M 230,207 L 230,162 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 162, 233.0448 168.3031, 226.9552 168.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="30" width="312" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="161.815" y="56.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,112) scale(1,-1)">Versioned training mapping (610)</text>
+			<text x="146.07" y="44.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,88) scale(1,-1)">Promotion threshold &gt; retention threshold</text>
+			<path d="M 230,110 L 230,76 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 76, 233.0448 82.30313, 226.9552 82.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 386,53 L 452,53 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,53 L 452,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,424 L 445,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="445 424, 451.3031 420.9552, 451.3031 427.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 7. Condition evidence and longitudinal comparison</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="18" y="390" width="195" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="54.815" y="420.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,840) scale(1,-1)">Localized visual finding (702)</text>
+			<text x="49.455" y="408.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,816) scale(1,-1)">Target + view + assessment state</text>
+			<rect x="247" y="390" width="195" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="294.785" y="420.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,840) scale(1,-1)">Diagnostic context (720)</text>
+			<text x="285.765" y="408.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,816) scale(1,-1)">DTC / sensor / service record</text>
+			<path d="M 115,390 L 174,343 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="174 343, 170.9671 349.3088, 167.1728 344.5458" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,390 L 286,343 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="286 343, 292.8272 344.5458, 289.0329 349.3088" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="94" y="287" width="272" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="161.39999999999998" y="318.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,636) scale(1,-1)">Component-linked evidence (704)</text>
+			<text x="155.14999999999998" y="306.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Retain uncertainty and contradictions</text>
+			<path d="M 230,287 L 230,249 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 249, 233.0448 255.3031, 226.9552 255.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="94" y="197" width="272" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="173.62" y="226.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Inspection assessment (706)</text>
+			<text x="152.105" y="214.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Observed / suspected / review required</text>
+			<path d="M 38,136 L 419,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="419 136, 412.6969 139.0448, 412.6969 132.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="90" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="69.58" y="155" style="font-family: Times-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Session A</text>
+			<rect x="33" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="54.875" y="81.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">View provenance</text>
+			<text x="51.665" y="69.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Identity / condition</text>
+			<path d="M 90,131 L 90,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="90 102, 93.04476 108.3031, 86.95524 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="230" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="209.855" y="155" style="font-family: Times-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Session B</text>
+			<rect x="173" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="194.875" y="81.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">View provenance</text>
+			<text x="191.665" y="69.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Identity / condition</text>
+			<path d="M 230,131 L 230,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 102, 233.0448 108.3031, 226.9552 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="370" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="349.58" y="155" style="font-family: Times-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Session C</text>
+			<rect x="313" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="334.875" y="81.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">View provenance</text>
+			<text x="331.665" y="69.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Identity / condition</text>
+			<path d="M 370,131 L 370,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="370 102, 373.0448 108.3031, 366.9552 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="83.90299999999999" y="26" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,52) scale(1,-1)">Longitudinal comparison (740): corresponding targets, changes, and replacement</text>
+			<text x="217.3775" y="14" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,28) scale(1,-1)">events.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>FIG. 8. Vehicle-region synthetic training engine</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="10" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="24.450000000000003" y="416.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,833) scale(1,-1)">Body / cabin assets (802)</text>
+			<path d="M 75,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 224.7957 354.6814, 223.0979 348.8334" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.98" y="422.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,845) scale(1,-1)">Wheel / chassis assets</text>
+			<text x="219.17" y="410.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,821) scale(1,-1)">(802)</text>
+			<path d="M 230,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 233.0448 356.3031, 226.9552 356.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="332.92" y="422.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,845) scale(1,-1)">Propulsion / energy assets</text>
+			<text x="374.17" y="410.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,821) scale(1,-1)">(802)</text>
+			<path d="M 385,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 236.9021 348.8334, 235.2043 354.6814" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="84" y="294" width="292" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="171.675" y="325.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,650) scale(1,-1)">Domain randomization (804)</text>
+			<text x="144.165" y="313.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,626) scale(1,-1)">Viewpoint / lighting / materials / occlusion</text>
+			<path d="M 230,294 L 230,259 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 259, 233.0448 265.3031, 226.9552 265.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="84" y="210" width="292" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="182.61" y="237.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,475) scale(1,-1)">Renderer + labels (806)</text>
+			<text x="137.08499999999998" y="225.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,451) scale(1,-1)">RGB / masks / regions / configured conditions</text>
+			<path d="M 230,210 L 230,171 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 171, 233.0448 177.3031, 226.9552 177.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="20" y="119" width="190" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="59.735" y="148.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,296) scale(1,-1)">Synthetic provenance (808)</text>
+			<text x="42.50999999999999" y="136.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,272) scale(1,-1)">Exclude from real promotion counts</text>
+			<rect x="250" y="119" width="190" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="281.275" y="148.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,296) scale(1,-1)">Expert-reviewed real data (810)</text>
+			<text x="301.945" y="136.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,272) scale(1,-1)">Eligible class support</text>
+			<path d="M 210,145 L 250,145 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 145, 243.6969 148.0448, 243.6969 141.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 115,119 L 175,77 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="175 77, 171.5823 83.10897, 168.0902 78.12024" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,119 L 285,77 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="285 77, 291.9098 78.12024, 288.4177 83.10897" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="95" y="30" width="270" height="47" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="167.235" y="56.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,113) scale(1,-1)">Training / real adaptation (812)</text>
+			<text x="158.2" y="44.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,89) scale(1,-1)">Deploy region-linked visual models</text>
+			<text x="98.14099999999999" y="9" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,18) scale(1,-1)">Offline synthesis; no mandatory online three-dimensional reconstruction.</text>
+		</g>
+	</g>
+</svg>
+</section></body></html>

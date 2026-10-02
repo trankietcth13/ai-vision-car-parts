@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="460" height="470" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 470" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="470"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-470)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="165" y="395" width="130" height="40" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="202.37" y="412.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Vehicle (302)</text>
+			<rect x="10" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="32.510000000000005" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Exterior region (304)</text>
+			<path d="M 230,395 L 75,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 349, 81.9089 347.8744, 80.17638 353.7122" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="180.29" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Wheel / tire region (304)</text>
+			<path d="M 230,395 L 230,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 349, 233.0448 355.3031, 226.9552 355.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="337.225" y="323.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Propulsion region (304)</text>
+			<path d="M 230,395 L 385,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 349, 379.8236 353.7122, 378.0911 347.8744" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="36.945" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Body system (306)</text>
+			<path d="M 75,304 L 75,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 264, 78.04476 270.3031, 71.95524 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="186.67000000000002" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Braking system (306)</text>
+			<path d="M 230,304 L 230,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 264, 233.0448 270.3031, 226.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="341.665" y="240.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Cooling system (306)</text>
+			<path d="M 385,304 L 385,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 264, 388.0448 270.3031, 381.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="36.959999999999994" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Door surface (308)</text>
+			<path d="M 75,222 L 75,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 181, 78.04476 187.3031, 71.95524 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="182.51" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Brake component (308)</text>
+			<path d="M 230,222 L 230,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 181, 233.0448 187.3031, 226.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="348.335" y="157.0" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Coolant line (308)</text>
+			<path d="M 385,222 L 385,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 181, 388.0448 187.3031, 381.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 320,160 L 295,160 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="295 160, 301.3031 156.9552, 301.3031 163.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="294.78" y="185" style="font-family: Times-Roman; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,370) scale(1,-1)">relation</text>
+			<rect x="44" y="38" width="372" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="75.03999999999999" y="67.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,135) scale(1,-1)">Evidence nodes (310): view ID, location, score, finding, review and coverage</text>
+			<text x="220.835" y="55.5" style="font-family: Times-Roman; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,111) scale(1,-1)">state</text>
+			<path d="M 75,139 L 75,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 91, 78.04476 97.30313, 71.95524 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,139 L 230,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 91, 233.0448 97.30313, 226.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 385,139 L 385,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 91, 388.0448 97.30313, 381.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="84.02449999999999" y="10" style="font-family: Times-Roman; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">Solid: ownership tree. Dashed: shared-function / connected-to relationship (320).</text>
+		</g>
+	</g>
+</svg>

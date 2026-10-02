@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="100%" height="100%" style="background:#ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'DejaVu Sans', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-dash" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0f172a"/>
+    </marker>
+    
+    <!-- Gradients & filters -->
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.06"/>
+    </filter>
+    <linearGradient id="trapezoidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!-- LEFT CONTAINER: Dual-Stream Distillation Network            -->
+  <!-- ============================================================ -->
+  <g id="left-container">
+    <!-- Outer Box (Warm Light Gray, matching reference) -->
+    <rect x="15" y="15" width="730" height="490" rx="14" fill="#EEF1F4" stroke="#D3D9E0" stroke-width="1.8"/>
+    
+    <!-- Title -->
+    <text x="35" y="52" font-size="25" font-weight="800" fill="#0f172a" letter-spacing="-0.5">Dual-Stream Distillation Network</text>
+    
+    <!-- Input Section -->
+    <g id="input-arrow" transform="translate(115, 455)">
+      <line x1="0" y1="20" x2="0" y2="-30" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arrow)"/>
+      <text x="12" y="2" font-size="16" font-weight="700" fill="#0f172a">Input</text>
+      <text x="12" y="18" font-size="12" font-weight="500" fill="#64748b">640×640×3</text>
+    </g>
+
+    <!-- Backbone Trapezoid (Matches reference polygon) -->
+    <g id="backbone" filter="url(#shadow)">
+      <!-- Trapezoid: Top narrower (x=80 to 150), Bottom wider (x=50 to 180) -->
+      <polygon points="85,160 145,160 175,370 55,370" fill="url(#trapezoidGrad)" stroke="#1e293b" stroke-width="2.2"/>
+      <text x="115" y="270" font-size="20" font-weight="800" fill="#0f172a" text-anchor="middle">Backbone</text>
+      <text x="115" y="290" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">YOLO11 (C3k2/SPPF)</text>
+    </g>
+
+    <!-- Arrows: Backbone -> PAN (3 scales: P3, P4, P5) -->
+    <g id="arrows-backbone-pan" stroke="#1e293b" stroke-width="2.2">
+      <line x1="150" y1="200" x2="200" y2="200" marker-end="url(#arrow)"/>
+      <line x1="162" y1="265" x2="200" y2="265" marker-end="url(#arrow)"/>
+      <line x1="172" y1="330" x2="200" y2="330" marker-end="url(#arrow)"/>
+      <text x="175" y="193" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">P3</text>
+      <text x="180" y="258" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">P4</text>
+      <text x="185" y="323" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">P5</text>
+    </g>
+
+    <!-- PAN Block (Tall vertical rectangle, matches reference) -->
+    <g id="pan-block" filter="url(#shadow)">
+      <rect x="205" y="145" width="62" height="240" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
+      <text x="236" y="268" font-size="22" font-weight="800" fill="#0f172a" text-anchor="middle" letter-spacing="1">PAN</text>
+      <text x="236" y="288" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">Neck</text>
+    </g>
+
+    <!-- Connector: PAN -> Teacher & Student Branches -->
+    <g id="pan-connectors" stroke="#1e293b" stroke-width="2.2" fill="none">
+      <!-- To Teacher (Top) -->
+      <path d="M 267 195 L 290 195 L 290 145 L 315 145" marker-end="url(#arrow)"/>
+      <!-- To Student (Bottom) -->
+      <path d="M 267 335 L 290 335 L 290 385 L 315 385" marker-end="url(#arrow)"/>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- TOP BRANCH: Teacher yolo11l-seg (Peach Card)              -->
+    <!-- ======================================================== -->
+    <g id="teacher-box" filter="url(#shadow)">
+      <!-- Outer peach card -->
+      <rect x="320" y="75" width="405" height="180" rx="12" fill="#FEE9DE" stroke="#F4A582" stroke-width="2"/>
+      
+      <!-- Teacher Header -->
+      <text x="340" y="105" font-size="18" font-weight="800" fill="#1e293b">Teacher Branch</text>
+      <rect x="480" y="90" width="130" height="20" rx="4" fill="#E28B65" opacity="0.2"/>
+      <text x="545" y="104" font-size="11" font-weight="700" fill="#9C4217" text-anchor="middle">yolo11l-seg · Frozen (θ_T)</text>
+      
+      <!-- Forking branches inside Teacher -->
+      <g stroke="#1e293b" stroke-width="2" fill="none">
+        <path d="M 360 170 L 380 170 L 380 135 L 405 135" marker-end="url(#arrow)"/>
+        <path d="M 380 170 L 405 170" marker-end="url(#arrow)"/>
+        <path d="M 380 170 L 380 205 L 405 205" marker-end="url(#arrow)"/>
+      </g>
+
+      <!-- Head 1: Regression (DFL) -->
+      <g id="t-reg">
+        <rect x="410" y="120" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="140" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Regression (DFL)</text>
+      </g>
+
+      <!-- Head 2: Classification (Logits) -->
+      <g id="t-cls">
+        <rect x="410" y="155" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="175" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Classification (Logits)</text>
+      </g>
+
+      <!-- Head 3: Mask Proto & Coef -->
+      <g id="t-mask">
+        <rect x="410" y="190" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="210" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Mask Prototype &amp; Coef</text>
+      </g>
+      
+      <!-- Teacher Feature Hook Tag -->
+      <rect x="618" y="155" width="92" height="30" rx="6" fill="#FAD1C0" stroke="#E28B65" stroke-width="1.2"/>
+      <text x="664" y="174" font-size="11" font-weight="700" fill="#7C2D12" text-anchor="middle">F_T (P3-P5)</text>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- BOTTOM BRANCH: Student yolo11n-seg (Mint Green Card)     -->
+    <!-- ======================================================== -->
+    <g id="student-box" filter="url(#shadow)">
+      <!-- Outer mint green card -->
+      <rect x="320" y="275" width="405" height="210" rx="12" fill="#E2F3E5" stroke="#82C78E" stroke-width="2"/>
+      
+      <!-- Student Header -->
+      <text x="340" y="305" font-size="18" font-weight="800" fill="#1e293b">Student Branch</text>
+      <rect x="475" y="290" width="145" height="20" rx="4" fill="#58A367" opacity="0.2"/>
+      <text x="547" y="304" font-size="11" font-weight="700" fill="#166534" text-anchor="middle">yolo11n-seg · Trainable (θ_S)</text>
+
+      <!-- 1x1 Conv Adapter for FGD Feature alignment -->
+      <g id="adapter-1x1" transform="translate(340, 325)">
+        <rect x="0" y="0" width="130" height="26" rx="6" fill="#D1EBD6" stroke="#4AA762" stroke-width="1.5" stroke-dasharray="4 2"/>
+        <text x="65" y="17" font-size="11" font-weight="700" fill="#14532D" text-anchor="middle">1×1 Conv Adapters</text>
+      </g>
+      
+      <!-- Forking branches inside Student -->
+      <g stroke="#1e293b" stroke-width="2" fill="none">
+        <path d="M 360 410 L 380 410 L 380 375 L 405 375" marker-end="url(#arrow)"/>
+        <path d="M 380 410 L 405 410" marker-end="url(#arrow)"/>
+        <path d="M 380 410 L 380 445 L 405 445" marker-end="url(#arrow)"/>
+      </g>
+
+      <!-- Head 1: Regression -->
+      <g id="s-reg">
+        <rect x="410" y="360" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="380" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Regression (DFL)</text>
+      </g>
+
+      <!-- Head 2: Classification -->
+      <g id="s-cls">
+        <rect x="410" y="395" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="415" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Classification (Logits)</text>
+      </g>
+
+      <!-- Head 3: Mask Proto & Coef -->
+      <g id="s-mask">
+        <rect x="410" y="430" width="195" height="30" rx="15" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+        <text x="507" y="450" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Mask Prototype &amp; Coef</text>
+      </g>
+
+      <!-- Student Adapted Feature Tag -->
+      <rect x="618" y="323" width="92" height="30" rx="6" fill="#C3E8CA" stroke="#4AA762" stroke-width="1.2"/>
+      <text x="664" y="342" font-size="11" font-weight="700" fill="#14532D" text-anchor="middle">F_S (P3-P5)</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT CONTAINER: Distillation & Consistent Supervision       -->
+  <!-- ============================================================ -->
+  <g id="right-container">
+    <!-- Outer Box (Soft Sky Blue, matching reference) -->
+    <rect x="765" y="15" width="420" height="490" rx="14" fill="#E4EFFB" stroke="#B8D5F2" stroke-width="1.8"/>
+    
+    <!-- Title -->
+    <text x="785" y="52" font-size="24" font-weight="800" fill="#0f172a" letter-spacing="-0.5">Distillation &amp; Task Metric</text>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 1: Focal & Global Distillation (FGD Attention)   -->
+    <!-- Matches top grid in reference with numbered circle focus -->
+    <!-- ======================================================== -->
+    <g id="feature-grid-top" transform="translate(800, 75)">
+      <!-- Background card for Feature Matching -->
+      <rect x="0" y="0" width="350" height="135" rx="8" fill="#ffffff" stroke="#93C5FD" stroke-width="1.4" filter="url(#shadow)"/>
+      <text x="15" y="24" font-size="13" font-weight="800" fill="#1e3a8a">Focal &amp; Global Feature Distillation (FGD)</text>
+      
+      <!-- 4x3 Spatial Grid imitating engine bay attention map -->
+      <g transform="translate(18, 36)">
+        <!-- Grid outline -->
+        <rect x="0" y="0" width="105" height="80" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2"/>
+        <line x1="35" y1="0" x2="35" y2="80" stroke="#CBD5E1" stroke-width="1"/>
+        <line x1="70" y1="0" x2="70" y2="80" stroke="#CBD5E1" stroke-width="1"/>
+        <line x1="0" y1="26.6" x2="105" y2="26.6" stroke="#CBD5E1" stroke-width="1"/>
+        <line x1="0" y1="53.3" x2="105" y2="53.3" stroke="#CBD5E1" stroke-width="1"/>
+        
+        <!-- Engine bay component hot regions (Foreground Attention circles) -->
+        <circle cx="17.5" cy="40" r="11" fill="#FDE047" opacity="0.6"/>
+        <circle cx="17.5" cy="40" r="8" fill="#F59E0B" stroke="#B45309" stroke-width="1.2"/>
+        <text x="17.5" y="44" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">FG</text>
+
+        <circle cx="52.5" cy="13.3" r="10" fill="#F97316" stroke="#C2410C" stroke-width="1.2"/>
+        <text x="52.5" y="17" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">1</text>
+
+        <circle cx="52.5" cy="40" r="10" fill="#EF4444" stroke="#B91C1C" stroke-width="1.2"/>
+        <text x="52.5" y="44" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">2</text>
+
+        <circle cx="87.5" cy="66.6" r="9" fill="#3B82F6" stroke="#1D4ED8" stroke-width="1.2"/>
+        <text x="87.5" y="70" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">BG</text>
+      </g>
+
+      <!-- Explanation list for FGD -->
+      <g transform="translate(135, 42)">
+        <text x="0" y="12" font-size="11.5" font-weight="700" fill="#334155">• Foreground (α_fg = 1.0)</text>
+        <text x="0" y="30" font-size="11.5" font-weight="700" fill="#334155">• Background (α_bg = 0.5)</text>
+        <text x="0" y="48" font-size="11.5" font-weight="700" fill="#334155">• Spatial &amp; Channel Attn</text>
+        <text x="0" y="66" font-size="11.5" font-weight="700" fill="#334155">• Global Relation (λ_g = 0.5)</text>
+      </g>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 2: Consistent Multi-Task Loss Formula            -->
+    <!-- Matches central formula in reference                     -->
+    <!-- ======================================================== -->
+    <g id="formula-box" transform="translate(790, 225)">
+      <!-- Formula container -->
+      <rect x="0" y="0" width="370" height="75" rx="8" fill="#ffffff" stroke="#60A5FA" stroke-width="1.6" filter="url(#shadow)"/>
+      
+      <!-- Primary Mathematical Equation -->
+      <text x="185" y="34" font-size="18" font-weight="800" font-style="italic" fill="#0f172a" text-anchor="middle" font-family="'Times New Roman', Times, serif">
+        L<tspan font-size="13" font-style="normal" dy="3">total</tspan><tspan font-size="18" font-style="normal" dy="-3"> = </tspan>L<tspan font-size="13" font-style="normal" dy="3">task</tspan><tspan font-size="18" font-style="normal" dy="-3"> + α·</tspan>L<tspan font-size="13" font-style="normal" dy="3">feat</tspan><tspan font-size="18" font-style="normal" dy="-3"> + β·</tspan>L<tspan font-size="13" font-style="normal" dy="3">cls</tspan><tspan font-size="18" font-style="normal" dy="-3"> + γ·</tspan>L<tspan font-size="13" font-style="normal" dy="3">loc</tspan>
+      </text>
+
+      <!-- Subtitle hyperparameters -->
+      <text x="185" y="60" font-size="11.5" font-weight="600" fill="#475569" text-anchor="middle">
+        α = 1.0 (FGD) · β = 1.0 (τ=2.0) · γ = 1.0 (τ=10.0)
+      </text>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 3: Task & Distillation Supervision Details       -->
+    <!-- Matches bottom block in reference                        -->
+    <!-- ======================================================== -->
+    <g id="bottom-loss-details" transform="translate(800, 315)">
+      <!-- Background card -->
+      <rect x="0" y="0" width="350" height="165" rx="8" fill="#ffffff" stroke="#93C5FD" stroke-width="1.4" filter="url(#shadow)"/>
+      <text x="15" y="24" font-size="13" font-weight="800" fill="#1e3a8a">Head Distillation &amp; Task Supervision</text>
+
+      <!-- 3 Supervision Components -->
+      <!-- Item 1: Logit Distillation -->
+      <g transform="translate(15, 36)">
+        <rect x="0" y="0" width="320" height="34" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <circle cx="16" cy="17" r="7" fill="#6366F1"/>
+        <text x="16" y="21" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">K</text>
+        <text x="32" y="16" font-size="11" font-weight="700" fill="#0f172a">Classification KL Loss (L_cls)</text>
+        <text x="32" y="28" font-size="9.5" font-weight="500" fill="#64748b">Soft logit mimicry · Temperature τ=2.0 · bg_weight=0.05</text>
+      </g>
+
+      <!-- Item 2: Localization Distillation -->
+      <g transform="translate(15, 76)">
+        <rect x="0" y="0" width="320" height="34" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <circle cx="16" cy="17" r="7" fill="#EC4899"/>
+        <text x="16" y="21" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">L</text>
+        <text x="32" y="16" font-size="11" font-weight="700" fill="#0f172a">Localization Distillation (L_loc)</text>
+        <text x="32" y="28" font-size="9.5" font-weight="500" fill="#64748b">DFL bounding-box distribution · Temperature τ=10.0</text>
+      </g>
+
+      <!-- Item 3: Ground Truth Task Loss -->
+      <g transform="translate(15, 116)">
+        <rect x="0" y="0" width="320" height="38" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <circle cx="16" cy="19" r="7" fill="#059669"/>
+        <text x="16" y="23" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">T</text>
+        <text x="32" y="17" font-size="11" font-weight="700" fill="#1e3a8a">Ground Truth Segmentation Loss (L_task)</text>
+        <text x="32" y="30" font-size="9.5" font-weight="600" fill="#2563eb">L_box + L_cls + L_dfl + L_seg (20 engine-bay classes)</text>
+      </g>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- INTER-CONNECTORS: Dashed supervision lines (Reference)   -->
+    <!-- Connects Teacher & Student outputs into Distillation     -->
+    <!-- ======================================================== -->
+    <!-- Feature KD line -->
+    <path d="M 725 170 C 750 170 755 140 795 140" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrow-blue)"/>
+    
+    <!-- Head Reg/Cls KD lines -->
+    <path d="M 605 170 C 650 170 720 250 785 250" fill="none" stroke="#0f172a" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <path d="M 605 410 C 650 410 720 270 785 270" fill="none" stroke="#0f172a" stroke-width="1.8" stroke-dasharray="5 3"/>
+    
+    <!-- Vertical dashed consistency line (matches reference double-arrow) -->
+    <g stroke="#0f172a" stroke-width="1.8" stroke-dasharray="4 3">
+      <line x1="755" y1="140" x2="755" y2="410"/>
+      <path d="M 750 148 L 755 140 L 760 148"/>
+      <path d="M 750 402 L 755 410 L 760 402"/>
+    </g>
+    <text x="746" y="278" font-size="11" font-weight="800" fill="#1e293b" text-anchor="end" transform="rotate(-90 746 278)">Consistency Supervision</text>
+  </g>
+</svg>

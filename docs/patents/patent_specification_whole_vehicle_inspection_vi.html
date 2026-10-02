@@ -1,0 +1,525 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>Patent specification</title><style>body{max-width:850px;margin:40px auto;font:16px/1.5 Georgia;color:#111}table{border-collapse:collapse;width:100%;font-size:13px}td{border:1px solid #555;padding:7px;overflow-wrap:anywhere}tr:first-child{background:#eee}pre{font-size:12px;white-space:pre-wrap}.figure{break-before:page;margin-top:50px}.block{border:1px solid #222;padding:14px;text-align:center;margin:12px}h2,h3{break-after:avoid}@media print{body{margin:0}h2{font-size:18px}}</style><body><h1>BẢN MÔ TẢ SÁNG CHẾ - DỰ THẢO KIỂM TRA TOÀN XE</h1>
+<p>Ngày cập nhật: 30 tháng 9 năm 2026. Khoang động cơ là một phương án thực hiện đại diện trong kiến trúc kiểm tra toàn xe. Các phương án mở rộng dưới đây là nội dung mô tả đề xuất; số liệu thực nghiệm hiện có chỉ liên quan đến khoang động cơ. Bản tiếng Việt tương ứng với bản tiếng Anh cùng phiên bản.</p>
+<h2>1. TÊN SÁNG CHẾ</h2>
+<p>PHƯƠNG PHÁP VÀ HỆ THỐNG KIỂM TRA TRỰC QUAN ĐA TỶ LỆ THEO CẤU TRÚC PHÂN CẤP VÀ ĐÁNH GIÁ DỰA TRÊN BẰNG CHỨNG ĐỐI VỚI LINH KIỆN VÀ CÁC VÙNG CỦA PHƯƠNG TIỆN</p>
+<h2>2. LĨNH VỰC KỸ THUẬT</h2>
+<p>Sáng chế liên quan đến kiểm tra phương tiện bằng máy tính sử dụng hình ảnh, biểu diễn phân cấp các vùng và linh kiện, phân tích thị giác đa tỷ lệ, mức độ bao phủ quan sát, thẩm định dựa trên độ tin cậy và thông tin chẩn đoán tùy chọn. Phạm vi kiểm tra có thể bao gồm bề mặt ngoại thất, khoang hành khách và khoang hàng, khoang động cơ hoặc hệ truyền động, bánh xe và lốp, kết cấu gầm, hệ thống điện và các bộ phận bảo dưỡng có thể tiếp cận. Các phương án thực hiện áp dụng cho xe động cơ đốt trong, xe lai và xe điện; xe con, xe thương mại, xe buýt và xe máy, với cấu trúc vùng được điều chỉnh theo cấu hình phương tiện.</p>
+<h2>3. TÌNH TRẠNG KỸ THUẬT</h2>
+<p>Việc kiểm tra phương tiện thường tách thành các quy trình về ngoại hình, trang bị nội thất, lốp, bộ phận cơ khí và thông tin chẩn đoán. Các ảnh thu nhận khác nhau về tỷ lệ, góc nhìn, khả năng quan sát, thiết bị và cấu hình phương tiện. Một chi tiết có thể được phát hiện trong ảnh cận cảnh nhưng chưa xác định rõ quan hệ với vùng trên xe. Ngược lại, ảnh toàn cảnh có thể xác định vùng nhưng làm mất chi tiết linh kiện nhỏ hoặc tình trạng bề mặt. Kết hợp các ảnh này có thể tạo quan sát trùng hoặc hợp nhất sai các linh kiện khác nhau.</p>
+<p>Đánh giá toàn xe còn đòi hỏi phân biệt vùng chưa kiểm tra với vùng đã kiểm tra nhưng không phát hiện một linh kiện. Linh kiện có thể không thuộc cấu hình xe, nằm ngoài góc chụp, bị che khuất hoặc chưa được phân tích thị giác xác định. Mã chẩn đoán hoặc hồ sơ bảo dưỡng cung cấp ngữ cảnh bổ sung nhưng tự nó không xác lập một hư hỏng đã được xác nhận bằng hình ảnh.</p>
+<p>Phát hiện đa tỷ lệ, phân đoạn, liên kết ảnh, phân loại phân cấp, ước lượng độ tin cậy và ngẫu nhiên hóa miền cho dữ liệu tổng hợp là các nhóm kỹ thuật đã biết. Kiến trúc được mô tả phối hợp các thao tác này thông qua bản ghi bằng chứng gắn với vùng xe, định danh linh kiện và mức độ bao phủ quan sát. Không khẳng định rằng tất cả hệ thống hiện có đều thiếu một thao tác riêng lẻ nào. Các yêu cầu bảo hộ được đề xuất để đối chiếu với tình trạng kỹ thuật và rà soát theo cơ quan nộp đơn.</p>
+<h2>4. BẢN CHẤT KỸ THUẬT CỦA SÁNG CHẾ</h2>
+<p>Bộ xử lý kiểm tra tiếp nhận một hoặc nhiều ảnh gắn với phương tiện và xác định vùng được thể hiện trong từng ảnh. Bộ xử lý phân tích ảnh ở tỷ lệ ngữ cảnh và một hoặc nhiều tỷ lệ cục bộ, xử lý các quan sát lặp trong cùng ảnh bằng hệ tọa độ ảnh chung, rồi gắn bằng chứng thu được với cấu trúc phân cấp của phương tiện. Bằng chứng từ các ảnh riêng biệt sau đó có thể được liên kết với cùng một linh kiện dựa trên vùng, đặc điểm hình ảnh, cấu hình và ngữ cảnh hình học.</p>
+<p>Biểu diễn kiểm tra thu được phân biệt các phát hiện về linh kiện hoặc bề mặt đã quan sát với mức độ bao phủ bằng chứng của các vùng áp dụng. Một vùng có thể đã quan sát, quan sát một phần hoặc chưa kiểm tra; một linh kiện được kỳ vọng có thể đã quan sát, chưa xác định hoặc được kỳ vọng nhưng chưa quan sát thấy. Các trạng thái này quyết định việc báo cáo phát hiện, yêu cầu chụp bổ sung có mục tiêu hoặc giữ trạng thái bất định. Biểu diễn phân cấp có thể dùng cây cho quan hệ thuộc về và đồ thị cho chức năng dùng chung hoặc các quan hệ khác.</p>
+<p>Các phương án tùy chọn bổ sung mô hình theo vùng, đánh giá tình trạng, liên kết nhiều góc nhìn, theo dõi thay đổi, thông tin chẩn đoán, chấm điểm độ tin cậy được huấn luyện từ kết quả thẩm định, cơ chế thăng hạng lớp có ngưỡng trễ và huấn luyện bằng dữ liệu tổng hợp. Các thao tác này sử dụng cùng bản ghi bằng chứng về vùng và linh kiện. Phương pháp không cần tiếp nhận ảnh của mọi vùng để kiểm tra một vùng trên xe, và không đòi hỏi kích thước lưới, nhà cung cấp mô hình, số hệ thống trên xe, ngưỡng điểm hoặc việc tái dựng ba chiều cụ thể.</p>
+<h2>5. MÔ TẢ VẮN TẮT CÁC HÌNH VẼ</h2>
+<p>HÌNH 1 minh họa phạm vi vùng kiểm tra toàn xe: ngoại thất và thân xe (120), khoang hành khách và khoang hàng (130), bánh xe và lốp (140), gầm và khung xe (150), khoang hệ truyền động (160), và các bộ phận điện/năng lượng (170).</p>
+<p>HÌNH 2 minh họa thu nhận ảnh (202), định tuyến theo vùng (204), phân tích ngữ cảnh/cục bộ (206), xử lý bằng chứng (208), kho phân cấp và mức độ bao phủ (210), đánh giá (212), và đầu ra hoặc chụp lại có mục tiêu (214).</p>
+<p>HÌNH 3 minh họa cấu trúc phân cấp phương tiện-vùng-hệ thống-linh kiện (300) và đồ thị quan hệ riêng biệt (320).</p>
+<p>HÌNH 4 minh họa phân tích ngữ cảnh (402), phân tích vùng cục bộ (404), xử lý trong hệ tọa độ chung (406), và tùy chọn liên kết bằng chứng giữa các ảnh riêng biệt (408).</p>
+<p>HÌNH 5 minh họa mức độ bao phủ quan sát (502), tính áp dụng (504), trạng thái bằng chứng (506) và chụp bổ sung có mục tiêu (508).</p>
+<p>HÌNH 6 minh họa thẩm định và phản hồi huấn luyện (600), bao gồm thẩm định riêng về lớp và hình học, điều kiện chấp nhận, và trạng thái lớp dựa trên mẫu thực đã thẩm định.</p>
+<p>HÌNH 7 minh họa bằng chứng tình trạng gắn với linh kiện (700), ngữ cảnh chẩn đoán tùy chọn (720) và so sánh qua thời gian có bảo toàn bằng chứng (740).</p>
+<p>HÌNH 8 minh họa bộ sinh dữ liệu tổng hợp tùy chọn (800), sử dụng mô hình đối tượng thuộc nhiều vùng xe và huấn luyện ngoại tuyến cho hệ thống kiểm tra được triển khai.</p>
+<p>Các hình vẽ là sơ đồ vector. Kích thước, vị trí linh kiện và số góc nhìn minh họa không phải phép đo vật lý hoặc giới hạn của yêu cầu bảo hộ.</p>
+<h2>6. MÔ TẢ CÁC PHƯƠNG ÁN THỰC HIỆN ĐẠI DIỆN</h2>
+<h3>6.1 Phạm vi kiểm tra và hồ sơ vùng</h3>
+<p>Hồ sơ phương tiện xác định các vùng, hệ thống, loại linh kiện áp dụng và tùy chọn biến thể trang bị. Siêu dữ liệu có thể gồm cấu hình suy ra từ VIN, năm sản xuất/hãng/mẫu xe, loại hệ truyền động, bố trí trục, phiên bản trang bị hoặc mã tài sản trong đội xe. Hồ sơ chưa xác định được giữ ở trạng thái chưa biết hoặc có điều kiện thay vì thay bằng cấu hình giả định.</p>
+<p>Bảng 1 nêu các vùng kiểm tra đại diện. Vùng là ngữ cảnh ngữ nghĩa về thu nhận và quan hệ thuộc về, không nhất thiết là một hình chữ nhật cố định. Xe có thể có nhiều khoang hệ truyền động hoặc khoang hàng; các tên vùng khác nhau có thể ánh xạ vào cùng nút phân cấp. Hồ sơ xe máy có thể bỏ khoang hành khách nhưng giữ hệ truyền động lộ ra, bánh xe, khung và cơ cấu điều khiển. Hồ sơ xe buýt hoặc xe tải có thể gồm nhiều trục và các khoang hàng hoặc thiết bị riêng.</p>
+<table><tr><td>Nhóm vùng</td><td>Đối tượng đại diện</td><td>Giới hạn theo góc nhìn</td></tr><tr><td>Ngoại thất/thân xe</td><td>Tấm thân vỏ, cản, cửa, kính, đèn, gương, chi tiết trang trí, tình trạng bề mặt nhìn thấy</td><td>Phản xạ, ánh sáng và góc nhìn ảnh hưởng tình trạng bề mặt biểu kiến</td></tr><tr><td>Nội thất/khoang hàng</td><td>Ghế, hệ thống giữ người, bảng táp-lô, điều khiển, màn hình, trang trí, chi tiết khoang hàng tiếp cận được</td><td>Hình thức bên ngoài không xác lập trạng thái cơ cấu ẩn hoặc điện tử bên trong</td></tr><tr><td>Bánh/lốp/phanh</td><td>Lốp, vành, vùng van, chi tiết siết bánh, bộ phận phanh nhìn thấy</td><td>Mòn bên trong và kích thước định lượng cần góc nhìn hoặc phép đo phù hợp</td></tr><tr><td>Gầm/khung xe</td><td>Khung, treo, liên kết lái, khí xả, tấm chắn, đường ống tiếp cận được</td><td>Khả năng tiếp cận, chất bẩn và che khuất giới hạn mức độ quan sát</td></tr><tr><td>Khoang hệ truyền động</td><td>Động cơ, nạp khí, làm mát, bôi trơn, phụ kiện, điểm bảo dưỡng</td><td>Bộ phận bị che hoặc bên trong có thể vẫn được kỳ vọng nhưng chưa quan sát thấy</td></tr><tr><td>Điện/năng lượng</td><td>Dây dẫn nhìn thấy, đầu nối, cổng sạc, vỏ bộ pin, vỏ hệ thống năng lượng</td><td>Ngoại hình không xác lập sức khỏe bên trong bộ pin hoặc khả năng cách điện</td></tr></table>
+<p>Phạm vi toàn xe nghĩa là kiến trúc có thể biểu diễn các vùng áp dụng nêu trên. Chỉ thị hoàn tất kiểm tra chỉ được phát khi đáp ứng các tiêu chí bao phủ đã cấu hình cho phương tiện và nhiệm vụ kiểm tra. Không suy ra hoàn tất từ một ảnh hoặc chỉ từ việc có cấu trúc phân cấp toàn xe.</p>
+<h3>6.2 Thu nhận ảnh và định tuyến theo vùng</h3>
+<p>Đầu vào gồm ảnh tĩnh, khung hình video được chọn hoặc ảnh từ camera cầm tay, cố định, trạm xe chạy qua, camera gầm, robot hoặc camera nội soi tại vị trí tiếp cận được. Bản ghi ảnh lưu định danh xe/phiên, định danh góc nhìn, thời điểm thu nhận, hướng ảnh, nguồn và vùng được gán. Vùng có thể do người vận hành cung cấp, suy ra từ mốc thị giác hoặc xác định bằng trạm chụp đã biết. Gán vùng chưa rõ được giữ như phương án ứng viên cho đến khi thẩm định.</p>
+<p>Chất lượng và mức độ bao phủ ảnh được kiểm tra riêng với suy luận linh kiện. Nhòe, chói, khoảng cách quá xa, cắt ảnh hoặc khoang chưa mở có thể giảm trạng thái quan sát của vùng. Định tuyến vùng chọn mô hình phát hiện, phân đoạn, đánh giá tình trạng phù hợp hoặc mô hình dùng chung có ngữ cảnh vùng. Không bắt buộc tái dựng các ảnh thành mô hình phương tiện ba chiều.</p>
+<h3>6.3 Phân tích thị giác theo ngữ cảnh và cục bộ</h3>
+<p>Nhánh ngữ cảnh đánh giá toàn ảnh hoặc ảnh tổng quan vùng. Các nhánh cục bộ đánh giá vùng con chồng lấn, vùng quan tâm được chọn hoặc tháp ảnh có mức chi tiết cao hơn. Các nhánh có thể chạy tuần tự hoặc đồng thời nhằm giữ cả ngữ cảnh vùng và chi tiết hình ảnh; chia ô hai-hai là một phương án thực hiện.</p>
+<p>Mỗi ứng viên mang định danh lớp hoặc nhóm chung, điểm, khung bao hoặc mặt nạ, nguồn nhánh/góc nhìn và ngữ cảnh vùng. Kết quả cục bộ được chuyển sang hệ tọa độ ảnh gốc tương ứng bằng độ lệch vùng cắt và phép biến đổi ngược của việc đổi kích thước. Mặt nạ, nếu dùng, nhận cùng phép biến đổi với khung bao. Ứng viên bị cắt tại biên nội bộ của vùng cắt có thể được đánh dấu hoặc loại để ưu tiên quan sát đầy đủ hơn.</p>
+<p>Xử lý trong một ảnh dùng mức chồng lấn và bằng chứng cá thể tương thích để loại ứng viên lặp hoặc giữ khung bao/mặt nạ có bằng chứng tốt nhất. Triệt tiêu không cực đại (NMS) theo lớp hoặc không phân biệt lớp là các ví dụ; hợp nhất mặt nạ tương thích là lựa chọn khác. Các đối tượng khác nhau lồng nhau, như bánh xe và bộ phận phanh, được giữ bằng quy tắc tương thích xét phân cấp, thay vì tự động gộp do khung bao chồng lấn. Giới hạn số lượng theo vùng và bằng chứng vị trí có thể đánh dấu ứng viên khó hợp lý; giới hạn thiếu cơ sở được vô hiệu hóa. Tiên nghiệm không gian phụ thuộc góc nhìn được dùng như bằng chứng mềm, trừ khi việc đăng ký ảnh đủ cơ sở cho ràng buộc mạnh hơn.</p>
+<h3>6.4 Bằng chứng phân cấp và liên kết giữa các ảnh</h3>
+<p>Kho bằng chứng gắn phát hiện với cấu trúc như phương tiện -&gt; vùng -&gt; hệ thống chức năng -&gt; nhóm linh kiện -&gt; cá thể linh kiện. Quan hệ thuộc về có thể dùng cây; các cạnh connected_to, part_of, serves_system, adjacent_to và possible_same_instance biểu diễn quan hệ bổ sung. Một đầu nối điện có thể thuộc bó dây vật lý nhưng phục vụ hệ truyền động hoặc chiếu sáng. Phát hiện tình trạng được gắn với linh kiện hoặc vùng bề mặt tương ứng, không coi là nhãn cấp xe không có liên hệ.</p>
+<p>Giữa các ảnh riêng biệt, chồng lấn điểm ảnh đơn thuần không đủ để đối sánh định danh. Khối liên kết tùy chọn so sánh định danh xe/phiên, vùng và phía xe, lớp linh kiện, biểu diễn nhúng hình ảnh, mốc nhìn thấy và tương ứng hình học có sẵn. Không gộp bánh trước trái với bánh trước phải chỉ vì chúng giống nhau. Nhãn trạm/góc nhìn đã biết, đối sánh mốc hoặc vị trí do người vận hành xác nhận giúp phân biệt. Đối sánh chưa rõ được giữ như giả thuyết có nguồn gốc thay vì định danh vật lý đã xác nhận.</p>
+<p>Thao tác tọa độ chung ở Mục 6.3 áp dụng trong từng ảnh gốc. Liên kết giữa ảnh nối bằng chứng cục bộ của từng ảnh với cùng cá thể theo ngữ nghĩa, không giả định mọi ảnh chung hệ tọa độ điểm ảnh. Quan sát độc lập và mâu thuẫn được giữ để thẩm định. Sự tách biệt này cho phép camera khác góc nhìn đóng góp bằng chứng mà không bắt buộc đăng ký ba chiều.</p>
+<h3>6.5 Mức độ bao phủ, tính áp dụng và linh kiện kỳ vọng</h3>
+<p>Với từng vùng áp dụng, bộ xử lý lưu mức độ bao phủ quan sát từ chất lượng ảnh được chấp nhận, mức chồng lấn ảnh/vùng và khả năng nhìn thấy mốc hoặc bề mặt mục tiêu liên quan nhiệm vụ. Chính sách có thể yêu cầu nhiều góc nhìn, mặt nạ bề mặt đủ đầy hoặc khả năng tiếp cận do người vận hành xác nhận. Chính sách phân biệt đã quan sát, quan sát một phần, chưa kiểm tra và không áp dụng. Các trạng thái phản ánh bao phủ bằng chứng, không phải tình trạng vật lý linh kiện.</p>
+<p>Bản ghi linh kiện kỳ vọng được chọn từ hồ sơ xe đã xác định hoặc mẫu kiểm tra rồi đối chiếu với bằng chứng được giữ. Linh kiện có thể đã quan sát, unresolved_generic_match, expected_not_observed hoặc applicability_unknown. Có thể giữ tên expected_not_visible để tương thích, nhưng tên này nghĩa là được kỳ vọng và chưa quan sát thấy trong các ảnh có sẵn. Không xác nhận che khuất, thiếu linh kiện hoặc hỏng. Phát hiện nhóm chung có thể tương ứng với linh kiện được liên kết như bằng chứng chưa giải quyết.</p>
+<p>Nếu mục tiêu chưa đạt mức bao phủ chấp nhận được, bộ xử lý tạo chỉ dẫn chụp lại có mục tiêu. Chỉ dẫn xác định vùng hoặc mốc, góc nhìn hoặc chi tiết cần có và lý do: chói, thiếu phía xe, linh kiện chưa rõ hoặc khả năng che khuất. Lớp phủ vị trí của mục tiêu chưa quan sát cần mốc có cơ sở, sơ đồ cấu hình phù hợp hoặc mô hình tọa độ trạm đã xác lập; nếu không, chỉ dẫn ở dạng chữ. Sau chụp lại, hệ thống cập nhật mức bao phủ và đối chiếu bằng chứng, vẫn giữ nguồn ảnh trước đó.</p>
+<h3>6.6 Tình trạng linh kiện và ngữ cảnh chẩn đoán</h3>
+<p>Khối đánh giá tình trạng tùy chọn phân loại dấu hiệu nhìn thấy như móp tấm thân vỏ, nứt bề mặt, vết chất lỏng, đầu nối tách rời, ăn mòn, thiếu chi tiết trang trí nhìn thấy hoặc bất thường bề mặt lốp. Có thể dùng phân đoạn, mô hình ảnh đã huấn luyện, quy tắc cấu hình hoặc bằng chứng thị giác đã thẩm định. Bản ghi lưu loại phát hiện, cá thể/vùng mục tiêu, ảnh hỗ trợ, vị trí, độ tin cậy và trạng thái đánh giá. Phát hiện chưa chắc chắn giữ trạng thái nghi ngờ hoặc review_required. Không tự động chuyển bất thường nhìn thấy thành hư hỏng cơ khí bên trong.</p>
+<p>Trường mức độ nghiêm trọng tùy chọn là định tính, trừ khi phép đo có cơ sở hoặc mô hình đã hiệu chuẩn xác lập thang định lượng. Độ sâu gai lốp, kích thước biến dạng và phép đo tương tự cần chuẩn tỷ lệ hoặc bố trí đo đã kiểm chứng. Không khẳng định dung lượng bên trong bộ pin, cách điện hoặc độ dày phanh bị che chỉ từ hình thức RGB.</p>
+<p>Đầu vào OBD/DTC tùy chọn, lịch sử bảo dưỡng, số km hoặc quan sát cảm biến có cơ sở được giữ như loại bằng chứng riêng với thời điểm và nguồn gốc. Quan hệ cấu hình có thể nối bằng chứng này với linh kiện và đề xuất bước kiểm tra. Mâu thuẫn giữa thị giác và chẩn đoán được lưu rõ ràng. Không khẳng định DTC chỉ từ không phát hiện, và không suy ra chỉ dẫn tháo bộ phận cao áp từ nhận diện vỏ bao.</p>
+<h3>6.7 Thẩm định, bất định và phản hồi huấn luyện</h3>
+<p>Mô hình huấn luyện từ thẩm định có thể chấm điểm đúng lớp bằng độ tin cậy của bộ phát hiện hoặc mô hình thị giác-ngôn ngữ, tương đồng hình ảnh vùng cắt tham chiếu, hình học, ngữ cảnh không gian, chồng lấn và đặc trưng theo vùng. Tương đồng có thể dùng hiệu giữa mức phù hợp với mẫu đúng lớp đã thẩm định và mẫu bị bác bỏ. Đúng lớp, chấp nhận định vị, đúng tình trạng và trạng thái trùng là các mục tiêu thẩm định riêng. Điểm lớp cao không xác nhận tất cả mục tiêu.</p>
+<p>Nhãn ứng viên được chấp nhận, thẩm định hoặc loại theo ngưỡng điểm có cơ sở và điều kiện hình học/không trùng. Hiệu chuẩn xác suất tùy chọn được khớp cho mục tiêu xác định bằng xe kiểm định riêng. Kho tham chiếu và tiên nghiệm học được trong từng lượt đánh giá chỉ xây từ xe huấn luyện; đánh giá ngưỡng cuối dùng xe chưa tham gia các bước trước. Hệ thống lưu quyết định người thẩm định và có thể thu hồi nhãn đã chấp nhận.</p>
+<p>Định danh chi tiết vẫn có trong bản ghi chú giải dù nhãn huấn luyện dùng lớp dự phòng chung như vỏ bao khác, đường dẫn khác, chi tiết siết khác hoặc bất thường bề mặt khác. Chỉ thăng hạng lớp độc lập khi số mẫu thực đủ điều kiện đã được chuyên gia thẩm định và độ đa dạng xe đạt ngưỡng. Hạ hạng dùng ngưỡng duy trì thấp hơn, giữ định danh và thay ánh xạ huấn luyện. Thay đổi đi vào danh mục huấn luyện có phiên bản và có hiệu lực trong mô hình cập nhật tương ứng. Mẫu tổng hợp không tăng số mẫu thực đã thẩm định. Ngưỡng và danh mục vùng có thể cấu hình, không cố định theo một số lượng toàn xe.</p>
+<h3>6.8 Bằng chứng qua thời gian và tạo báo cáo</h3>
+<p>Phương án theo dõi qua thời gian tùy chọn liên kết các phiên với cùng xe và đối sánh định danh vùng/linh kiện tương ứng. Hệ thống so sánh trạng thái phát hiện đã chuẩn hóa hoặc bề mặt tương ứng đã đăng ký, xét khác biệt góc nhìn, ánh sáng, thay thế và chất lượng chụp. Dấu vết mới được báo như thay đổi ứng viên cho đến khi bằng chứng hỗ trợ liên kết và so sánh tình trạng. Linh kiện thay thế tạo sự kiện định danh/phiên bản thay vì giả định cá thể vẫn liên tục tồn tại.</p>
+<p>Đầu ra gồm cây hoặc đồ thị vùng/hệ thống, mức bao phủ quan sát, phát hiện có định vị, bất định, ngữ cảnh chẩn đoán liên kết và yêu cầu góc nhìn bổ sung. Báo cáo giữ phiên bản mô hình/danh mục phân loại, tham chiếu ảnh nguồn, trạng thái hồ sơ xe và lịch sử thẩm định. Giao diện đội xe hoặc bảo dưỡng có thể nhận bản ghi có cấu trúc nhưng không phải thành phần bắt buộc của phương pháp. Xử lý có thể tại thiết bị, máy chủ hoặc chia giữa thiết bị thu nhận và xử lý.</p>
+<h3>6.9 Huấn luyện tổng hợp toàn xe tùy chọn</h3>
+<p>Thư viện mô hình đối tượng ngoại tuyến gắn tấm ngoại thất, trang bị nội thất, bánh xe, bộ phận khung gầm, hệ truyền động và vỏ điện với cùng định danh vùng/linh kiện dùng khi kiểm tra. Cảnh theo vùng, linh kiện riêng và tình trạng thị giác đề xuất có thể được kết xuất với tư thế camera, ánh sáng, vật liệu, chất bẩn và che khuất ngẫu nhiên. Bộ kết xuất tạo ảnh màu và định danh cá thể/bề mặt để suy ra khung bao, mặt nạ, nhãn vùng và nhãn tình trạng đã cấu hình.</p>
+<p>Nhãn tuân theo khả năng nhìn thấy và thao tác ghép ảnh cuối. Cá thể không quan sát được không nhận mặt nạ cá thể nhìn thấy. Bản ghi tổng hợp giữ nguồn mô hình, vùng, cấu hình và lần kết xuất. Lấy mẫu có thể tập trung linh kiện hoặc tình trạng hiếm, trong khi chỉ mẫu thực đã thẩm định điều khiển thăng hạng lớp. Tiền huấn luyện hoặc huấn luyện hỗn hợp được tiếp nối bằng thích nghi với ảnh thực đã thẩm định. Xe thực giữ riêng đánh giá chuyển miền; dự thảo không cung cấp số liệu toàn xe hoặc chuyển miền tổng hợp được tạo giả. Kết xuất ngoại tuyến không đòi hỏi tái dựng ba chiều khi vận hành.</p>
+<h3>6.10 Tình huống kiểm tra đại diện</h3>
+<p>Tình huống A - khoang hệ truyền động: ảnh tổng quan xác định các vỏ bao lớn, trong khi vùng cắt cục bộ nhận diện nắp bảo dưỡng nhỏ. Tọa độ chung của ảnh gốc xử lý trùng. Bugi được kỳ vọng nhưng bị che vẫn chưa quan sát với bất định; nắp có định danh hợp lý nhưng hình học khung bao chưa rõ vẫn cần thẩm định. Đây là phương án khoang động cơ ban đầu.</p>
+<p>Tình huống B - ngoại thất và bánh xe: ảnh tổng quan bên trái và ảnh chi tiết cung cấp bằng chứng bề mặt cửa trước và bánh trước trái. Tình trạng cửa gắn với vùng bề mặt; bánh được liên kết bằng vị trí trước trái và bằng chứng góc nhìn. Thiếu ảnh bên phải giữ phía này chưa kiểm tra và tạo yêu cầu chụp bên phải. Hệ thống không báo phía chưa kiểm tra là không có hư hỏng.</p>
+<p>Tình huống C - gầm xe: ảnh gầm được chấp nhận xác định liên kết hệ treo tiếp cận được và dấu vết giống chất lỏng. Dấu vết là tình trạng nghi ngờ có định vị gắn với các linh kiện gần đó. Bề mặt phanh bị che vẫn chỉ quan sát một phần; cần ảnh gần hơn. Riêng dấu vết không xác lập nguồn rò rỉ hoặc mòn phanh bên trong.</p>
+<p>Tình huống D - xe điện và khoang hành khách: hồ sơ xác định động cơ đốt trong không áp dụng và xác định vùng cổng sạc/vỏ bộ pin. Dấu hiệu trên vỏ nhìn thấy và mã chẩn đoán được cung cấp vẫn là bằng chứng riêng. Ảnh khoang hành khách xác định ghế và điều khiển; điểm gắn hệ thống giữ người bị che chưa được quan sát. Không suy ra sức khỏe bộ pin từ hình thức vỏ. Đây là các phương án minh họa đề xuất, không phải thử nghiệm đã báo cáo.</p>
+<h3>6.11 Bằng chứng hiện có và giới hạn áp dụng</h3>
+<p>Báo cáo mô hình giáo viên khoang động cơ trong kho mã ghi 125 ảnh kiểm tra, kích thước đầu vào mạng 640 và IoU khung bao &gt;=0.5 với lớp trùng khớp. Độ thu hồi (recall)/độ chính xác dự đoán (precision) của toàn ảnh là 0.582/0.632; suy luận chia ô cùng xử lý trùng và giới hạn số lượng đạt 0.614/0.581. Độ thu hồi tăng 3.2 điểm phần trăm, độ chính xác giảm 5.1 điểm phần trăm. Không xác lập hiệu năng ngoại thất, khoang hành khách, bánh xe, gầm hoặc xe điện.</p>
+<p>Báo cáo thẩm định trước đây ghi 4627 khung bao đã thẩm định từ 177 xe và AUROC 0.844 so với 0.617 của độ tin cậy VLM thô. Với điểm &gt;=0.9, tỷ lệ mẫu được chọn là 21.8% và độ chính xác lớp là 0.941. Mục tiêu coi bad_geometry là đúng lớp; mẫu cắt tham chiếu được tính trước bước chia lượt mô hình theo xe. Vì vậy đây là quan sát thăm dò về chấm điểm lớp, không phải kiểm chứng độc lập đầy đủ về hiệu chuẩn, chấp nhận định vị hoặc toàn xe. Không tái dựng đường ROC thực nghiệm trong hình vẽ.</p>
+<p>Kiểm chứng toàn xe cần đo riêng sai số bao phủ vùng, hợp nhất sai giữa ảnh, sai lớp/tình trạng, ích lợi của chụp lại, bất định và chuyển giao giữa hồ sơ xe. Phương pháp có thể kiểm tra các vùng áp dụng từ tập ảnh được chấp nhận; chức năng nội bộ ẩn vẫn ngoài bằng chứng thị giác nếu không có phép đo riêng được xác định rõ hỗ trợ.</p>
+<h2>7. YÊU CẦU BẢO HỘ ĐỀ XUẤT</h2>
+<p>1. Phương pháp kiểm tra trực quan phương tiện được thực hiện bằng máy tính, bao gồm: (a) tiếp nhận một hoặc nhiều ảnh gắn với phương tiện; (b) gán từng ảnh cho một hoặc nhiều vùng của phương tiện được biểu diễn trong cấu trúc phân cấp phương tiện; (c) phân tích ít nhất một ảnh ở tỷ lệ ngữ cảnh và một hoặc nhiều tỷ lệ cục bộ để tạo các quan sát ứng viên về linh kiện hoặc bề mặt; (d) chuyển vị trí quan sát tỷ lệ cục bộ sang tọa độ ảnh gốc tương ứng và xử lý quan sát lặp trong ảnh đó; (e) gắn quan sát được giữ với định danh vùng và linh kiện hoặc bề mặt trong cấu trúc phân cấp; (f) xác định trạng thái bao phủ quan sát cho vùng được biểu diễn từ bằng chứng ảnh được chấp nhận; và (g) tạo đầu ra kiểm tra có cấu trúc phân biệt phát hiện đã quan sát với vùng chưa xác định hoặc chưa kiểm tra theo trạng thái bao phủ quan sát.</p>
+<p>2. Phương pháp theo yêu cầu bảo hộ 1, trong đó các vùng được biểu diễn gồm ngoại thất thân xe, nội thất hoặc khoang hàng, bánh xe hoặc lốp, gầm hoặc khung xe, khoang hệ truyền động và vùng hệ thống điện hoặc năng lượng; phương pháp áp dụng cho một tập con hoặc tất cả vùng áp dụng đối với cấu hình phương tiện.</p>
+<p>3. Phương pháp theo yêu cầu bảo hộ 1, trong đó hồ sơ phương tiện xác định tính áp dụng của vùng và linh kiện cho xe động cơ đốt trong, xe lai hoặc xe điện; linh kiện không áp dụng được phân biệt với linh kiện áp dụng nhưng chưa quan sát thấy trong ảnh có sẵn.</p>
+<p>4. Phương pháp theo yêu cầu bảo hộ 1, trong đó thu nhận gồm chụp cầm tay, trạm cố định, khung hình video được chọn, chụp gầm, chụp bằng robot hoặc camera nội soi tại vị trí tiếp cận được, với định danh góc nhìn/phiên và gán vùng được lưu giữ.</p>
+<p>5. Phương pháp theo yêu cầu bảo hộ 1, trong đó khối định tuyến vùng chọn mô hình thị giác theo vùng hoặc cung cấp ngữ cảnh vùng cho mô hình thị giác dùng chung.</p>
+<p>6. Phương pháp theo yêu cầu bảo hộ 1, trong đó phân tích tỷ lệ cục bộ gồm ô chồng lấn, vùng quan tâm được chọn hoặc biểu diễn ảnh đa độ phân giải; các nhánh ngữ cảnh và cục bộ chạy tuần tự hoặc đồng thời.</p>
+<p>7. Phương pháp theo yêu cầu bảo hộ 1, trong đó quan sát gồm mặt nạ phân đoạn; mặt nạ và khung bao tương ứng được chuyển bằng cùng độ lệch vùng cắt và phép biến đổi ngược của việc đổi kích thước trước khi xử lý trùng.</p>
+<p>8. Phương pháp theo yêu cầu bảo hộ 1, trong đó xử lý quan sát lặp gồm NMS theo lớp hoặc không phân biệt lớp, hoặc hợp nhất mặt nạ tương thích; quan hệ linh kiện ngăn hợp nhất các mục tiêu khác nhau lồng nhau chỉ vì vị trí chồng lấn.</p>
+<p>9. Phương pháp theo yêu cầu bảo hộ 1, trong đó bằng chứng vị trí hoặc ràng buộc số lượng linh kiện phụ thuộc vùng hoặc hồ sơ xe; ràng buộc thiếu cơ sở được vô hiệu hóa hoặc dùng như bằng chứng mềm.</p>
+<p>10. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm liên kết quan sát từ các ảnh riêng với cùng định danh linh kiện bằng định danh xe/phiên, vùng hoặc phía xe, đặc điểm hình ảnh, mốc hoặc tương ứng hình học, đồng thời giữ liên kết chưa rõ như giả thuyết.</p>
+<p>11. Phương pháp theo yêu cầu bảo hộ 10, trong đó xử lý tọa độ trong một ảnh tách biệt với liên kết cá thể theo ngữ nghĩa giữa ảnh; liên kết không đòi hỏi cùng hệ tọa độ điểm ảnh hoặc tái dựng phương tiện ba chiều.</p>
+<p>12. Phương pháp theo yêu cầu bảo hộ 1, trong đó biểu diễn phân cấp gồm nút phương tiện, vùng, hệ thống, nhóm linh kiện và cá thể, với cạnh quan hệ xác định chức năng dùng chung, kết nối hoặc quan hệ thuộc về.</p>
+<p>13. Phương pháp theo yêu cầu bảo hộ 1, trong đó trạng thái bao phủ quan sát phân biệt đã quan sát, quan sát một phần, chưa kiểm tra và không áp dụng theo chính sách kiểm tra và chất lượng ảnh được chấp nhận.</p>
+<p>14. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm đối chiếu quan sát được giữ với kỳ vọng từ hồ sơ xe và biểu diễn linh kiện kỳ vọng nhưng chưa quan sát với bất định, phân biệt chưa quan sát với thiếu linh kiện vật lý hoặc hỏng đã xác nhận.</p>
+<p>15. Phương pháp theo yêu cầu bảo hộ 14, trong đó quan sát nhóm chung liên kết với linh kiện chi tiết kỳ vọng chưa xác định; lớp phủ vị trí cho linh kiện chưa quan sát chỉ được tạo khi có mốc, sơ đồ cấu hình hoặc mô hình tọa độ trạm hỗ trợ.</p>
+<p>16. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm tạo chỉ dẫn chụp bổ sung có mục tiêu xác định vùng, góc nhìn hoặc chi tiết cần có và bằng chứng còn thiếu, rồi cập nhật trạng thái bao phủ sau tiếp nhận ảnh bổ sung.</p>
+<p>17. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm gắn phát hiện tình trạng nhìn thấy có định vị với định danh linh kiện hoặc bề mặt được giữ, đồng thời lưu nguồn ảnh hỗ trợ và trạng thái đánh giá tình trạng.</p>
+<p>18. Phương pháp theo yêu cầu bảo hộ 17, trong đó mã chẩn đoán được cung cấp, hồ sơ bảo dưỡng hoặc quan sát cảm biến được giữ như loại bằng chứng riêng gắn với linh kiện hoặc vùng; mâu thuẫn với phát hiện thị giác được bảo toàn.</p>
+<p>19. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm so sánh bằng chứng từ các phiên khác nhau của cùng phương tiện bằng định danh vùng hoặc linh kiện tương ứng, và ghi nhận thay đổi tình trạng hoặc thay linh kiện với nguồn ảnh.</p>
+<p>20. Phương pháp theo yêu cầu bảo hộ 1, còn bao gồm chấm điểm nhãn huấn luyện đề xuất bằng bằng chứng kết quả thẩm định và chỉ chấp nhận nhãn khi điều kiện điểm lớp, hình học và không trùng đáp ứng chính sách cấu hình.</p>
+<p>21. Phương pháp theo yêu cầu bảo hộ 20, trong đó linh kiện chi tiết giữ định danh chú giải trong khi nhãn huấn luyện ánh xạ vào lớp dự phòng chung; thăng hạng thành lớp huấn luyện độc lập đòi hỏi số mẫu thực đã thẩm định và độ đa dạng xe, còn hạ hạng dùng ngưỡng duy trì thấp hơn.</p>
+<p>22. Phương pháp theo yêu cầu bảo hộ 1, trong đó mô hình thị giác triển khai được huấn luyện bằng ảnh tổng hợp ngoại tuyến từ mô hình đối tượng gắn với danh mục phân loại của nhiều vùng xe, được kết xuất với góc nhìn, ánh sáng, vật liệu và che khuất ngẫu nhiên, rồi thích nghi với ảnh thực đã chuyên gia thẩm định; mẫu tổng hợp không được tính vào số mẫu thực hỗ trợ thăng hạng lớp.</p>
+<p>23. Hệ thống kiểm tra trực quan phương tiện bao gồm giao diện thu nhận, bộ nhớ lưu biểu diễn phân cấp phương tiện và bản ghi mức bao phủ vùng, và một hoặc nhiều bộ xử lý được cấu hình để: gắn ảnh xe tiếp nhận với các vùng; tạo quan sát linh kiện hoặc bề mặt bằng phân tích ngữ cảnh và tỷ lệ cục bộ; chuyển và xử lý quan sát cục bộ trong tọa độ ảnh gốc; gắn quan sát được giữ với định danh vùng và linh kiện hoặc bề mặt; xác định mức bao phủ vùng từ bằng chứng ảnh được chấp nhận; và xuất phát hiện đã quan sát riêng với vùng chưa xác định hoặc chưa kiểm tra theo mức bao phủ; cùng màn hình hoặc giao diện đầu ra cho biểu diễn kiểm tra có cấu trúc thu được.</p>
+<p>24. Vật mang lưu trữ đọc được bằng máy tính không mang tính tạm thời, lưu các lệnh khi được một hoặc nhiều bộ xử lý thực thi sẽ khiến các bộ xử lý thực hiện phương pháp theo yêu cầu bảo hộ 1.</p>
+<p>25. Phương pháp được thực hiện bằng máy tính để tuyển chọn nhãn huấn luyện kiểm tra trực quan trên các vùng phương tiện, bao gồm: tiếp nhận bản ghi ứng viên linh kiện hoặc bề mặt đã thẩm định với kết quả về lớp và định vị được xác định riêng; tính đặc trưng ứng viên theo ngữ cảnh vùng, gồm độ tin cậy thị giác và hiệu giữa độ tương đồng biểu diễn nhúng với mẫu đúng lớp đã thẩm định và với mẫu bị bác bỏ; huấn luyện mô hình chấm điểm kết quả thẩm định bằng các đặc trưng đó; chọn ngưỡng định tuyến bằng dữ liệu kiểm định tách theo xe, với kho tham chiếu chỉ gồm xe huấn luyện; và định tuyến ứng viên mới vào chấp nhận, thẩm định hoặc loại theo điểm và điều kiện riêng về định vị và không trùng, đồng thời giữ nguồn gốc thẩm định.</p>
+<p>26. Phương pháp theo yêu cầu bảo hộ 25, còn bao gồm khớp ánh xạ hiệu chuẩn xác suất cho mục tiêu thẩm định xác định bằng xe kiểm định riêng và đánh giá ánh xạ bằng dữ liệu xe được giữ riêng.</p>
+<p>27. Phương pháp theo yêu cầu bảo hộ 25, còn bao gồm duy trì định danh chi tiết với nhãn huấn luyện dự phòng chung và thay trạng thái lớp độc lập theo số cá thể thực đã thẩm định và số xe, dùng ngưỡng thăng hạng và duy trì khác nhau, không tính mẫu tổng hợp.</p>
+<p>28. Hệ thống tuyển chọn nhãn huấn luyện bao gồm bộ nhớ lưu bản ghi ứng viên đã thẩm định gắn với vùng và các biểu diễn nhúng tham chiếu, cùng một hoặc nhiều bộ xử lý được cấu hình thực hiện phương pháp theo yêu cầu bảo hộ 25.</p>
+<p>29. Vật mang lưu trữ đọc được bằng máy tính không mang tính tạm thời, lưu các lệnh khi được một hoặc nhiều bộ xử lý thực thi sẽ khiến các bộ xử lý thực hiện phương pháp theo yêu cầu bảo hộ 25.</p>
+<p>30. Phương pháp theo yêu cầu bảo hộ 1, trong đó chỉ thị hoàn tất kiểm tra chỉ được phát khi đáp ứng các tiêu chí bao phủ quan sát đã cấu hình cho vùng áp dụng của hồ sơ phương tiện và nhiệm vụ kiểm tra.</p>
+<h2>8. TÓM TẮT</h2>
+<p>Sáng chế đề xuất hệ thống kiểm tra trực quan các vùng phương tiện bằng phân tích ảnh theo ngữ cảnh và tỷ lệ cục bộ. Quan sát cục bộ được chuyển về tọa độ ảnh gốc và xử lý trùng, rồi gắn với biểu diễn phân cấp các vùng ngoại thất, nội thất, bánh xe, gầm, hệ truyền động và điện áp dụng cho xe. Mức bao phủ phân biệt vùng đã quan sát, quan sát một phần và chưa kiểm tra. Hồ sơ xe xác định linh kiện áp dụng nhưng chưa quan sát với bất định; thiếu bằng chứng có thể tạo yêu cầu chụp bổ sung. Các phương án tùy chọn liên kết nhiều góc nhìn, tình trạng và chẩn đoán, so sánh các phiên, tuyển chọn nhãn từ thẩm định với điều kiện định vị và không trùng. Lớp dự phòng dùng mẫu thực đã thẩm định và ngưỡng thăng hạng trễ. Huấn luyện tổng hợp ngoại tuyến không làm tăng số mẫu thực dùng thăng hạng. Đầu ra bảo toàn nguồn bằng chứng và phân biệt quan sát với đánh giá chưa xác định.</p><section class="figure"><h2>HÌNH 1. Phạm vi vùng kiểm tra toàn xe</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<polygon points="65 215, 82 266, 137 273, 173 318, 282 318, 330 279, 391 265, 402 215" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.8; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<polygon points="145 279, 179 309, 226 309, 226 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<polygon points="237 309, 279 309, 316 279, 237 279" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<path d="M 229,279 L 229,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 315,277 L 315,222 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1;"/>
+			<circle cx="122" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="122" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="29" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<circle cx="340" cy="215" r="15" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="180" y="223" width="105" height="17" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<rect x="75" y="235" width="50" height="22" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="108.8369140625" y="443" style="font-family: PatentVI-Bold; font-size: 12px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,886) scale(1,-1)">PHẠM VI VÙNG KIỂM TRA TOÀN XE (100)</text>
+			<rect x="12" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="20.34716796875" y="388.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Khoang hệ truyền động (160)</text>
+			<rect x="163" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="176.90380859375" y="394.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,788) scale(1,-1)">Khoang hành khách / hàng</text>
+			<text x="219.669921875" y="382.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,764) scale(1,-1)">(130)</text>
+			<rect x="313" y="368" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="328.986328125" y="388.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,776) scale(1,-1)">Ngoại thất / thân xe (120)</text>
+			<path d="M 79,368 L 97,258 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="97 258, 98.98691 264.7121, 92.97732 263.7287" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,368 L 235,300 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="235 300, 237.5743 306.5094, 231.5012 306.0629" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 382,368 L 367,273 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="367 273, 370.9906 278.7511, 364.9756 279.7009" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="12" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="40.6181640625" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Bánh xe / lốp (140)</text>
+			<rect x="163" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="186.34228515625" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Gầm / khung xe (150)</text>
+			<rect x="313" y="103" width="135" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="332.09912109375" y="123.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,246) scale(1,-1)">Điện / năng lượng (170)</text>
+			<path d="M 80,149 L 118,187 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="118 187, 111.39 184.696, 115.696 180.39" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,149 L 230,219 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 219, 226.9552 212.6969, 233.0448 212.6969" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 380,149 L 286,230 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="286 230, 288.7874 223.5789, 292.7625 228.192" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="99.40112304687497" y="62" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,124) scale(1,-1)">Tên vùng và vị trí linh kiện là minh họa; cấu hình xác định tính áp dụng.</text>
+			<text x="125.04760742187499" y="31" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,62) scale(1,-1)">Đốt trong / lai / điện | Xe con / thương mại / buýt / xe máy</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 2. Kiến trúc kiểm tra và vòng chụp lại</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="20" y="386" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="83.896484375" y="417.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,834) scale(1,-1)">Thu nhận (202)</text>
+			<text x="60.244140625" y="405.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">Ảnh + định danh phiên / xe</text>
+			<rect x="250" y="386" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="299.3115234375" y="417.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,834) scale(1,-1)">Định tuyến vùng (204)</text>
+			<text x="297.939453125" y="405.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,810) scale(1,-1)">Hồ sơ + chất lượng ảnh</text>
+			<rect x="250" y="275" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="277.4462890625" y="306.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Phân tích ngữ cảnh / cục bộ (206)</text>
+			<text x="271.39892578125" y="294.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,588) scale(1,-1)">Mô hình theo vùng hoặc dùng chung</text>
+			<rect x="20" y="275" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="66.8115234375" y="306.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Xử lý bằng chứng (208)</text>
+			<text x="53.095703125" y="294.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,588) scale(1,-1)">Trong ảnh + tùy chọn giữa ảnh</text>
+			<rect x="20" y="160" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="64.873046875" y="191.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">Phân cấp / bao phủ (210)</text>
+			<text x="58.43994140625" y="179.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,358) scale(1,-1)">Định danh + trạng thái vùng</text>
+			<rect x="250" y="160" width="190" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="314.7314453125" y="191.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,382) scale(1,-1)">Đánh giá (212)</text>
+			<text x="304.68505859375" y="179.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,358) scale(1,-1)">Phát hiện + bất định</text>
+			<rect x="133" y="52" width="194" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="184.599609375" y="83.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,166) scale(1,-1)">Đầu ra / chụp lại (214)</text>
+			<text x="177.65380859375" y="71.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,142) scale(1,-1)">Báo cáo hoặc ảnh bổ sung</text>
+			<path d="M 210,414 L 250,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 414, 243.6969 417.0448, 243.6969 410.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,386 L 345,331 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="345 331, 348.0448 337.3031, 341.9552 337.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 250,303 L 210,303 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="210 303, 216.3031 299.9552, 216.3031 306.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 115,275 L 115,216 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="115 216, 118.0448 222.3031, 111.9552 222.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 210,188 L 250,188 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 188, 243.6969 191.0448, 243.6969 184.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,160 L 290,108 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="290 108, 296.6719 110.1179, 292.4884 114.5428" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 170,108 L 115,160 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="115 160, 117.4884 153.4572, 121.6719 157.8821" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 133,80 L 5,80 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 5,80 L 5,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 5,414 L 20,414 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="20 414, 13.69687 417.0448, 13.69687 410.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="103.46166992187499" y="23" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,46) scale(1,-1)">Nét đứt: chụp lại có mục tiêu đưa bằng chứng mới vào phiên kiểm tra.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 3. Phân cấp, nút bằng chứng và đồ thị quan hệ</h2><svg width="460" height="470" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 470" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="470"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-470)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="165" y="395" width="130" height="40" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="193.53759765625" y="412.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Phương tiện (302)</text>
+			<rect x="10" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="30.703125" y="323.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Vùng ngoại thất (304)</text>
+			<path d="M 230,395 L 75,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 349, 81.9089 347.8744, 80.17638 353.7122" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.5615234375" y="323.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Vùng bánh / lốp (304)</text>
+			<path d="M 230,395 L 230,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 349, 233.0448 355.3031, 226.9552 355.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="304" width="130" height="45" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="336.53564453125" y="323.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,647) scale(1,-1)">Vùng truyền động (304)</text>
+			<path d="M 230,395 L 385,349 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 349, 379.8236 353.7122, 378.0911 347.8744" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="28.623046875" y="240.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Hệ thống thân xe (306)</text>
+			<path d="M 75,304 L 75,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 264, 78.04476 270.3031, 71.95524 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.9814453125" y="240.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Hệ thống phanh (306)</text>
+			<path d="M 230,304 L 230,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 264, 233.0448 270.3031, 226.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="222" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="336.95556640625" y="240.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,480) scale(1,-1)">Hệ thống làm mát (306)</text>
+			<path d="M 385,304 L 385,264 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 264, 388.0448 270.3031, 381.9552 270.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="10" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="40.2197265625" y="157.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Bề mặt cửa (308)</text>
+			<path d="M 75,222 L 75,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 181, 78.04476 187.3031, 71.95524 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.14892578125" y="157.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Linh kiện phanh (308)</text>
+			<path d="M 230,222 L 230,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 181, 233.0448 187.3031, 226.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="139" width="130" height="42" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="341.4599609375" y="157.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,314) scale(1,-1)">Đường làm mát (308)</text>
+			<path d="M 385,222 L 385,181 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 181, 388.0448 187.3031, 381.9552 187.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 320,160 L 295,160 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="295 160, 301.3031 156.9552, 301.3031 163.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="294.44921875" y="185" style="font-family: PatentVI; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,370) scale(1,-1)">quan hệ</text>
+			<rect x="44" y="38" width="372" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="82.87841796875" y="67.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,135) scale(1,-1)">Nút bằng chứng (310): mã ảnh, vị trí, điểm, phát hiện, thẩm định và trạng</text>
+			<text x="205.283203125" y="55.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,111) scale(1,-1)">thái bao phủ</text>
+			<path d="M 75,139 L 75,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 91, 78.04476 97.30313, 71.95524 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,139 L 230,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 91, 233.0448 97.30313, 226.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 385,139 L 385,91 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 91, 388.0448 97.30313, 381.9552 97.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="110.65771484374999" y="10" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">Nét liền: cây thuộc về. Nét đứt: quan hệ chức năng / kết nối (320).</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 4. Phân tích ngữ cảnh/cục bộ và liên kết ảnh</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="95" y="414" width="270" height="40" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="168.34228515625" y="431.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,862) scale(1,-1)">Ảnh gốc / góc nhìn vùng (400)</text>
+			<path d="M 175,414 L 107,369 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="107 369, 113.9367 369.9394, 110.5761 375.0176" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 285,414 L 352,369 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="352 369, 348.4651 375.0419, 345.0699 369.9868" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="15" y="305" width="180" height="64" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="59.94140625" y="340.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,680) scale(1,-1)">Nhánh ngữ cảnh (402)</text>
+			<text x="52.421875" y="328.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,656) scale(1,-1)">Tổng quan / đối tượng lớn</text>
+			<rect x="265" y="305" width="180" height="64" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="315.1513671875" y="340.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,680) scale(1,-1)">Nhánh cục bộ (404)</text>
+			<text x="302.9931640625" y="328.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,656) scale(1,-1)">Ô ảnh / chi tiết được chọn</text>
+			<rect x="62" y="232" width="87" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="79" y="242" width="26" height="23" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="306" y="257" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="337" y="257" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="306" y="232" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<rect x="337" y="232" width="37" height="31" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+			<path d="M 106,232 L 172,190 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="172 190, 168.3169 195.9527, 165.0476 190.8153" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 354,232 L 288,190 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="288 190, 294.9524 190.8153, 291.6831 195.9527" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="70" y="132" width="320" height="58" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="165.30029296875" y="164.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,328) scale(1,-1)">Tọa độ chung của ảnh gốc (406)</text>
+			<text x="134.09912109375" y="152.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,304) scale(1,-1)">Xử lý trùng; giữ đối tượng khác nhau lồng nhau</text>
+			<path d="M 230,132 L 230,93 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 93, 233.0448 99.30313, 226.9552 99.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="70" y="36" width="320" height="57" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="164.2529296875" y="67.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,135) scale(1,-1)">Liên kết giữa ảnh tùy chọn (408)</text>
+			<text x="129.8291015625" y="55.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,111) scale(1,-1)">Vùng / phía + bằng chứng định danh; giữ bất định</text>
+			<text x="100.71728515624997" y="11" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,22) scale(1,-1)">Liên kết ảnh theo ngữ nghĩa; không bắt buộc chung hệ tọa độ điểm ảnh.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 5. Trạng thái bao phủ và chụp bổ sung có mục tiêu</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="20" y="396" width="190" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="48.5595703125" y="424.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,848) scale(1,-1)">Bằng chứng ảnh chấp nhận (502)</text>
+			<text x="49.89013671875" y="412.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Chất lượng + nhìn thấy mục tiêu</text>
+			<rect x="250" y="396" width="190" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="290.4296875" y="424.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,848) scale(1,-1)">Tính áp dụng theo xe (504)</text>
+			<text x="288.7158203125" y="412.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,824) scale(1,-1)">Hồ sơ + chính sách kiểm tra</text>
+			<path d="M 115,396 L 170,348 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="170 348, 167.2531 354.4385, 163.249 349.8505" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,396 L 290,348 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="290 348, 296.751 349.8505, 292.7469 354.4385" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="93" y="298" width="274" height="50" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="179.46044921875" y="326.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,652) scale(1,-1)">Trạng thái quan sát (506)</text>
+			<text x="174.31884765625" y="314.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,628) scale(1,-1)">Bao phủ tách biệt tình trạng</text>
+			<rect x="10" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="51.396484375" y="214.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Đã quan sát</text>
+			<path d="M 230,298 L 75,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 244, 81.95395 243.1984, 79.95054 248.949" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="191.7431640625" y="214.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Một phần / chưa rõ</text>
+			<path d="M 230,298 L 230,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 244, 233.0448 250.3031, 226.9552 250.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="190" width="130" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="356.46484375" y="214.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Chưa kiểm tra</text>
+			<path d="M 230,298 L 385,244 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 244, 380.0495 248.949, 378.046 243.1984" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="22" y="84" width="180" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="58.26708984375" y="113.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,226) scale(1,-1)">Báo cáo phát hiện quan sát</text>
+			<text x="66.443359375" y="101.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,202) scale(1,-1)">Giữ bằng chứng hỗ trợ</text>
+			<rect x="258" y="84" width="180" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="300.509765625" y="113.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,226) scale(1,-1)">Chụp có mục tiêu (508)</text>
+			<text x="298.751953125" y="101.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,202) scale(1,-1)">Vùng + góc nhìn + lý do</text>
+			<path d="M 75,190 L 112,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="112 136, 110.949 142.9206, 105.9256 139.4787" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 230,190 L 348,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="348 136, 343.5355 141.3915, 341.0015 135.8543" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 385,190 L 348,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="348 136, 354.0744 139.4787, 349.051 142.9206" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 438,110 L 452,110 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="452 110, 445.6969 113.0448, 445.6969 106.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 452,110 L 452,423 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,423 L 452,466 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,466 L 115,466 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 115,466 L 115,446 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="115 446, 118.0448 452.3031, 111.9552 452.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="98.39257812499997" y="48" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,96) scale(1,-1)">Không áp dụng là trạng thái hồ sơ, không phải linh kiện hỏng hoặc thiếu.</text>
+			<text x="97.21923828124997" y="22" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,44) scale(1,-1)">Hoàn tất đòi hỏi đáp ứng tiêu chí bao phủ cấu hình cho các vùng áp dụng.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 6. Thẩm định và phản hồi trạng thái lớp</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="15" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="76.68212890625" y="426.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Ứng viên (602)</text>
+			<text x="56.953125" y="414.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Linh kiện / bề mặt / vùng</text>
+			<rect x="260" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="303.89892578125" y="426.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Mẫu đã thẩm định (604)</text>
+			<text x="309.68017578125" y="414.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Kết quả lớp + định vị</text>
+			<path d="M 107,398 L 175,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="175 355, 171.2999 360.9422, 168.0453 355.7954" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 352,398 L 285,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="285 355, 291.9492 355.842, 288.6601 360.9669" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="103" y="302" width="254" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="174.09912109375" y="331.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,663) scale(1,-1)">Mô hình từ thẩm định (606)</text>
+			<text x="154.140625" y="319.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,639) scale(1,-1)">Điểm lớp + điều kiện chấp nhận riêng</text>
+			<rect x="10" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="53.4765625" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Chấp nhận</text>
+			<path d="M 230,302 L 75,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 251, 81.93899 250.0778, 80.03572 255.8623" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.70068359375" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Chuyên gia thẩm định</text>
+			<path d="M 230,302 L 230,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 251, 233.0448 257.3031, 226.9552 257.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="375.83740234375" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Loại</text>
+			<path d="M 230,302 L 385,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 251, 379.9643 255.8623, 378.061 250.0778" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="110" width="312" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="151.3330078125" y="139.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,278) scale(1,-1)">Mẫu thực thẩm định đủ điều kiện (608)</text>
+			<text x="135.29052734375" y="127.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,254) scale(1,-1)">Giữ định danh chi tiết; dự phòng chung khi cần</text>
+			<path d="M 230,207 L 230,162 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 162, 233.0448 168.3031, 226.9552 168.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="30" width="312" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="153.21533203125" y="56.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,112) scale(1,-1)">Ánh xạ huấn luyện có phiên bản (610)</text>
+			<text x="155.09033203125" y="44.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,88) scale(1,-1)">Ngưỡng thăng hạng &gt; ngưỡng duy trì</text>
+			<path d="M 230,110 L 230,76 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 76, 233.0448 82.30313, 226.9552 82.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 386,53 L 452,53 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,53 L 452,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,424 L 445,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="445 424, 451.3031 420.9552, 451.3031 427.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 7. Bằng chứng tình trạng và so sánh qua thời gian</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="18" y="390" width="195" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="63.4248046875" y="420.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,840) scale(1,-1)">Phát hiện có định vị (702)</text>
+			<text x="60.70751953125" y="408.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,816) scale(1,-1)">Mục tiêu + ảnh + trạng thái</text>
+			<rect x="247" y="390" width="195" height="54" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="291.2529296875" y="420.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,840) scale(1,-1)">Ngữ cảnh chẩn đoán (720)</text>
+			<text x="287.21240234375" y="408.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,816) scale(1,-1)">DTC / cảm biến / bảo dưỡng</text>
+			<path d="M 115,390 L 174,343 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="174 343, 170.9671 349.3088, 167.1728 344.5458" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,390 L 286,343 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="286 343, 292.8272 344.5458, 289.0329 349.3088" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="94" y="287" width="272" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="166.33056640625" y="318.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,636) scale(1,-1)">Bằng chứng gắn linh kiện (704)</text>
+			<text x="176.6064453125" y="306.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,612) scale(1,-1)">Giữ bất định và mâu thuẫn</text>
+			<path d="M 230,287 L 230,249 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 249, 233.0448 255.3031, 226.9552 255.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="94" y="197" width="272" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="181.96044921875" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Đánh giá kiểm tra (706)</text>
+			<text x="158.47900390625" y="214.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,428) scale(1,-1)">Quan sát / nghi ngờ / cần thẩm định</text>
+			<path d="M 38,136 L 419,136 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="419 136, 412.6969 139.0448, 412.6969 132.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="90" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="72.9150390625" y="155" style="font-family: PatentVI-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Phiên A</text>
+			<rect x="33" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="67.919921875" y="81.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">Nguồn ảnh</text>
+			<text x="45.83984375" y="69.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Định danh / tình trạng</text>
+			<path d="M 90,131 L 90,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="90 102, 93.04476 108.3031, 86.95524 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="230" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="213.19091796875" y="155" style="font-family: PatentVI-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Phiên B</text>
+			<rect x="173" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="207.919921875" y="81.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">Nguồn ảnh</text>
+			<text x="185.83984375" y="69.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Định danh / tình trạng</text>
+			<path d="M 230,131 L 230,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 102, 233.0448 108.3031, 226.9552 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<circle cx="370" cy="136" r="5" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="352.9150390625" y="155" style="font-family: PatentVI-Bold; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,310) scale(1,-1)">Phiên C</text>
+			<rect x="313" y="54" width="114" height="48" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="347.919921875" y="81.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,162) scale(1,-1)">Nguồn ảnh</text>
+			<text x="325.83984375" y="69.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,138) scale(1,-1)">Định danh / tình trạng</text>
+			<path d="M 370,131 L 370,102 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="370 102, 373.0448 108.3031, 366.9552 108.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<text x="103.63305664062499" y="26" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,52) scale(1,-1)">So sánh qua thời gian (740): mục tiêu tương ứng, thay đổi và thay thế.</text>
+		</g>
+	</g>
+</svg>
+</section>
+<section class="figure"><h2>HÌNH 8. Bộ huấn luyện tổng hợp theo vùng xe</h2><svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="10" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="23.47900390625" y="422.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,845) scale(1,-1)">Mô hình thân / khoang xe</text>
+			<text x="64.169921875" y="410.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,821) scale(1,-1)">(802)</text>
+			<path d="M 75,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 224.7957 354.6814, 223.0979 348.8334" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="179.58740234375" y="422.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,845) scale(1,-1)">Mô hình bánh / khung xe</text>
+			<text x="219.169921875" y="410.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,821) scale(1,-1)">(802)</text>
+			<path d="M 230,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 233.0448 356.3031, 226.9552 356.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="395" width="130" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="329.033203125" y="422.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,845) scale(1,-1)">Mô hình truyền động / năng</text>
+			<text x="361.1767578125" y="410.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,821) scale(1,-1)">lượng (802)</text>
+			<path d="M 385,395 L 230,350 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 350, 236.9021 348.8334, 235.2043 354.6814" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="84" y="294" width="292" height="56" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="175.0146484375" y="325.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,650) scale(1,-1)">Ngẫu nhiên hóa miền (804)</text>
+			<text x="148.076171875" y="313.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,626) scale(1,-1)">Góc nhìn / ánh sáng / vật liệu / che khuất</text>
+			<path d="M 230,294 L 230,259 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 259, 233.0448 265.3031, 226.9552 265.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="84" y="210" width="292" height="49" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.80322265625" y="237.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,475) scale(1,-1)">Kết xuất + nhãn (806)</text>
+			<text x="146.95556640625" y="225.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,451) scale(1,-1)">RGB / mặt nạ / vùng / tình trạng cấu hình</text>
+			<path d="M 230,210 L 230,171 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 171, 233.0448 177.3031, 226.9552 177.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="20" y="119" width="190" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="70.27587890625" y="148.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,296) scale(1,-1)">Nguồn tổng hợp (808)</text>
+			<text x="40.63720703125" y="136.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,272) scale(1,-1)">Không tính vào mẫu thực thăng hạng</text>
+			<rect x="250" y="119" width="190" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="280.42724609375" y="148.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,296) scale(1,-1)">Dữ liệu thực đã thẩm định (810)</text>
+			<text x="302.0849609375" y="136.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,272) scale(1,-1)">Mẫu lớp đủ điều kiện</text>
+			<path d="M 210,145 L 250,145 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="250 145, 243.6969 148.0448, 243.6969 141.9552" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 115,119 L 175,77 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="175 77, 171.5823 83.10897, 168.0902 78.12024" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 345,119 L 285,77 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="285 77, 291.9098 78.12024, 288.4177 83.10897" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="95" y="30" width="270" height="47" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="160.63720703125" y="56.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,113) scale(1,-1)">Huấn luyện / thích nghi thực (812)</text>
+			<text x="161.9580078125" y="44.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,89) scale(1,-1)">Triển khai mô hình gắn theo vùng</text>
+			<text x="102.45751953124999" y="9" style="font-family: PatentVI; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,18) scale(1,-1)">Tổng hợp ngoại tuyến; không bắt buộc tái dựng ba chiều khi vận hành.</text>
+		</g>
+	</g>
+</svg>
+</section></body></html>

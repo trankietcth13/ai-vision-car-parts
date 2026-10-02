@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiến Trúc Hệ Thống Knowledge Distillation &amp; Android App · AI Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --primary: #2563EB;
+      --teacher-peach: #FEE9DE;
+      --teacher-border: #F4A582;
+      --student-mint: #E2F3E5;
+      --student-border: #82C78E;
+      --metric-blue: #E4EFFB;
+      --metric-border: #B8D5F4;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-serif: 'Newsreader', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 32px 24px 80px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-content {
+      max-width: 900px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EFF6FF;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      background: #E2E8F0;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    p.subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      max-width: 860px;
+    }
+
+    /* Tabs Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 12px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 2px;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: #EFF6FF;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .diagram-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+      position: relative;
+    }
+
+    .diagram-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .diagram-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #E2E8F0;
+      padding: 12px;
+    }
+
+    .svg-wrapper svg, .svg-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 900px;
+    }
+
+    /* Explanation Breakdown */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .card-icon.peach {
+      background: var(--teacher-peach);
+      border: 1px solid var(--teacher-border);
+      color: #9C4217;
+    }
+
+    .card-icon.mint {
+      background: var(--student-mint);
+      border: 1px solid var(--student-border);
+      color: #166534;
+    }
+
+    .card-icon.blue {
+      background: var(--metric-blue);
+      border: 1px solid var(--metric-border);
+      color: #1E40AF;
+    }
+
+    .card-icon.amber {
+      background: #FEF3C7;
+      border: 1px solid #FDE68A;
+      color: #92400E;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .formula-display {
+      background: #0F172A;
+      color: #F8FAFC;
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-family: var(--font-serif);
+      font-size: 19px;
+      letter-spacing: 0.02em;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .meta-table th, .meta-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meta-table th {
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 32%;
+    }
+
+    .meta-table td {
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .specs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .specs-list li {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .specs-list li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="badge">Academic Architecture Design · YOLOv10 Style</div>
+        <h1>Kiến Trúc Hệ Thống AI Vision Khoang Máy</h1>
+        <p class="subtitle">Thiết kế trực quan hệ thống chưng cất tri thức (Knowledge Distillation) từ máy chủ DGX và quy trình triển khai ứng dụng Android ngoại tuyến (100% On-Device), tuân thủ ngôn ngữ trực quan bài báo khoa học YOLOv10.</p>
+      </div>
+      <div class="lang-switcher">
+        <a href="architecture_diagram.html" class="lang-btn active">VI (Tiếng Việt)</a>
+        <a href="architecture_diagram_en.html" class="lang-btn">EN (English)</a>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-android')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Sơ Đồ Tích Hợp Android App (End-to-End)
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-core')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Sơ Đồ Mạng Distillation Gốc (Model Core)
+      </button>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: INTEGRATED ANDROID APP DIAGRAM                     -->
+    <!-- ======================================================== -->
+    <div id="tab-android" class="tab-content active">
+      <div class="diagram-card">
+        <div class="diagram-header">
+          <div class="diagram-title">Sơ Đồ Toàn Trình: Chưng Cất Tri Thức DGX ➔ Android Edge App (YOLOv10 Style)</div>
+          <div class="actions">
+            <a href="architecture_android_integrated.svg" download="engine_bay_android_architecture.svg" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Tải SVG Tích Hợp
+            </a>
+            <a href="architecture_android_integrated.jpg" target="_blank" class="btn">
+              Xem Bản Ảnh HD
+            </a>
+          </div>
+        </div>
+
+        <div class="svg-wrapper">
+          <img src="architecture_android_integrated.jpg" alt="Kiến Trúc Tích Hợp Android App" style="border-radius: 8px;">
+        </div>
+      </div>
+
+      <!-- Android Integration Architecture Cards -->
+      <div class="grid-3">
+        <!-- Card 1: Server Training & Packaging -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon peach">DGX</div>
+            <div>
+              <div class="card-title">Server KD &amp; Export</div>
+              <div style="font-size:12px; color:var(--text-muted)">scripts/deployment/</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Model distillation:</strong> Teacher yolo11l (56MB) truyền tri thức sang Student yolo11n (6MB).</li>
+            <li><strong>Top-5 Checkpoint Avg:</strong> Làm mịn trọng số EMA, gỡ bỏ nhánh Teacher (`--strip-kd`).</li>
+            <li><strong>ONNX Export:</strong> Xuất định dạng chuẩn ONNX opset 17 (`kd_n_full.onnx`).</li>
+            <li><strong>Zero-Cloud Dependency:</strong> Đóng gói model và tri thức trực tiếp vào file APK (`assets/`).</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: On-Device Vision Engine -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon mint">ORT</div>
+            <div>
+              <div class="card-title">ONNX Runtime Android</div>
+              <div style="font-size:12px; color:var(--text-muted)">apps/engine_bay_android/</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Preprocess.kt:</strong> Letterbox chuẩn xác, sai số &lt; 1/255 so với cv2 của Python.</li>
+            <li><strong>Detector.kt:</strong> ONNX Runtime chạy trực tiếp trên CPU (4 luồng, độ trễ 3.1 ms).</li>
+            <li><strong>Postprocess.kt:</strong> Giải mã YOLO11-seg, NMS theo lớp, tính mask prototype. Mask IoU = 1.000 so với Python.</li>
+            <li><strong>Không cần Internet:</strong> Tự động loại bỏ hoàn toàn quyền INTERNET trong AndroidManifest.</li>
+          </ul>
+        </div>
+
+        <!-- Card 3: Multimodal & 3D OpenGL -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">3D</div>
+            <div>
+              <div class="card-title">Interactive &amp; Triage</div>
+              <div style="font-size:12px; color:var(--text-muted)">Bilingual &amp; OpenGL ES 2.0</div>
+            </div>
+          </div>
+          <ul class="specs-list">
+            <li><strong>Bundled ML Kit OCR:</strong> Quét ảnh mã lỗi DTC từ máy đọc lỗi (P/C/B/U) offline.</li>
+            <li><strong>DTC ↔ Triage:</strong> Tự động tra cứu linh kiện nghi ngờ theo chuẩn OBD2.</li>
+            <li><strong>OpenGL ES 2.0:</strong> Dựng lưới 3D động cho 34 linh kiện với chế độ tách rời (exploded view).</li>
+            <li><strong>Báo cáo độc lập:</strong> Xuất HTML tự chứa (self-contained) gồm ảnh nhúng, mask và ghi chú kỹ thuật viên.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: CORE DISTILLATION MODEL ARCHITECTURE               -->
+    <!-- ======================================================== -->
+    <div id="tab-core" class="tab-content">
+      <div class="diagram-card">
+        <div class="diagram-header">
+          <div class="diagram-title">Sơ Đồ Mạng Chưng Cất Tri Thức Gốc (Dual-Stream Distillation Network)</div>
+          <div class="actions">
+            <a href="architecture_diagram.svg" download="engine_bay_kd_architecture.svg" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Tải SVG Vector
+            </a>
+            <a href="architecture_diagram.jpg" target="_blank" class="btn">
+              Xem Bản Ảnh HD
+            </a>
+          </div>
+        </div>
+        
+        <div class="svg-wrapper">
+          <img src="architecture_diagram.jpg" alt="Sơ Đồ Mạng Chưng Cất Tri Thức Gốc" style="border-radius: 8px;">
+        </div>
+      </div>
+
+      <!-- Comparative Breakdown Cards -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon peach">T</div>
+            <div>
+              <div class="card-title">Teacher Branch (yolo11l-seg)</div>
+              <div style="font-size:12.5px; color:var(--text-muted)">Đóng băng tham số (Frozen) · Tri thức nguồn</div>
+            </div>
+          </div>
+          <table class="meta-table">
+            <tr><th>Kích thước</th><td>56 MB (27.6 triệu tham số)</td></tr>
+            <tr><th>Độ trễ DGX</th><td>9.2 ms (batch size 1)</td></tr>
+            <tr><th>Độ chính xác</th><td>mask mAP50-95 = 0.354 (trên xe mới)</td></tr>
+            <tr><th>Backbone/Neck</th><td>256–512 kênh (C3k2, SPPF, C2PSA)</td></tr>
+            <tr><th>Nhiệm vụ KD</th><td>Cung cấp soft logits, DFL variance, attention map</td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon mint">S</div>
+            <div>
+              <div class="card-title">Student Branch (yolo11n-seg)</div>
+              <div style="font-size:12.5px; color:var(--text-muted)">Học thích ứng &amp; cập nhật gradient · Triển khai biên</div>
+            </div>
+          </div>
+          <table class="meta-table">
+            <tr><th>Kích thước</th><td>6 MB (2.84 triệu tham số · gọn gấp 10 lần)</td></tr>
+            <tr><th>Độ trễ DGX</th><td>3.1 ms (4.0 ms toàn bộ pipeline)</td></tr>
+            <tr><th>Độ chính xác</th><td>mask mAP50-95 = 0.302 (thu hẹp 85% khoảng cách)</td></tr>
+            <tr><th>Feature Adapter</th><td>1×1 Conv khớp kênh P3/P4/P5 với Teacher</td></tr>
+            <tr><th>Gradient flow</th><td>Chỉ cập nhật Student + Adapter; Teacher giữ nguyên</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Loss Functions Breakdown -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">∑</div>
+          <div>
+            <div class="card-title">Hàm Mục Tiêu Đồng Thời (Joint Distillation Metric)</div>
+            <div style="font-size:12.5px; color:var(--text-muted)">Kết hợp đa tầng: Đặc trưng không gian, Nhãn mềm và Độ không chắc chắn vị trí</div>
+          </div>
+        </div>
+        
+        <div class="formula-display">
+          ℒ<sub>total</sub> = ℒ<sub>task</sub> + 1.0 · ℒ<sub>FGD</sub> + 1.0 · ℒ<sub>cls</sub>(τ=2) + 1.0 · ℒ<sub>loc</sub>(τ=10)
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <ul class="specs-list">
+            <li><strong>ℒ<sub>task</sub> (Ground Truth Loss):</strong> Giám sát chuẩn Ultralytics từ tập nhãn đã review gồm Box IoU, Class BCE, Distribution Focal Loss (DFL) và Mask prototype/coefficients.</li>
+            <li><strong>ℒ<sub>FGD</sub> (Focal &amp; Global Distillation):</strong> Phân chia đặc trưng neck P3, P4, P5 thành vùng foreground (linh kiện, α=1.0) và background (khung vỏ/nền, α=0.5), đồng thời căn chỉnh attention không gian và tương quan toàn cục.</li>
+          </ul>
+          <ul class="specs-list">
+            <li><strong>ℒ<sub>cls</sub> (Logit KL Divergence):</strong> Chưng cất xác suất nhãn với nhiệt độ τ = 2.0 và hệ số phạt nền 0.05. Giúp student học "dark knowledge" (ví dụ sự phân vân giữa bình dầu phanh và bình nước làm mát).</li>
+            <li><strong>ℒ<sub>loc</sub> (Localization Distillation):</strong> Chuyển giao phân bố xác suất biên 4 cạnh hộp (DFL) với nhiệt độ làm mềm τ = 10.0, giúp student nắm bắt độ tự tin về đường ranh giới linh kiện.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Dự án Engine-Bay Component Knowledge Distillation &amp; Android App · AI Vision Research · Thiết kế trực quan theo phong cách xuất bản YOLOv10 (Dual Label / Consistent Metric).
+    </footer>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>

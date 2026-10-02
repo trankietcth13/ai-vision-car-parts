@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="460" height="480" preserveAspectRatio="xMinYMin meet" viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="460" height="480"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-480)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="15" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="76.68212890625" y="426.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Ứng viên (602)</text>
+			<text x="56.953125" y="414.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Linh kiện / bề mặt / vùng</text>
+			<rect x="260" y="398" width="185" height="51" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="303.89892578125" y="426.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,853) scale(1,-1)">Mẫu đã thẩm định (604)</text>
+			<text x="309.68017578125" y="414.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,829) scale(1,-1)">Kết quả lớp + định vị</text>
+			<path d="M 107,398 L 175,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="175 355, 171.2999 360.9422, 168.0453 355.7954" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 352,398 L 285,355 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="285 355, 291.9492 355.842, 288.6601 360.9669" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="103" y="302" width="254" height="53" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="174.09912109375" y="331.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,663) scale(1,-1)">Mô hình từ thẩm định (606)</text>
+			<text x="154.140625" y="319.5" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,639) scale(1,-1)">Điểm lớp + điều kiện chấp nhận riêng</text>
+			<rect x="10" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="53.4765625" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Chấp nhận</text>
+			<path d="M 230,302 L 75,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="75 251, 81.93899 250.0778, 80.03572 255.8623" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="165" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="185.70068359375" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Chuyên gia thẩm định</text>
+			<path d="M 230,302 L 230,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 251, 233.0448 257.3031, 226.9552 257.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="320" y="207" width="130" height="44" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="375.83740234375" y="226.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,452) scale(1,-1)">Loại</text>
+			<path d="M 230,302 L 385,251 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="385 251, 379.9643 255.8623, 378.061 250.0778" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="110" width="312" height="52" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="151.3330078125" y="139.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,278) scale(1,-1)">Mẫu thực thẩm định đủ điều kiện (608)</text>
+			<text x="135.29052734375" y="127.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,254) scale(1,-1)">Giữ định danh chi tiết; dự phòng chung khi cần</text>
+			<path d="M 230,207 L 230,162 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 162, 233.0448 168.3031, 226.9552 168.3031" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<rect x="74" y="30" width="312" height="46" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; fill: rgb(95%,95%,95%); fill-rule: evenodd;"/>
+			<text x="153.21533203125" y="56.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,112) scale(1,-1)">Ánh xạ huấn luyện có phiên bản (610)</text>
+			<text x="155.09033203125" y="44.0" style="font-family: PatentVI; font-size: 10px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,88) scale(1,-1)">Ngưỡng thăng hạng &gt; ngưỡng duy trì</text>
+			<path d="M 230,110 L 230,76 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9;"/>
+			<polygon points="230 76, 233.0448 82.30313, 226.9552 82.30313" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+			<path d="M 386,53 L 452,53 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,53 L 452,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 4, 3;"/>
+			<path d="M 452,424 L 445,424 Z" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0.9; stroke-dasharray: 4, 3;"/>
+			<polygon points="445 424, 451.3031 420.9552, 451.3031 427.0448" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: rgb(0%,0%,0%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>
