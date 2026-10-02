@@ -1,0 +1,82 @@
+# Dual-VLM Transformer to Hybrid Edge ConvNet Distillation Config
+# Teacher: DaViT-Large / Swin-Transformer Large (Florence-2 / Grounding DINO vision tower)
+# Student: MobileNetV4-Hybrid-Medium / FastViT-S12
+# Target: Edge ONNX Runtime / Mobile NPU / Browser WASM
+
+distillation:
+  # Teacher Specification
+  teacher:
+    architecture: "davit_large"           # Options: davit_large, swin_large_patch4_window7_224
+    checkpoint: "weights/teacher_davit_large_avg5.pt"
+    pretrained: true
+    freeze: true
+    feature_stages: ["stage1", "stage2", "stage3", "stage4"] # Maps to P2, P3, P4, P5
+    feature_channels: [128, 256, 512, 1024]
+    use_gradient_checkpointing: false
+
+  # Student Specification
+  student:
+    architecture: "mobilenetv4_hybrid_medium" # Options: mobilenetv4_hybrid_medium, fastvit_s12
+    pretrained: true
+    feature_stages: ["stage1", "stage2", "stage3", "stage4"]
+    feature_channels: [64, 128, 256, 512]
+    reparameterize_on_export: true
+
+  # Multi-level Loss Weights
+  alpha_feature: 1.5           # Feature KD weight (Cross-Attention FGD)
+  beta_cls: 1.0               # Logit KD weight (Decoupled KD)
+  gamma_loc: 1.0              # Localization KD weight (DFL + IoU)
+  lambda_mask: 1.2            # Mask IoU / Prototype KD weight
+  warmup_adapter_epochs: 5    # Warmup adapters and heads while freezing student backbone
+
+  # Feature Distillation (Cross-Attention FGD with Projection Adapters)
+  fgd:
+    alpha_fg: 1.2             # High weight on foreground object masks
+    alpha_bg: 0.3             # Lower weight on background context
+    lambda_attn: 0.6          # Spatial Window Attention map transfer
+    lambda_global: 0.4        # Global context correlation transfer
+    temperature: 0.5
+    use_global: true
+
+  # Decoupled Knowledge Distillation (DKD)
+  dkd:
+    alpha_tckd: 1.0           # Target class KD
+    beta_nckd: 0.5            # Non-target class correlation KD
+    temperature: 2.5
+    cls_bg_weight: 0.05
+
+  # Localization & Boundary KD
+  localization:
+    temperature_ld: 8.0
+    iou_loss_weight: 0.5
+
+  # Semi-supervised Distillation on Unlabeled Images
+  unlabeled:
+    dir: "data/unlabeled_exterior"
+    weight: 0.6
+    batch: 8
+    every: 1
+
+training:
+  epochs: 120
+  batch: 16
+  imgsz: 640
+  optimizer: "AdamW"          # Preferred optimizer for Hybrid Transformer
+  lr0: 0.001
+  lrf: 0.01                  # Final LR factor (cosine to 1e-5)
+  weight_decay: 0.01          # Regularization against overfitting
+  warmup_epochs: 5
+  close_mosaic: 15            # Disable mosaic last 15 epochs for clean mask boundaries
+  amp: true                   # Automatic Mixed Precision (bfloat16/fp16)
+  workers: 8
+  seed: 42
+  patience: 120
+  cos_lr: true
+  save_period: 5
+
+  # Data Augmentation (tailored for vehicle parts)
+  copy_paste: 0.35
+  mixup: 0.15
+  degrees: 7.0
+  scale: 0.5
+  perspective: 0.0005

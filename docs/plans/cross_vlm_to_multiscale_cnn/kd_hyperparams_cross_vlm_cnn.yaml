@@ -1,0 +1,76 @@
+# Cross-Architecture Distillation: Transformer-based VLM -> Multi-Scale CNN
+# Teacher: Qwen2.5-VL / Qwen3-VL / Grounding DINO (EVA-02 / ViT-H / Swin-L)
+# Student: CSP-Darknet (C3k2 in YOLO11-seg / YOLO26-seg) or HGNetv2 (D-FINE / RT-DETR)
+
+distillation:
+  # Teacher Configuration (VLM)
+  teacher:
+    name: "qwen3-vl-30b"                      # Options: qwen3-vl-30b, grounding_dino_eva02
+    cache_path: "/data/cache/vlm_features_v1" # Offline pre-extracted feature directory
+    feature_levels: ["P3", "P4", "P5"]
+    teacher_dim: 1024                         # Embedding dimension of Vision Transformer
+    freeze: true
+
+  # Student Configuration (CNN Multi-Scale)
+  student:
+    architecture: "yolo11m-seg"               # Options: yolo11m-seg, dfine_hgnetv2_m
+    backbone: "C3k2-CSPDarknet"
+    channels:
+      P3: 128
+      P4: 256
+      P5: 512
+
+  # Distillation Loss Weights
+  alpha_feature: 2.0                          # Multi-Scale FPN feature transfer weight
+  beta_cls: 1.0                              # Decoupled Logit KD weight
+  gamma_loc: 1.0                             # Bounding box localization (DFL) weight
+  lambda_affinity: 0.8                       # Cross-Attention to Conv Affinity (CAT) weight
+
+  # Multi-Scale Feature Distillation (FGD)
+  multi_scale_fgd:
+    weights:
+      P3: 1.2                                 # Extra weight on fine details (terminals, small sensors)
+      P4: 1.0
+      P5: 0.8
+    alpha_fg: 1.5                             # High attention on foreground object masks
+    alpha_bg: 0.2                             # Controlled background context
+    temperature: 0.5
+    use_affinity_matching: true
+
+  # Decoupled Class Knowledge Distillation (DKD)
+  dkd:
+    alpha_tckd: 1.0                           # Target Class KD
+    beta_nckd: 0.6                            # Non-Target Class correlation KD
+    temperature: 3.0
+    confidence_gate: 0.65                     # Filter out Teacher hallucination
+
+  # Semi-Supervised Distillation on Unlabeled Images
+  unlabeled:
+    dir: "data/unlabeled_exterior"
+    weight: 0.5
+    batch: 8
+    every: 1
+
+training:
+  epochs: 120
+  batch: 16
+  imgsz: 640
+  optimizer: "SGD"                            # Classic momentum SGD for CNN stability
+  lr0: 0.01
+  lrf: 0.01
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 5
+  close_mosaic: 15                            # Disable mosaic at the end for sharp mask boundaries
+  amp: true                                   # Automatic Mixed Precision
+  workers: 8
+  seed: 42
+  patience: 120
+  cos_lr: true
+  save_period: 5
+
+  # Augmentation
+  copy_paste: 0.3
+  mixup: 0.1
+  degrees: 5.0
+  scale: 0.5

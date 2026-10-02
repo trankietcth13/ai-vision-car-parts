@@ -1,0 +1,50 @@
+# Multimodal Knowledge Distillation Config: SigLIP/CLIP -> MobileCLIP
+# Teacher: SigLIP-SO400M (or ViT-L/14@336px)
+# Student: MobileCLIP-S0 (or MobileCLIP-S2)
+
+distillation:
+  teacher:
+    name: "siglip_so400m_patch14_384"
+    embedding_dim: 1152
+    cache_path: "/data/cache/siglip_embeddings"
+    temperature_init: 10.0
+    bias_init: -10.0
+    freeze: true
+
+  student:
+    name: "mobileclip_s0"
+    image_backbone: "fastvit_mci0"
+    text_backbone: "mobileclip_text_transformer"
+    embedding_dim: 512
+    reparameterize_on_export: true
+
+  # Loss Weights for Multimodal Distillation
+  loss_weights:
+    siglip_bce: 1.0                           # Sigmoid Pairwise Binary Cross-Entropy KD
+    feat_image: 1.5                           # Image embedding alignment (Cosine distance)
+    feat_text: 1.0                            # Text embedding alignment (Cosine distance)
+    relation_graph: 0.8                       # Similarity Graph (Frobenius norm)
+
+  # Sigmoid Loss KD Hyperparameters
+  siglip_kd:
+    temperature: 1.5                          # Softening factor for teacher probability matrix
+    symmetric: true                           # Compute both Image->Text and Text->Image BCE
+
+training:
+  epochs: 80
+  batch: 64
+  imgsz: 256                                  # MobileCLIP native resolution
+  optimizer: "AdamW"
+  lr0: 0.0005
+  lrf: 0.01
+  weight_decay: 0.05                          # Robust weight decay for multimodal stability
+  warmup_epochs: 5
+  cos_lr: true
+  amp: true                                   # Mixed precision bfloat16
+  workers: 8
+  seed: 42
+  save_period: 5
+
+  # Augmentation for Multimodal Vision
+  color_jitter: 0.2
+  random_crop_scale: [0.8, 1.0]
