@@ -107,6 +107,7 @@ export class Detector {
       ...k,
       name: this.cfg.names[k.cls],
       name_vi: this.cfg.names_vi[k.cls],
+      name_en: this.cfg.names_en ? this.cfg.names_en[k.cls] : this.cfg.names[k.cls],
       // box in original image pixels
       xyxy: [(k.box[0] - lb.left) / lb.r, (k.box[1] - lb.top) / lb.r, (k.box[2] - lb.left) / lb.r, (k.box[3] - lb.top) / lb.r]
         .map((v, i) => Math.max(0, Math.min(v, i % 2 ? lb.h : lb.w))),

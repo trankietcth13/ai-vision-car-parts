@@ -87,7 +87,13 @@
   <section class="panel stage">
     <div class="bar">
       <span id="status">Đang tải model…</span>
-      <button class="btn" id="orig" aria-pressed="false" disabled title="Phím O">Ảnh gốc</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="lang" class="btn" style="padding:4px 8px;font-size:12.5px;" aria-label="Ngôn ngữ / Language">
+          <option value="vi" selected>Tiếng Việt</option>
+          <option value="en">English</option>
+        </select>
+        <button class="btn" id="orig" aria-pressed="false" disabled title="Phím O">Ảnh gốc</button>
+      </div>
     </div>
     <div class="progress" id="prog"><i></i></div>
     <canvas id="view" aria-label="Kết quả nhận diện"></canvas>
@@ -107,6 +113,8 @@ const cfg = await (await fetch("config.json")).json();
 const rgb = cfg.colors.map((h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
 const MAX_SIDE = 1600;
 let det = null, current = null, showOrig = false, busy = false, pending = false;
+let lang = $("lang") ? $("lang").value : "vi";
+if ($("lang")) $("lang").onchange = () => { lang = $("lang").value; draw(); };
 
 $("conf").value = cfg.default_conf;
 $("confv").textContent = Number(cfg.default_conf).toFixed(2);
@@ -191,6 +199,7 @@ async function run() {
 }
 
 function draw() {
+  if (!current) return;
   const { img, result: r } = current;
   const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, MAX_SIDE / Math.max(w, h));
   const W = Math.round(w * k), H = Math.round(h * k), cv = $("view"), ctx = cv.getContext("2d");
@@ -206,7 +215,10 @@ function draw() {
   for (const d of [...r.dets].reverse()) {
     const [x1, y1, x2, y2] = d.xyxy.map((v) => v * k), col = cfg.colors[d.cls];
     ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-    const label = `${d.name_vi} ${Math.round(d.score * 100)}%`, tw = ctx.measureText(label).width + 8, th = fs + 6;
+    const nameStr = (lang === "en" && (d.name_en || (cfg.names_en && cfg.names_en[d.cls])))
+      ? (d.name_en || cfg.names_en[d.cls])
+      : d.name_vi;
+    const label = `${nameStr} ${Math.round(d.score * 100)}%`, tw = ctx.measureText(label).width + 8, th = fs + 6;
     const ty = y1 - th >= 0 ? y1 - th : y1;
     ctx.fillStyle = col; ctx.fillRect(x1 - lw / 2, ty, tw, th);
     const [cr, cg, cb] = rgb[d.cls];
@@ -223,7 +235,8 @@ function renderParts(dets) {
     const li = document.createElement("li"), pct = Math.round(e.best * 100);
     li.innerHTML = `<span class="dot" style="background:${cfg.colors[c]}"></span><span></span>`
       + `<span class="meter"><i style="width:${pct}%"></i></span><span class="pct">${pct}%</span>`;
-    li.children[1].textContent = cfg.names_vi[c] + (e.n > 1 ? ` ×${e.n}` : "");
+    const nameStr = (lang === "en" && cfg.names_en ? cfg.names_en[c] : cfg.names_vi[c]) || cfg.names[c];
+    li.children[1].textContent = nameStr + (e.n > 1 ? ` ×${e.n}` : "");
     $("parts").append(li);
   }
 }
