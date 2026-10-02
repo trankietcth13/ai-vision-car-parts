@@ -1,43 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Redesigned component list row with modern automotive styling -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:gravity="center_vertical"
-    android:minHeight="48dp"
-    android:orientation="horizontal"
-    android:paddingVertical="6dp">
+    android:layout_marginVertical="3dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="?attr/colorOutline"
+    app:strokeWidth="1dp">
 
-    <View
-        android:id="@+id/dot"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_marginEnd="12dp" />
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:gravity="center_vertical"
+        android:minHeight="54dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/meter"
-        android:layout_width="72dp"
-        android:layout_height="wrap_content"
-        android:max="100" />
+        <!-- Rounded indicator pill for the part's detection mask color -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="12dp"
+            app:cardCornerRadius="7dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/pct"
-        android:layout_width="44dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textAppearance="?attr/textAppearanceBodySmall" />
+            <View
+                android:id="@+id/dot"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/chevron"
-        android:textAppearance="?attr/textAppearanceTitleLarge" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/meter"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:max="100"
+            app:indicatorColor="@color/accent_blue"
+            app:trackColor="?attr/colorSurfaceContainerHigh"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="6dp" />
+
+        <TextView
+            android:id="@+id/pct"
+            android:layout_width="44dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:gravity="end"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textStyle="bold" />
+
+        <!-- Trailing action circle badge for 3D model / info sheet -->
+        <FrameLayout
+            android:id="@+id/btnDetails"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_circle_neutral">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/chevron"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

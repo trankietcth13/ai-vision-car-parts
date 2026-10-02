@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Redesigned Main Activity for Landscape / Automotive Tablets (Innova Spark, etc.) -->
+<!-- Split-pane Cockpit Dashboard layout inspired by luxury automotive infotainment (Image 1 & 2) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/android:colorBackground"
+    android:orientation="vertical">
+
+    <!-- Top App Bar / Automotive Cockpit Header -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/android:colorBackground"
+        android:minHeight="48dp"
+        app:title="@string/title"
+        app:titleTextAppearance="?attr/textAppearanceTitleMedium"
+        app:titleTextColor="?attr/colorOnSurface"
+        app:subtitle="@string/subtitle"
+        app:subtitleTextAppearance="?attr/textAppearanceBodySmall"
+        app:subtitleTextColor="?attr/colorOnSurfaceVariant" />
+
+    <!-- 2-Column Split Dashboard -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingBottom="12dp">
+
+        <!-- Left Pane: Visual Intelligence & Camera Hero (54% width) -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1.15"
+            android:clipToPadding="false"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Visual Scanner Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <!-- Viewport Frame -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="?attr/colorOutline"
+                            app:strokeWidth="1dp">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <!-- Live Detection Result -->
+                                <com.enginebay.vision.ResultView
+                                    android:id="@+id/result"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="gone" />
+
+                                <!-- Floating Zoom Badge on Result View -->
+                                <LinearLayout
+                                    android:id="@+id/resultZoomBadgeContainer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="top|end"
+                                    android:layout_margin="8dp"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:id="@+id/resultZoomBadge"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@drawable/bg_badge"
+                                        android:paddingHorizontal="10dp"
+                                        android:paddingVertical="4dp"
+                                        android:text="1.0x"
+                                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                                        android:textColor="@color/accent_blue"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                                <!-- Empty View State Placeholder -->
+                                <LinearLayout
+                                    android:id="@+id/empty"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="180dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <FrameLayout
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:layout_marginBottom="10dp"
+                                        android:background="@drawable/bg_circle_neutral">
+
+                                        <ImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            android:layout_gravity="center"
+                                            android:contentDescription="@null"
+                                            android:src="@drawable/ic_camera"
+                                            app:tint="?attr/colorPrimary" />
+                                    </FrameLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="@string/empty_hint"
+                                        android:textAppearance="?attr/textAppearanceBodySmall"
+                                        android:textColor="?attr/colorOnSurfaceVariant" />
+                                </LinearLayout>
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Telemetry / Status Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/status"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/loading_model"
+                                android:textAppearance="?attr/textAppearanceLabelMedium"
+                                android:textColor="?attr/colorOnSurfaceVariant" />
+
+                            <!-- Zoom Controls Group -->
+                            <LinearLayout
+                                android:id="@+id/zoomToolGroup"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:background="@drawable/bg_pill_neutral"
+                                android:backgroundTint="?attr/colorSurfaceContainerHigh"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="3dp"
+                                android:paddingVertical="1dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnMainZoomOut"
+                                    style="@style/Widget.EngineBay.Button.Icon"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:contentDescription="@string/zoom_out"
+                                    android:enabled="false"
+                                    app:icon="@drawable/ic_zoom_out"
+                                    app:iconGravity="textStart"
+                                    app:iconPadding="0dp"
+                                    app:iconSize="16dp"
+                                    app:iconTint="?attr/colorOnSurface" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnMainZoomReset"
+                                    style="@style/Widget.EngineBay.Button.Icon"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:contentDescription="@string/zoom_reset"
+                                    android:enabled="false"
+                                    app:icon="@drawable/ic_zoom_reset"
+                                    app:iconGravity="textStart"
+                                    app:iconPadding="0dp"
+                                    app:iconSize="16dp"
+                                    app:iconTint="?attr/colorOnSurface" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnMainZoomIn"
+                                    style="@style/Widget.EngineBay.Button.Icon"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:contentDescription="@string/zoom_in"
+                                    android:enabled="false"
+                                    app:icon="@drawable/ic_zoom_in"
+                                    app:iconGravity="textStart"
+                                    app:iconPadding="0dp"
+                                    app:iconSize="16dp"
+                                    app:iconTint="?attr/colorOnSurface" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/rotate"
+                                style="@style/Widget.EngineBay.Button.Outlined"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:enabled="false"
+                                android:minHeight="34dp"
+                                android:paddingHorizontal="10dp"
+                                android:text="@string/rotate"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                app:icon="@drawable/ic_rotate_right"
+                                app:iconTint="?attr/colorOnSurface" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/original"
+                                style="@style/Widget.EngineBay.Button.Outlined"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:enabled="false"
+                                android:minHeight="34dp"
+                                android:paddingHorizontal="12dp"
+                                android:text="@string/original"
+                                android:textAppearance="?attr/textAppearanceLabelSmall" />
+                        </LinearLayout>
+
+                        <!-- Progress Bar -->
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:indeterminate="true"
+                            app:indicatorColor="@color/accent_blue"
+                            app:trackColor="?attr/colorSurfaceContainerHigh"
+                            app:trackCornerRadius="4dp"
+                            app:trackThickness="4dp" />
+
+                        <!-- Action Dock -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/capture"
+                                style="@style/Widget.EngineBay.Button"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.3"
+                                android:backgroundTint="@color/accent_blue"
+                                android:enabled="false"
+                                android:text="@string/capture"
+                                android:textColor="#FFFFFF"
+                                app:icon="@drawable/ic_camera"
+                                app:iconTint="#FFFFFF" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/gallery"
+                                style="@style/Widget.EngineBay.Button.Tonal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:enabled="false"
+                                android:text="@string/gallery"
+                                app:icon="@drawable/ic_gallery"
+                                app:iconTint="?attr/colorOnSurface" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/samples"
+                                style="@style/Widget.EngineBay.Button.Tonal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:enabled="false"
+                                android:text="@string/samples"
+                                app:icon="@drawable/ic_samples"
+                                app:iconTint="?attr/colorOnSurface" />
+                        </LinearLayout>
+
+                        <!-- DTC Action -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/dtc"
+                            style="@style/Widget.EngineBay.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:enabled="false"
+                            android:text="@string/dtc_button"
+                            app:icon="@drawable/ic_dtc"
+                            app:iconTint="?attr/colorPrimary" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- AI Tuning & Settings Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/options"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textStyle="bold" />
+
+                        <!-- Switch -->
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/perClass"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:checked="true"
+                            android:text="@string/per_class"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/per_class_hint"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <!-- Confidence Slider -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/confidence"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.slider.Slider
+                                android:id="@+id/conf"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:stepSize="0.05"
+                                android:value="0.35"
+                                android:valueFrom="0.05"
+                                android:valueTo="0.9"
+                                app:thumbColor="@color/accent_blue"
+                                app:trackColorActive="@color/accent_blue"
+                                app:trackColorInactive="?attr/colorSurfaceContainerHigh" />
+
+                            <TextView
+                                android:id="@+id/confValue"
+                                android:layout_width="44dp"
+                                android:layout_height="26dp"
+                                android:background="@drawable/bg_badge"
+                                android:gravity="center"
+                                android:text="0.35"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Disclaimer -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_note"
+                            android:padding="10dp"
+                            android:text="@string/disclaimer"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/warn_fg" />
+
+                        <TextView
+                            android:id="@+id/footer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Right Pane: Inspection Workflow, Diagnostics & Parts (46% width) -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_weight="0.85"
+            android:clipToPadding="false"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Vehicle Inspection Report Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <!-- Header -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:background="@drawable/bg_circle_neutral">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_car_check"
+                                    app:tint="?attr/colorPrimary" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/report_title"
+                                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                                    android:textColor="?attr/colorOnSurface"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/subtitle"
+                                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                                    android:textColor="?attr/colorOnSurfaceVariant" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_badge"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="3dp"
+                                android:text="ON-DEVICE"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="@color/accent_blue"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Populated by InspectionWorkflow.bind() -->
+                        <LinearLayout
+                            android:id="@+id/inspection_actions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- DTC Diagnosis Card (populated by renderDiagnosis()) -->
+                <LinearLayout
+                    android:id="@+id/diagnosis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card"
+                    android:elevation="2dp"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:visibility="gone" />
+
+                <!-- Detected Components Header & List -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/partsTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/components"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tapHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/tap_hint"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:visibility="gone" />
+
+                    <!-- Parts rows populated with item_part.xml -->
+                    <LinearLayout
+                        android:id="@+id/parts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</LinearLayout>

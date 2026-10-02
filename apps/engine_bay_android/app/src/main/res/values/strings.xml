@@ -88,4 +88,19 @@
     <string name="model_status_detectable">The model can find this component in a photo.</string>
     <string name="model_status_not_detectable">Not detectable from a photo yet: use the 3D model to recognise it on the vehicle and inspect it directly.</string>
     <string name="model_status_codes">Pointed to by: %1$s</string>
+    <!-- Photo preview and rotation -->
+    <string name="photo_preview_title">Review &amp; Rotate Photo</string>
+    <string name="photo_preview_desc">Rotate the photo so the engine bay is upright before AI analysis.</string>
+    <string name="rotate_left">Rotate Left</string>
+    <string name="rotate_right">Rotate Right</string>
+    <string name="retake">Retake</string>
+    <string name="confirm_analyze">Analyze</string>
+    <string name="rotate">Rotate</string>
+    <string name="rotate_hint">Rotate 90° clockwise</string>
+    <string name="zoom">Zoom</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
+    <string name="zoom_reset">Reset Zoom</string>
+    <string name="zoom_hint">Pinch or double-tap to zoom &amp; pan</string>
+    <string name="photo_review_title">Review Photo</string>
 </resources>

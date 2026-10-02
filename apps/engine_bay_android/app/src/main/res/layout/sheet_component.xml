@@ -1,57 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Redesigned Component Details Bottom Sheet with Automotive Cockpit Style -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="28dp">
+        android:paddingHorizontal="22dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="36dp">
 
+        <!-- Top Drag Indicator Handle -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_pill_neutral" />
+
+        <!-- Component Title & Localization -->
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
+            android:layout_marginTop="2dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
+        <!-- Detection Status Pill Badge -->
         <TextView
             android:id="@+id/detection"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_badge"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="@color/accent_blue"
+            android:textStyle="bold" />
 
+        <!-- Draft Note Banner -->
         <TextView
             android:id="@+id/draft"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/bg_note"
-            android:padding="8dp"
+            android:padding="10dp"
             android:text="@string/draft"
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="@color/warn_fg"
             android:visibility="gone" />
 
-        <!-- 3D model (ModelPanel), when assets/models has one for this component -->
+        <!-- 3D model frame (ModelPanel) -->
         <FrameLayout
             android:id="@+id/model3d"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- Information Sections -->
         <LinearLayout
             android:id="@+id/sections"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:orientation="vertical" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

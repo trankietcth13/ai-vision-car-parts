@@ -78,4 +78,19 @@
     <string name="model_status_detectable">Model nhận diện được linh kiện này trên ảnh.</string>
     <string name="model_status_not_detectable">Model chưa nhận diện được linh kiện này trên ảnh: dùng mô hình 3D để nhận ra nó trên xe và kiểm tra trực tiếp.</string>
     <string name="model_status_codes">Liên quan đến mã: %1$s</string>
+    <!-- Photo preview and rotation -->
+    <string name="photo_preview_title">Kiểm tra &amp; Xoay ảnh</string>
+    <string name="photo_preview_desc">Xoay ảnh đúng chiều khoang máy trước khi phân tích AI.</string>
+    <string name="rotate_left">Xoay trái</string>
+    <string name="rotate_right">Xoay phải</string>
+    <string name="retake">Chụp lại</string>
+    <string name="confirm_analyze">Phân tích</string>
+    <string name="rotate">Xoay</string>
+    <string name="rotate_hint">Xoay 90° theo chiều kim đồng hồ</string>
+    <string name="zoom">Phóng to</string>
+    <string name="zoom_in">Phóng to</string>
+    <string name="zoom_out">Thu nhỏ</string>
+    <string name="zoom_reset">Đặt lại 1:1</string>
+    <string name="zoom_hint">Chụm 2 ngón hoặc chạm đúp để phóng to &amp; kéo xem</string>
+    <string name="photo_review_title">Xem chi tiết ảnh</string>
 </resources>

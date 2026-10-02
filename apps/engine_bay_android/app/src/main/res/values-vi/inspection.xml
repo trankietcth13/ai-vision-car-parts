@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="find_component">Tìm linh kiện</string>
+    <string name="find_clear">Bỏ chọn</string>
+    <string name="find_not_seen">Chưa nhận diện được trong ảnh này. Thử chụp gần hơn hoặc đổi góc. Điều này không có nghĩa linh kiện bị thiếu hay bị hỏng.</string>
+    <string name="inspection_details">Thông tin xe</string>
+    <string name="inspection_vehicle">Xe / biển số / mã công việc</string>
+    <string name="inspection_notes">Ghi chú kiểm tra</string>
+    <string name="inspection_observation">Quan sát / sửa tên nhận diện sai</string>
+    <string name="inspection_vehicle_missing">Lần kiểm tra chưa đặt tên</string>
+    <string name="inspection_vehicle_required">Nhập tên xe hoặc mã công việc.</string>
+    <string name="inspection_summary">%1$s · đã ghi nhận %2$d/%3$d bước</string>
+    <string name="inspection_photo_note">Mỗi lần kiểm tra lưu một ảnh khoang máy. Thay ảnh sẽ đặt lại checklist. Hãy lưu trước khi chụp góc khác; dùng cùng mã xe để tìm các lần kiểm tra liên quan.</string>
+    <string name="inspection_checks">Checklist kiểm tra</string>
+    <string name="inspection_save">Lưu kiểm tra</string>
+    <string name="inspection_saved">Đã lưu lần kiểm tra trên thiết bị.</string>
+    <string name="inspection_history">Lịch sử</string>
+    <string name="inspection_new">Lần kiểm tra mới</string>
+    <string name="inspection_replace">Thay ảnh</string>
+    <string name="inspection_replace_photo">Thay ảnh khoang máy sẽ xóa checklist của bản nháp này. Hãy lưu lần kiểm tra hiện tại trước nếu muốn giữ các quan sát đã ghi. Thay ảnh?</string>
+    <string name="inspection_new_confirm">Bắt đầu lần kiểm tra mới? Bản nháp hiện tại sẽ được xóa. Các lần đã lưu vẫn nằm trong Lịch sử.</string>
+    <string name="inspection_apply">Áp dụng</string>
+    <string name="inspection_done">Xong</string>
+    <string name="inspection_wait">Chờ phân tích ảnh hoàn tất trước khi lưu. Nếu phân tích lỗi, hãy thử ảnh khác.</string>
+    <string name="inspection_empty">Thêm ảnh, mã lỗi, checklist hoặc ghi chú trước khi lưu.</string>
+    <string name="inspection_io_error">Không đọc hoặc lưu được lần kiểm tra. Kiểm tra dung lượng trống rồi thử lại.</string>
+    <string name="draft_restore_failed">Không khôi phục được bản nháp. Các lần kiểm tra đã lưu vẫn có trong Lịch sử.</string>
+    <string name="history_search">Lọc theo xe / mã công việc</string>
+    <string name="history_empty">Chưa có lần kiểm tra nào được lưu.</string>
+    <string name="history_damaged">Một số bản ghi không đọc được. Các bản ghi còn lại vẫn được hiển thị.</string>
+    <string name="check_identity">Xác nhận đúng linh kiện trên xe. Ghi tên sửa lại bên dưới nếu AI nhận diện sai hoặc chưa chắc chắn.</string>
+    <string name="check_visual">Ghi nhận những gì nhìn thấy trên ảnh hoặc khi kiểm tra. Ghi rõ phần bị che khuất hoặc cần kiểm tra riêng.</string>
+    <string name="checklist_note">Đây là quan sát của kỹ thuật viên, không phải chẩn đoán tự động. Hướng dẫn theo linh kiện là bản nháp tham khảo; cần đối chiếu tài liệu sửa chữa của xe. Không thao tác vào bộ phận nóng, đang chuyển động hoặc đang mang điện. “Đã kiểm tra” không có nghĩa là đạt.</string>
+    <string name="check_pending">Chưa kiểm tra</string>
+    <string name="check_done">Đã kiểm tra — xem ghi chú</string>
+    <string name="check_concern">Có vấn đề — cần kiểm tra thêm</string>
+    <string name="check_skipped">Bỏ qua / không tiếp cận được</string>
+    <string name="report_title">Báo cáo kiểm tra khoang máy</string>
+    <string name="report_model">Model nhận diện</string>
+    <string name="report_photo">Ảnh khoang máy</string>
+    <string name="report_disclaimer">Tên và điểm nhận diện AI là gợi ý, không phải kết luận hư hỏng hay an toàn. Kết quả checklist và ghi chú do kỹ thuật viên nhập. Không nhìn thấy linh kiện không có nghĩa là thiếu hoặc hỏng. Hướng dẫn tham khảo là bản nháp, cần đối chiếu tài liệu sửa chữa của xe.</string>
+    <string name="report_export">Xuất báo cáo HTML</string>
+    <string name="report_saved">Đã xuất báo cáo. Mở file HTML bằng trình duyệt để xem hoặc in offline.</string>
+</resources>

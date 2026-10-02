@@ -1,10 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brand">#C2410C</color>
-    <color name="brand_dark">#FB923C</color>
-    <color name="ic_bg">#C2410C</color>
+    <!-- Brand & Automotive Electric Blue -->
+    <color name="brand">#1B64F2</color>
+    <color name="brand_dark">#3B82F6</color>
+    <color name="accent_blue">#1B64F2</color>
+    <color name="accent_blue_light">#EBF2FF</color>
+    <color name="accent_blue_dark">#3B82F6</color>
+
+    <!-- Cockpit Obsidian / Dark Titanium -->
+    <color name="obsidian_black">#111318</color>
+    <color name="obsidian_surface">#181A20</color>
+    <color name="obsidian_card">#20242D</color>
+
+    <!-- Canvas & Cards (Light) -->
+    <color name="canvas_bg_light">#F5F6F9</color>
+    <color name="card_surface_light">#FFFFFF</color>
+    <color name="card_stroke_light">#E5E7EB</color>
+    <color name="pill_neutral_light">#EEF1F6</color>
+
+    <!-- Canvas & Cards (Dark) -->
+    <color name="canvas_bg_dark">#0E1015</color>
+    <color name="card_surface_dark">#171A21</color>
+    <color name="card_stroke_dark">#262B35</color>
+    <color name="pill_neutral_dark">#222631</color>
+
+    <!-- Text -->
+    <color name="text_primary_light">#111827</color>
+    <color name="text_secondary_light">#6B7280</color>
+    <color name="text_tertiary_light">#9CA3AF</color>
+
+    <color name="text_primary_dark">#F9FAFB</color>
+    <color name="text_secondary_dark">#9CA3AF</color>
+    <color name="text_tertiary_dark">#6B7280</color>
+
+    <!-- Status Accents -->
+    <color name="success_fg">#059669</color>
+    <color name="success_bg">#D1FAE5</color>
+
     <color name="warn_bg">#FEF3C7</color>
-    <color name="warn_fg">#78350F</color>
+    <color name="warn_fg">#92400E</color>
+    <color name="warn_stroke">#FDE68A</color>
+
     <color name="danger_bg">#FEE2E2</color>
-    <color name="danger_fg">#7F1D1D</color>
+    <color name="danger_fg">#B91C1C</color>
+    <color name="danger_stroke">#FECACA</color>
 </resources>

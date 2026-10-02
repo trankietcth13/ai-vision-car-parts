@@ -55,4 +55,17 @@ object PhotoLoader {
             Bitmap.createScaledBitmap(out, (out.width * s).roundToInt(), (out.height * s).roundToInt(), true).also { out.recycle() }
         } else out
     }
+
+    /**
+     * Rotates [bitmap] clockwise by [degrees] (90, 180, 270, etc.).
+     * Recycles [bitmap] if [recycleOriginal] is true and a new rotated bitmap was allocated.
+     */
+    fun rotate(bitmap: Bitmap, degrees: Float, recycleOriginal: Boolean = false): Bitmap {
+        val norm = ((degrees % 360f) + 360f) % 360f
+        if (norm == 0f) return bitmap
+        val m = Matrix().apply { postRotate(norm) }
+        val out = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
+        if (recycleOriginal && out !== bitmap) bitmap.recycle()
+        return out
+    }
 }

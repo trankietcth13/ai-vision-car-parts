@@ -92,7 +92,33 @@ python scripts/deployment/build_component_models.py --only spark_plug --glb outp
 - `adb shell am start -n com.enginebay.vision/.MainActivity --es model spark_plug` mở thẳng một mô hình.
 - `ComponentModelsTest` kiểm tra ba điều: mọi linh kiện của bảng tri thức đều có mô hình, mô hình đọc được, và mọi nhãn cùng nội dung kiểm tra đều đủ hai ngôn ngữ.
 
-## Ghi chú
+## Kiểm tra offline: ảnh, checklist và lịch sử
+
+Trên màn hình chính, nhóm thao tác kiểm tra gồm:
+
+1. **Thông tin xe**: nhập biển số/tên xe/mã công việc và ghi chú.
+2. **Tìm linh kiện**: chọn tên để làm nổi bật trên ảnh. Có thể bỏ chọn để trở lại các linh kiện liên quan mã lỗi. “Chưa nhận diện” không phải “bị thiếu/bị hỏng”.
+3. **Checklist kiểm tra**: chọn linh kiện, hoặc mở từ bảng thông tin linh kiện. Checklist có bước xác nhận danh tính, ghi nhận quan sát, và hướng dẫn từ `components.json` hoặc các chi tiết của mô hình 3D khi có. Trạng thái: chưa kiểm tra / đã kiểm tra / có vấn đề / bỏ qua, kèm ghi chú riêng. Các hướng dẫn theo linh kiện vẫn là **bản nháp**, không phải quy trình sửa chữa đã được chuyên gia phê duyệt.
+4. **Lưu kiểm tra**: lưu bản chụp bất biến gồm xe, thời gian, ảnh, mã lỗi, tên/điểm/box nhận diện, thông tin model, trạng thái checklist và ghi chú. Bản nháp tự lưu và được khôi phục khi mở lại app; đổi EN/VI giữ nguyên dữ liệu.
+5. **Lịch sử**: lọc theo mã xe/công việc, xem lại và **Xuất báo cáo HTML** qua trình chọn nơi lưu của Android. File chứa ảnh JPEG nhúng, kết quả AI và quan sát kỹ thuật viên; không cần tài nguyên mạng. Mở bằng trình duyệt để xem/in. App không tự gửi báo cáo.
+
+Mỗi bản ghi lưu **một ảnh khoang máy**. Thay ảnh đặt lại checklist của bản nháp; hãy lưu trước khi chụp góc khác và dùng cùng mã xe cho các bản ghi liên quan. Lần kiểm tra mới xóa bản nháp sau bước xác nhận trong app, giữ nguyên lịch sử. Các ảnh và JSON nằm trong bộ nhớ riêng `files/inspections/`; gỡ app/xóa dữ liệu sẽ mất các bản lưu chưa xuất.
+
+Mã lỗi nhập tay qua nút DTC (chưa có quét ảnh mã lỗi bằng OCR). Manifest loại bỏ quyền INTERNET và ACCESS_NETWORK_STATE nếu dependency thêm vào. Chức năng 5–8 trong đề xuất ban đầu (hỏi đáp LLM, giọng nói, hướng dẫn chụp, model phát hiện bất thường) chưa thuộc đợt triển khai này.
+
+Kiểm thử:
+
+```bash
+./gradlew :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
+./gradlew :app:assembleDebugAndroidTest
+# Trên thiết bị QA riêng: Gradle connectedDebugAndroidTest có thể gỡ app sau khi chạy.
+# Nếu cần giữ dữ liệu trên thiết bị đang dùng, cài cả hai APK bằng adb install -r rồi chạy:
+adb shell am instrument -w com.enginebay.vision.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+`InspectionTest` kiểm tra lọc mã, lưu/khôi phục, lịch sử bất biến, xử lý bản ghi lỗi và escape nội dung báo cáo. `OfflineInspectionTest` nhận diện ảnh mẫu, kiểm tra app không có quyền mạng, và lưu/đọc dữ liệu trên hệ thống file Android; dùng thư mục cache thử nghiệm riêng.
+
+## Ghi chú vận hành
 
 - **Quyền:** app không xin quyền CAMERA, vì ảnh được chụp bằng app camera của hệ thống. App cũng không xin quyền INTERNET.
 - **Kích thước:** APK debug khoảng 115 MB (thư viện native cho `arm64-v8a`, `armeabi-v7a` cho máy 32-bit như Innova Spark, và `x86_64`; cộng model 11,6 MB). Bỏ bớt kiến trúc không dùng trong `abiFilters` để APK nhỏ hơn.

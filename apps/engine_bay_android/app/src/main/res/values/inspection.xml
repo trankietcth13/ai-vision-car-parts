@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="find_component">Find a part</string>
+    <string name="find_clear">Clear selection</string>
+    <string name="find_not_seen">Not detected in this photo. Try a closer photo or another angle. This does not mean the component is missing or faulty.</string>
+    <string name="inspection_details">Vehicle and notes</string>
+    <string name="inspection_vehicle">Vehicle / registration / job ID</string>
+    <string name="inspection_notes">Inspection notes</string>
+    <string name="inspection_observation">Your observation / identity correction</string>
+    <string name="inspection_vehicle_missing">Unnamed inspection</string>
+    <string name="inspection_vehicle_required">Enter a vehicle or job identifier.</string>
+    <string name="inspection_summary">%1$s · %2$d/%3$d steps recorded</string>
+    <string name="inspection_photo_note">One engine-bay photo per inspection. Replacing the photo resets its checklist. Save before taking another view; use the same vehicle ID to group the records.</string>
+    <string name="inspection_checks">Inspection checklist</string>
+    <string name="inspection_save">Save inspection</string>
+    <string name="inspection_saved">Inspection saved on this device.</string>
+    <string name="inspection_history">History</string>
+    <string name="inspection_new">New inspection</string>
+    <string name="inspection_replace">Replace photo</string>
+    <string name="inspection_replace_photo">Replacing the engine-bay photo clears this draft’s checklist. Save the current inspection first if you want to keep these observations. Replace the photo?</string>
+    <string name="inspection_new_confirm">Start a new inspection? The current draft will be cleared. Saved inspections stay in History.</string>
+    <string name="inspection_apply">Apply</string>
+    <string name="inspection_done">Done</string>
+    <string name="inspection_wait">Wait for the photo analysis to finish before saving. If analysis failed, try another photo.</string>
+    <string name="inspection_empty">Add a photo, codes, checklist or notes before saving.</string>
+    <string name="inspection_io_error">Could not read or save the inspection. Check available storage and try again.</string>
+    <string name="draft_restore_failed">Could not restore the draft. Saved inspections are still available in History.</string>
+    <string name="history_search">Filter by vehicle / job ID</string>
+    <string name="history_empty">No saved inspections yet.</string>
+    <string name="history_damaged">Some saved records could not be read. The remaining records are shown.</string>
+    <string name="check_identity">Confirm the component identity on the vehicle. Record a correction below if the AI label is wrong or uncertain.</string>
+    <string name="check_visual">Record what is visible in the photo or during inspection. Note anything obscured or requiring a separate test.</string>
+    <string name="checklist_note">Technician observations, not an automatic diagnosis. Component-specific instructions are draft reference material; confirm against the vehicle service manual. Do not handle hot, moving or energised parts. “Checked” records an action, not a pass.</string>
+    <string name="check_pending">Not checked</string>
+    <string name="check_done">Checked — see notes</string>
+    <string name="check_concern">Concern — needs follow-up</string>
+    <string name="check_skipped">Skipped / not accessible</string>
+    <string name="report_title">Engine-bay inspection report</string>
+    <string name="report_model">Detection model</string>
+    <string name="report_photo">Engine-bay photo</string>
+    <string name="report_disclaimer">AI labels and scores are suggestions, not fault or safety conclusions. Check results and notes are entered by the technician. An unseen component is not necessarily absent or faulty. Reference instructions are drafts and require review against the vehicle service manual.</string>
+    <string name="report_export">Export HTML report</string>
+    <string name="report_saved">Report exported. Open the HTML file in a browser to view or print offline.</string>
+</resources>

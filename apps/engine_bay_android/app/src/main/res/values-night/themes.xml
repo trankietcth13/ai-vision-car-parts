@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.EngineBay" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/brand_dark</item>
-        <item name="colorSecondary">@color/brand_dark</item>
+        <item name="colorPrimary">@color/accent_blue_dark</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#FFFFFF</item>
+        <item name="colorOnSecondary">@color/obsidian_black</item>
+        <item name="android:colorBackground">@color/canvas_bg_dark</item>
+        <item name="colorSurface">@color/card_surface_dark</item>
+        <item name="colorSurfaceContainer">@color/card_surface_dark</item>
+        <item name="colorSurfaceContainerLow">@color/canvas_bg_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/pill_neutral_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/pill_neutral_dark</item>
+        <item name="colorOutline">@color/card_stroke_dark</item>
+        <item name="colorOutlineVariant">@color/card_stroke_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_dark</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/canvas_bg_dark</item>
     </style>
-    <color name="warn_bg">#3B2A10</color>
+
+    <color name="warn_bg">#332512</color>
     <color name="warn_fg">#FDE68A</color>
-    <color name="danger_bg">#3F1414</color>
+    <color name="warn_stroke">#5C401C</color>
+    <color name="danger_bg">#3A1414</color>
     <color name="danger_fg">#FECACA</color>
+    <color name="danger_stroke">#6B2323</color>
 </resources>

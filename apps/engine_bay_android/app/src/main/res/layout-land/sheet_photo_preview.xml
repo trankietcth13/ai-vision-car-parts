@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Landscape / Tablet layout for Photo Review & Rotate Sheet before AI Inference -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="20dp">
+
+        <!-- Top Drag Handle -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_pill_neutral" />
+
+        <!-- 2-Column Split: Left Image Viewport, Right Controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Left: Image Viewport Card & Hint -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.enginebay.vision.ZoomableImageView
+                            android:id="@+id/previewImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="220dp"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/photo_preview_title" />
+
+                        <!-- Badges Row: Angle badge on left, Zoom badge on right -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                            <TextView
+                                android:id="@+id/previewAngleBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_badge"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:text="0°"
+                                android:textAppearance="?attr/textAppearanceLabelMedium"
+                                android:textColor="@color/accent_blue"
+                                android:textStyle="bold" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="1" />
+
+                            <TextView
+                                android:id="@+id/previewZoomBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_badge"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:text="1.0x"
+                                android:textAppearance="?attr/textAppearanceLabelMedium"
+                                android:textColor="@color/accent_blue"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Floating Zoom Control Pill at Bottom-Right -->
+                        <LinearLayout
+                            android:id="@+id/zoomControls"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp"
+                            android:background="@drawable/bg_pill_neutral"
+                            android:backgroundTint="?attr/colorSurfaceContainerHigh"
+                            android:elevation="3dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="2dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnZoomOut"
+                                style="@style/Widget.EngineBay.Button.Icon"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:contentDescription="@string/zoom_out"
+                                app:icon="@drawable/ic_zoom_out"
+                                app:iconGravity="textStart"
+                                app:iconPadding="0dp"
+                                app:iconSize="16dp"
+                                app:iconTint="?attr/colorOnSurface" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnZoomReset"
+                                style="@style/Widget.EngineBay.Button.Icon"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:contentDescription="@string/zoom_reset"
+                                app:icon="@drawable/ic_zoom_reset"
+                                app:iconGravity="textStart"
+                                app:iconPadding="0dp"
+                                app:iconSize="16dp"
+                                app:iconTint="?attr/colorOnSurface" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnZoomIn"
+                                style="@style/Widget.EngineBay.Button.Icon"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:contentDescription="@string/zoom_in"
+                                app:icon="@drawable/ic_zoom_in"
+                                app:iconGravity="textStart"
+                                app:iconPadding="0dp"
+                                app:iconSize="16dp"
+                                app:iconTint="?attr/colorOnSurface" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Subtle Zoom Hint -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@string/zoom_hint"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <!-- Right: Title & Control Actions -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.15"
+                android:orientation="vertical">
+
+                <!-- Header Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_circle_neutral">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_camera"
+                            app:tint="?attr/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/previewTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/photo_preview_title"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/previewSubtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/photo_preview_desc"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Quick Rotate Controls Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRotateLeft"
+                        style="@style/Widget.EngineBay.Button.Tonal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/rotate_left"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        app:icon="@drawable/ic_rotate_left"
+                        app:iconTint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRotateRight"
+                        style="@style/Widget.EngineBay.Button.Tonal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/rotate_right"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        app:icon="@drawable/ic_rotate_right"
+                        app:iconTint="?attr/colorOnSurface" />
+                </LinearLayout>
+
+                <!-- Actions Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRetake"
+                        style="@style/Widget.EngineBay.Button.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:text="@string/retake"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        app:icon="@drawable/ic_camera"
+                        app:iconTint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnConfirmAnalyze"
+                        style="@style/Widget.EngineBay.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/accent_blue"
+                        android:text="@string/confirm_analyze"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="#FFFFFF"
+                        app:icon="@drawable/ic_inspect"
+                        app:iconTint="#FFFFFF" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
