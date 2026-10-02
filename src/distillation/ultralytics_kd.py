@@ -199,6 +199,7 @@ class KDCriterion:
             device=self.device,
         )
         self._warned: set = set()
+        self.nonfinite = [0, 0, 0]  # batches whose feature / logit / box KD term was dropped
 
     # -- delegation needed by the Ultralytics trainer for E2E losses
     def update(self):
@@ -223,7 +224,7 @@ class KDCriterion:
     def project_student(self, s_feats: List[torch.Tensor], t_feats: List[torch.Tensor]):
         proj, tdict = {}, {}
         for i, lvl in enumerate(self.levels):
-            sf = self.adapters[lvl](s_feats[i])
+            sf = self.adapters[lvl](s_feats[i].float())
             if sf.shape[-2:] != t_feats[i].shape[-2:]:
                 sf = F.interpolate(sf, size=t_feats[i].shape[-2:], mode="bilinear", align_corners=False)
             proj[lvl] = sf
@@ -232,7 +233,9 @@ class KDCriterion:
 
     @torch.no_grad()
     def teacher_forward(self, teacher: nn.Module, img: torch.Tensor) -> Dict[str, torch.Tensor]:
-        return preds_dict(teacher(img))
+        # fp32: under AMP the yolo26l teacher produced NaN at some locations of some augmented batches
+        with torch.autocast(device_type=img.device.type, enabled=False):
+            return preds_dict(teacher(img.float()))
 
     def feature_kd_on_images(self, model: nn.Module, teacher: nn.Module, img: torch.Tensor) -> torch.Tensor:
         """Feature-only KD for unlabeled images (teacher attention weighting, no GT masks)."""
@@ -250,19 +253,36 @@ class KDCriterion:
 
         teacher = get_teacher(self.teacher_key)
         if teacher is not None and self.adapters.training:
-            kd = self._kd_terms(p, batch, teacher)
+            with torch.autocast(device_type=self.device.type, enabled=False):  # KD terms in fp32
+                kd = self._finite(self._kd_terms(p, batch, teacher))
 
         weighted = kd * self.weights
         loss = torch.cat([base_loss, weighted * bs])
         items = torch.cat([base_items, weighted.detach()])
         return loss, items
 
-    def _kd_terms(self, p: Dict[str, torch.Tensor], batch: Dict[str, Any], teacher: nn.Module) -> torch.Tensor:
+    def _finite(self, terms: List[torch.Tensor]) -> torch.Tensor:
+        """Stack the KD terms, dropping any non-finite one for this batch. A dropped term leaves the graph entirely:
+        masking it in place would still backpropagate 0 * NaN = NaN, and one NaN step corrupts the EMA (the trainer
+        then zeroes its NaN weights), which is how kd_26s_v26_s0 collapsed."""
+        out = []
+        for i, t in enumerate(terms):
+            if not bool(torch.isfinite(t)):
+                self.nonfinite[i] += 1
+                if self.nonfinite[i] <= 5 or self.nonfinite[i] % 100 == 0:
+                    LOGGER.warning(f"[KD] non-finite {('feature', 'logit', 'box')[i]} KD term dropped "
+                                   f"({self.nonfinite[i]} batches so far)")
+                t = torch.zeros((), device=self.device)
+            out.append(t.float().reshape(()))
+        return torch.stack(out)
+
+    def _kd_terms(self, p: Dict[str, torch.Tensor], batch: Dict[str, Any], teacher: nn.Module) -> List[torch.Tensor]:
         img = batch["img"]
         bs = img.shape[0]
         tp = self.teacher_forward(teacher, img)
         s_feats, t_feats = p["feats"], tp["feats"]
-        kd = torch.zeros(3, device=self.device)
+        zero = torch.zeros((), device=self.device)
+        kd = [zero, zero, zero]
 
         # 1) Feature distillation with GT-box foreground / background masks.
         masks = build_box_masks(

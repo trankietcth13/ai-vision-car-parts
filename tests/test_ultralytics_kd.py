@@ -106,5 +106,20 @@ class TestKDCriterion(unittest.TestCase):
         loss.sum().backward()
 
 
+class TestNonFiniteKD(unittest.TestCase):
+    def test_nan_term_is_dropped_and_gradients_stay_finite(self):
+        stub = type("Stub", (), {"nonfinite": [0, 0, 0], "device": torch.device("cpu")})()
+        x = torch.tensor([1.0, 2.0], requires_grad=True)
+        feat = (x ** 2).sum()
+        logit = (x / torch.zeros(2)).sum() * 0.0  # inf * 0 = NaN, still attached to x
+        kd = KDCriterion._finite(stub, [feat, logit, x.sum()])
+        self.assertTrue(torch.isfinite(kd).all())
+        self.assertEqual(kd[1].item(), 0.0)
+        self.assertEqual(stub.nonfinite, [0, 1, 0])
+        kd.sum().backward()
+        self.assertTrue(torch.isfinite(x.grad).all())  # masking in place would give NaN here
+        self.assertEqual(x.grad.tolist(), [3.0, 5.0])
+
+
 if __name__ == "__main__":
     unittest.main()
