@@ -69,6 +69,14 @@ Mở `http://<server>:7860/`, tải ảnh lên (hoặc chọn ảnh mẫu): kế
 phím `O` hoặc nút **Ảnh gốc** để so sánh. Mục **Tùy chọn** đổi model, ngưỡng tin cậy, và bật ngưỡng riêng từng lớp khi có
 file `config/class_thresholds.yaml`.
 
+Mục **Đánh giá Benchmark Model** đo độ trễ (batch 1, trên `ENGINE_BAY_DEVICE`) của model đang chọn, hoặc chọn
+**So sánh tất cả model** để đo mọi file trong `models/` cạnh nhau. Bảng tách thời gian tiền xử lý / suy luận / hậu xử lý
+(hậu xử lý = NMS + mask; YOLO26 không có NMS nên phần này gần như bằng 0). Số linh kiện chỉ để đối chiếu, độ chính xác
+(mAP) phải đo trên tập test có nhãn.
+
+`models/` nhận cả checkpoint `.pt` và file export `.onnx`, YOLO11 lẫn YOLO26. Kiến trúc (ví dụ `YOLO26s-seg · không NMS`)
+đọc từ metadata của file và hiện trong danh sách model.
+
 ## REST API
 
 `GET /healthz`
@@ -83,7 +91,7 @@ file `config/class_thresholds.yaml`.
 |---|---|---|
 | `file` | có | Ảnh JPG/PNG |
 | `conf` | không | Ngưỡng tin cậy, mặc định `ENGINE_BAY_CONF` |
-| `model` | không | `kd_n_full` hoặc `teacher_full` (tên trong `/healthz`, có hoặc không có `.pt`) |
+| `model` | không | `kd_n_full` hoặc `teacher_full` (tên trong `/healthz`, có hoặc không có đuôi; khi một model có cả `.pt` và `.onnx`, `/healthz` liệt kê tên kèm đuôi) |
 | `per_class` | không | `true` (mặc định): dùng ngưỡng từng lớp nếu có file cấu hình |
 
 ```bash
@@ -106,7 +114,9 @@ Tài liệu API tự sinh: `http://<server>:7860/docs`.
 ## Cập nhật model
 
 Chép checkpoint mới (đã gỡ adapter KD, ví dụ `runs/train_kd/<run>/weights/avg5.pt` trong project train) vào `models/`
-với tên mới, rồi đặt `ENGINE_BAY_MODEL=<tên>.pt` và khởi động lại. Khi có kết quả cross-validation, chép
+với tên mới, rồi đặt `ENGINE_BAY_MODEL=<tên>.pt` và khởi động lại. Tên chứa `teacher` được xếp vào nhóm teacher.
+Export ONNX: `python scripts/deployment/export_onnx.py --checkpoint <run>/weights/avg5.pt --output models/<tên>.onnx`
+(YOLO26 xuất đầu end-to-end `[1, 300, 38]`, không cần NMS). Khi có kết quả cross-validation, chép
 `configs/class_thresholds.yaml` từ project train vào `config/`.
 
 ## Lưu ý vận hành

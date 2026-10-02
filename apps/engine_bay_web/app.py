@@ -83,10 +83,14 @@ VI_NAMES = {
 }
 
 
+MODEL_SUFFIXES = (".pt", ".onnx")
+
+
 def discover_models() -> list[Path]:
-    """Checkpoints in MODELS_DIR: students first, then teachers, each alphabetical."""
-    found = sorted(p.resolve() for p in MODELS_DIR.glob("*.pt") if p.is_file())
-    return sorted(found, key=lambda p: ("teacher" in p.stem, p.stem))
+    """Checkpoints (.pt) and exports (.onnx) in MODELS_DIR: students first, then teachers, each alphabetical."""
+    found = sorted(p.resolve() for p in MODELS_DIR.iterdir() if p.is_file() and p.suffix in MODEL_SUFFIXES) \
+        if MODELS_DIR.is_dir() else []
+    return sorted(found, key=lambda p: ("teacher" in p.stem, p.stem, p.suffix))
 
 
 def resolve_model(name: str | None) -> Path | None:
@@ -104,10 +108,53 @@ def served_model(name: str) -> Path | None:
     return next((p for p in discover_models() if name in (p.stem, p.name)), None)
 
 
+def served_names() -> list[str]:
+    """/healthz model names: the stem, or the file name when a .pt and its .onnx export share the stem."""
+    models = discover_models()
+    stems = [p.stem for p in models]
+    return [p.stem if stems.count(p.stem) == 1 else p.name for p in models]
+
+
+_INFO: dict[tuple[str, float], dict] = {}
+
+
+def model_info(path: str | Path) -> dict:
+    """Architecture of a checkpoint or ONNX export, read from its metadata (cached by path + mtime):
+    arch "YOLO26s-seg", params in millions (None for ONNX), nms_free (YOLO26 end-to-end head: no NMS step)."""
+    path = Path(path)
+    key = (str(path), path.stat().st_mtime)
+    if key in _INFO:
+        return _INFO[key]
+    arch, params, nms_free, task = None, None, False, "segment"
+    try:
+        if path.suffix == ".onnx":
+            import onnx
+
+            meta = {p.key: p.value for p in onnx.load(str(path), load_external_data=False).metadata_props}
+            arch = next((w for w in meta.get("description", "").split() if w.lower().startswith("yolo")), None)
+            nms_free = meta.get("end2end", "").lower() == "true" or bool(arch and arch.lower().startswith("yolo26"))
+            task = meta.get("task", task)
+        else:
+            ckpt = torch.load(path, map_location="cpu", weights_only=False)
+            m = ckpt.get("ema") or ckpt.get("model")
+            arch = Path(m.yaml.get("yaml_file", "")).stem or None
+            params = sum(p.numel() for p in m.parameters()) / 1e6
+            nms_free = bool(getattr(m.model[-1], "end2end", False))
+    except Exception:  # unknown file layout: the model still runs, only the label is shorter
+        pass
+    if arch:
+        arch = arch.replace("yolov", "YOLOv").replace("yolo", "YOLO")
+    _INFO[key] = {"arch": arch, "params": params, "nms_free": nms_free, "task": task,
+                  "role": "teacher" if "teacher" in path.stem else "student", "format": path.suffix[1:].upper()}
+    return _INFO[key]
+
+
 def model_label(path: Path) -> str:
-    kind = "teacher · chính xác hơn, chậm hơn" if "teacher" in path.stem else "student · nhanh"
+    info = model_info(path)
+    kind = "teacher · chính xác hơn, chậm hơn" if info["role"] == "teacher" else "student · nhanh"
+    arch = " · ".join(x for x in (info["arch"], "không NMS" if info["nms_free"] else None, info["format"]) if x)
     size = path.stat().st_size / 2**20
-    return f"{path.stem} · {kind} · {size:.0f} MB"
+    return f"{path.stem} · {kind} · {arch} · {size:.0f} MB"
 
 
 class ModelCache:
@@ -123,7 +170,9 @@ class ModelCache:
             if self._model is None or self._path != path:
                 if not Path(path).is_file():
                     raise FileNotFoundError(f"Không tìm thấy model: {path}")
-                self._model, self._path = YOLO(path), path
+                # an export's file name rarely says "-seg", so Ultralytics would guess task=detect and drop the masks
+                task = model_info(path)["task"] if Path(path).suffix == ".onnx" else None
+                self._model, self._path = YOLO(path, task=task), path
             return self._model
 
 
@@ -330,104 +379,138 @@ def on_upload_model(file_obj):
     return gr.update(choices=choices, value=str(dst)), f"Đã nạp model: {dst.name} ({dst.stat().st_size / 2**20:.1f} MB)"
 
 
-def benchmark_model(model_path: str, iterations: float, scope: str, current_image: np.ndarray | None) -> str:
-    """Benchmark model inference speed, latency statistics, and detection count."""
-    if not model_path:
-        return "<div class='summary muted'>Vui lòng chọn model trước khi benchmark.</div>"
-    try:
-        model = CACHE.get(model_path)
-    except Exception as e:
-        return f"<div class='summary muted'>Lỗi nạp model: {html.escape(str(e))}</div>"
+BENCH_CURRENT = "Ảnh hiện tại"
+BENCH_ONE, BENCH_ALL = "Model đang chọn", "So sánh tất cả model"
+_CARD = "background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;"
+_SUB = "font-size:11px;color:var(--body-text-color-subdued);"
+_TH = "padding:6px;white-space:nowrap;"
 
-    images_to_test = []
-    if scope == "Ảnh hiện tại" and current_image is not None:
-        images_to_test.append(("Ảnh hiện tại", downscale(current_image)))
-    else:
-        sample_paths = sorted(EXAMPLE_DIR.glob("*.jpg"))[:6] if EXAMPLE_DIR.is_dir() else []
-        for p in sample_paths:
-            im = cv2.imread(str(p))
-            if im is not None:
-                images_to_test.append((p.name, downscale(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))))
 
-    if not images_to_test:
-        return "<div class='summary muted'>Không có ảnh để benchmark (hãy tải ảnh lên hoặc đặt ảnh vào examples/).</div>"
+def _bench_images(scope: str, current_image: np.ndarray | None) -> list[tuple[str, np.ndarray]]:
+    if scope == BENCH_CURRENT and current_image is not None:
+        return [(BENCH_CURRENT, downscale(current_image))]
+    images = []
+    for p in (sorted(EXAMPLE_DIR.glob("*.jpg"))[:6] if EXAMPLE_DIR.is_dir() else []):
+        im = cv2.imread(str(p))
+        if im is not None:
+            images.append((p.name, downscale(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))))
+    return images
 
-    iters = max(1, int(iterations))
-    # 2 Warmup runs
-    dummy = cv2.cvtColor(images_to_test[0][1], cv2.COLOR_RGB2BGR)
-    for _ in range(2):
-        model.predict(dummy, imgsz=IMAGE_SIZE, device=DEVICE, verbose=False)
 
-    sample_stats = []
-    for name, img in images_to_test:
+def _bench_one(model_path: str, images: list[tuple[str, np.ndarray]], iters: int, conf: float) -> dict:
+    """Wall-clock latency of model.predict per image, split into Ultralytics' preprocess / inference / postprocess
+    times (postprocess = NMS + masks; YOLO26 has no NMS). Every image is warmed up first: photos of different aspect
+    ratios give different letterbox shapes, and the first run at a new shape builds new CPU kernels."""
+    model = CACHE.get(model_path)
+    kw = dict(imgsz=IMAGE_SIZE, conf=conf, device=DEVICE, verbose=False)
+    rows = []
+    for name, img in images:
         bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        latencies = []
-        last_res = None
+        for _ in range(2):
+            model.predict(bgr, **kw)
+        lat, parts, r = [], defaultdict(float), None
         for _ in range(iters):
             t0 = time.perf_counter()
-            r = model.predict(bgr, imgsz=IMAGE_SIZE, device=DEVICE, verbose=False)[0]
-            latencies.append((time.perf_counter() - t0) * 1000)
-            last_res = r
+            r = model.predict(bgr, **kw)[0]
+            lat.append((time.perf_counter() - t0) * 1000)
+            for k in ("preprocess", "inference", "postprocess"):
+                parts[k] += (r.speed or {}).get(k) or 0.0
+        rows.append({"name": name, "w": img.shape[1], "h": img.shape[0], "avg": sum(lat) / len(lat), "min": min(lat),
+                     "max": max(lat), **{k: v / iters for k, v in parts.items()},
+                     "dets": len(r.boxes) if r is not None and r.boxes is not None else 0})
+    mean = lambda k: sum(x[k] for x in rows) / len(rows)  # noqa: E731
+    return {"path": model_path, "images": rows, "avg": mean("avg"), "min": min(x["min"] for x in rows),
+            "max": max(x["max"] for x in rows), "preprocess": mean("preprocess"), "inference": mean("inference"),
+            "postprocess": mean("postprocess"), "dets": sum(x["dets"] for x in rows)}
 
-        avg_lat = sum(latencies) / len(latencies)
-        min_lat = min(latencies)
-        max_lat = max(latencies)
-        fps = 1000.0 / avg_lat if avg_lat > 0 else 0
-        dets_cnt = len(last_res.boxes) if (last_res and last_res.boxes is not None) else 0
-        sample_stats.append({
-            "name": name,
-            "h": img.shape[0], "w": img.shape[1],
-            "avg_ms": avg_lat,
-            "min_ms": min_lat,
-            "max_ms": max_lat,
-            "fps": fps,
-            "dets": dets_cnt
-        })
 
-    overall_avg = sum(s["avg_ms"] for s in sample_stats) / len(sample_stats)
-    overall_fps = 1000.0 / overall_avg if overall_avg > 0 else 0
-    overall_min = min(s["min_ms"] for s in sample_stats)
-    overall_max = max(s["max_ms"] for s in sample_stats)
-    total_dets = sum(s["dets"] for s in sample_stats)
+def _arch_text(path: str | Path) -> str:
+    info = model_info(path)
+    params = f"{info['params']:.1f}M tham số" if info["params"] else None
+    nms = "không NMS (end-to-end)" if info["nms_free"] else "có NMS"
+    return " · ".join(html.escape(x) for x in (info["arch"] or "?", params, nms, info["format"]) if x)
 
+
+def _render_one(s: dict, iters: int) -> str:
+    fps = 1000.0 / s["avg"] if s["avg"] > 0 else 0
+    cards = [("Độ trễ trung bình", f"{s['avg']:.1f} ms", f"min {s['min']:.1f} | max {s['max']:.1f}"),
+             ("Tốc độ (FPS)", f"{fps:.1f} FPS", f"{DEVICE} · batch 1"),
+             ("Suy luận / hậu xử lý", f"{s['inference']:.1f} / {s['postprocess']:.1f} ms",
+              f"tiền xử lý {s['preprocess']:.1f} ms"),
+             ("Tổng phát hiện", str(s["dets"]), f"trên {len(s['images'])} ảnh")]
+    cards_html = "".join(
+        f"<div style='{_CARD}'><div style='{_SUB}text-transform:uppercase;'>{t}</div>"
+        f"<div style='font-size:20px;font-weight:700;color:var(--color-accent);'>{v}</div><div style='{_SUB}'>{sub}</div></div>"
+        for t, v, sub in cards)
     rows = "".join(
-        f"<tr style='border-bottom:1px solid var(--block-border-color);'><td style='padding:6px;'><b>{html.escape(s['name'])}</b></td>"
-        f"<td>{s['w']}×{s['h']}</td>"
-        f"<td><b>{s['avg_ms']:.1f} ms</b> ({s['fps']:.1f} FPS)</td>"
-        f"<td><span style='background:var(--color-accent);color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;'>{s['dets']}</span></td></tr>"
-        for s in sample_stats
-    )
-
+        f"<tr style='border-bottom:1px solid var(--block-border-color);'><td style='padding:6px;'><b>{html.escape(x['name'])}</b></td>"
+        f"<td>{x['w']}×{x['h']}</td><td><b>{x['avg']:.1f} ms</b></td>"
+        f"<td>{x['preprocess']:.1f} / {x['inference']:.1f} / {x['postprocess']:.1f}</td><td>{x['dets']}</td></tr>"
+        for x in s["images"])
     return f"""
     <div style="background:var(--block-background-fill);border:1px solid var(--block-border-color);border-radius:10px;padding:14px;margin-top:10px;">
-      <h3 style="margin:0 0 10px;font-size:15px;">⚡ Kết quả Benchmark: {html.escape(Path(model_path).name)} ({iters} lần lặp)</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-bottom:12px;">
-        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
-          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Độ trễ trung bình</div>
-          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{overall_avg:.1f} ms</div>
-          <div style="font-size:11px;color:var(--body-text-color-subdued);">min {overall_min:.1f} | max {overall_max:.1f}</div>
-        </div>
-        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
-          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Tốc độ (FPS)</div>
-          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{overall_fps:.1f} FPS</div>
-          <div style="font-size:11px;color:var(--body-text-color-subdued);">{DEVICE} · batch 1</div>
-        </div>
-        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
-          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Tổng phát hiện</div>
-          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{total_dets}</div>
-          <div style="font-size:11px;color:var(--body-text-color-subdued);">trên {len(sample_stats)} ảnh</div>
-        </div>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--block-border-color);color:var(--body-text-color-subdued);">
-            <th style="padding:6px;">Ảnh</th><th>Kích thước</th><th>Độ trễ</th><th>Linh kiện</th>
-          </tr>
-        </thead>
+      <h3 style="margin:0 0 4px;font-size:15px;">⚡ Benchmark: {html.escape(Path(s['path']).name)} ({iters} lần lặp)</h3>
+      <div style="{_SUB}margin-bottom:10px;">{_arch_text(s['path'])}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-bottom:12px;">{cards_html}</div>
+      <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
+        <thead><tr style="border-bottom:1px solid var(--block-border-color);color:var(--body-text-color-subdued);">
+          <th style="{_TH}">Ảnh</th><th style="{_TH}">Kích thước</th><th style="{_TH}">Độ trễ</th>
+          <th style="{_TH}">Tiền xử lý / suy luận / hậu xử lý (ms)</th><th style="{_TH}">Linh kiện</th></tr></thead>
         <tbody>{rows}</tbody>
-      </table>
+      </table></div>
     </div>
     """
+
+
+def _render_all(stats: list[dict], errors: list[tuple[str, str]], iters: int, n_images: int) -> str:
+    fastest = min((s["avg"] for s in stats), default=0)
+    rows = "".join(
+        f"<tr style='border-bottom:1px solid var(--block-border-color);'>"
+        f"<td style='padding:6px;'><b>{html.escape(Path(s['path']).stem)}</b><div style='{_SUB}'>{_arch_text(s['path'])}</div></td>"
+        f"<td>{model_info(s['path'])['role']}</td><td><b>{s['avg']:.1f}</b></td><td>{1000.0 / s['avg']:.1f}</td>"
+        f"<td>{s['preprocess']:.1f} / {s['inference']:.1f} / {s['postprocess']:.1f}</td>"
+        f"<td>{s['dets']}</td><td>×{s['avg'] / fastest:.1f}</td></tr>"
+        for s in stats)
+    rows += "".join(f"<tr><td style='padding:6px;'><b>{html.escape(Path(p).stem)}</b></td>"
+                    f"<td colspan='6' style='color:var(--body-text-color-subdued);'>lỗi: {html.escape(e)}</td></tr>"
+                    for p, e in errors)
+    return f"""
+    <div style="background:var(--block-background-fill);border:1px solid var(--block-border-color);border-radius:10px;padding:14px;margin-top:10px;">
+      <h3 style="margin:0 0 4px;font-size:15px;">⚡ So sánh {len(stats)} model · {n_images} ảnh × {iters} lần lặp · {DEVICE} · batch 1</h3>
+      <div style="{_SUB}margin-bottom:10px;">Số linh kiện chỉ để đối chiếu; độ chính xác (mAP) phải đo trên tập test có nhãn.</div>
+      <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
+        <thead><tr style="border-bottom:1px solid var(--block-border-color);color:var(--body-text-color-subdued);">
+          <th style="{_TH}">Model</th><th style="{_TH}">Vai trò</th><th style="{_TH}">Độ trễ TB (ms)</th><th style="{_TH}">FPS</th>
+          <th style="{_TH}">Tiền xử lý / suy luận / hậu xử lý (ms)</th><th style="{_TH}">Linh kiện</th>
+          <th style="{_TH}">So với nhanh nhất</th></tr></thead>
+        <tbody>{rows}</tbody>
+      </table></div>
+    </div>
+    """
+
+
+def benchmark_model(model_path: str, iterations: float, scope: str, current_image: np.ndarray | None,
+                    confidence: float = DEFAULT_CONF, target: str = BENCH_ONE, progress=gr.Progress()) -> str:
+    """Latency benchmark of the selected model, or of every model in MODELS_DIR side by side."""
+    paths = [str(p) for p in discover_models()] if target == BENCH_ALL else ([model_path] if model_path else [])
+    if not paths:
+        return "<div class='summary muted'>Vui lòng chọn model trước khi benchmark.</div>"
+    images = _bench_images(scope, current_image)
+    if not images:
+        return "<div class='summary muted'>Không có ảnh để benchmark (hãy tải ảnh lên hoặc đặt ảnh vào examples/).</div>"
+    iters = max(1, int(iterations))
+    stats, errors = [], []
+    for i, p in enumerate(paths):
+        progress(i / len(paths), desc=f"Benchmark {Path(p).name}")
+        try:
+            stats.append(_bench_one(p, images, iters, float(confidence)))
+        except Exception as e:  # one broken model must not hide the others
+            errors.append((p, str(e)))
+    if target != BENCH_ALL:
+        if errors:
+            return f"<div class='summary muted'>Lỗi nạp model: {html.escape(errors[0][1])}</div>"
+        return _render_one(stats[0], iters)
+    return _render_all(stats, errors, iters, len(images))
 
 
 def build_app(initial_model: str | None = None) -> gr.Blocks:
@@ -465,15 +548,16 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
                                             if any_thr else "Ngưỡng riêng từng loại (chưa có config/class_thresholds/)")
 
                 with gr.Accordion("⚡ Đánh giá Benchmark Model", open=False):
-                    bench_scope = gr.Radio(["Bộ ảnh mẫu (Suite)", "Ảnh hiện tại"], value="Bộ ảnh mẫu (Suite)", label="Phạm vi")
-                    bench_iters = gr.Slider(5, 50, value=10, step=5, label="Số lần lặp (iterations)")
+                    bench_target = gr.Radio([BENCH_ONE, BENCH_ALL], value=BENCH_ONE, label="Model")
+                    bench_scope = gr.Radio(["Bộ ảnh mẫu (Suite)", BENCH_CURRENT], value="Bộ ảnh mẫu (Suite)", label="Phạm vi")
+                    bench_iters = gr.Slider(1, 50, value=10, step=1, label="Số lần lặp (iterations)")
                     bench_btn = gr.Button("⚡ Chạy Benchmark Model", variant="primary")
-                    bench_out = gr.HTML("")
 
             with gr.Column(scale=5):
                 image_out = gr.HTML(viewer_html(), padding=False)
                 summary = gr.HTML(summary_html("Tải ảnh khoang máy lên để bắt đầu.", "muted"))
                 parts = gr.HTML("")
+                bench_out = gr.HTML("")
 
         inputs, outputs = [image_in, model, confidence, per_class], [image_out, summary, parts]
         image_in.change(analyze, inputs, outputs, api_name="analyze")
@@ -482,7 +566,8 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
         per_class.change(analyze, inputs, outputs, api_visibility="private")
 
         model_file.upload(on_upload_model, inputs=[model_file], outputs=[model, upload_status])
-        bench_btn.click(benchmark_model, inputs=[model, bench_iters, bench_scope, image_in], outputs=[bench_out])
+        bench_btn.click(benchmark_model, inputs=[model, bench_iters, bench_scope, image_in, confidence, bench_target],
+                        outputs=[bench_out])
     return demo
 
 
@@ -519,7 +604,7 @@ def create_server(initial_model: str | None = None):
     @api.get("/healthz")
     def healthz():
         return {"status": "ok", "device": DEVICE, "default_model": default.stem if default else None,
-                "models": [p.stem for p in discover_models()],
+                "models": served_names(),
                 "per_class_thresholds": {p.stem: bool(class_thresholds(p)) for p in discover_models()}}
 
     @api.post("/api/detect")

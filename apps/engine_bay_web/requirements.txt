@@ -8,3 +8,5 @@ python-multipart>=0.0.9
 opencv-python-headless>=4.10
 numpy>=1.26,<3
 pyyaml>=6.0
+onnx>=1.16          # read architecture / task from uploaded .onnx models
+onnxruntime>=1.18   # run .onnx models
