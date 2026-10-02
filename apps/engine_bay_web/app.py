@@ -312,6 +312,124 @@ VIEWER_JS = """
 """
 
 
+def on_upload_model(file_obj):
+    """Handle user uploading a .pt or .onnx model file."""
+    if file_obj is None:
+        models = discover_models()
+        return gr.update(choices=[(model_label(p), str(p)) for p in models]), "Chưa chọn file model"
+    src = Path(file_obj.name)
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    dst = MODELS_DIR / src.name
+    import shutil
+    shutil.copyfile(src, dst)
+    models = discover_models()
+    choices = [(model_label(p), str(p)) for p in models]
+    threading.Thread(target=lambda: CACHE.get(str(dst)).predict(
+        np.zeros((IMAGE_SIZE, IMAGE_SIZE, 3), np.uint8), imgsz=IMAGE_SIZE, device=DEVICE, verbose=False),
+        daemon=True).start()
+    return gr.update(choices=choices, value=str(dst)), f"Đã nạp model: {dst.name} ({dst.stat().st_size / 2**20:.1f} MB)"
+
+
+def benchmark_model(model_path: str, iterations: float, scope: str, current_image: np.ndarray | None) -> str:
+    """Benchmark model inference speed, latency statistics, and detection count."""
+    if not model_path:
+        return "<div class='summary muted'>Vui lòng chọn model trước khi benchmark.</div>"
+    try:
+        model = CACHE.get(model_path)
+    except Exception as e:
+        return f"<div class='summary muted'>Lỗi nạp model: {html.escape(str(e))}</div>"
+
+    images_to_test = []
+    if scope == "Ảnh hiện tại" and current_image is not None:
+        images_to_test.append(("Ảnh hiện tại", downscale(current_image)))
+    else:
+        sample_paths = sorted(EXAMPLE_DIR.glob("*.jpg"))[:6] if EXAMPLE_DIR.is_dir() else []
+        for p in sample_paths:
+            im = cv2.imread(str(p))
+            if im is not None:
+                images_to_test.append((p.name, downscale(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))))
+
+    if not images_to_test:
+        return "<div class='summary muted'>Không có ảnh để benchmark (hãy tải ảnh lên hoặc đặt ảnh vào examples/).</div>"
+
+    iters = max(1, int(iterations))
+    # 2 Warmup runs
+    dummy = cv2.cvtColor(images_to_test[0][1], cv2.COLOR_RGB2BGR)
+    for _ in range(2):
+        model.predict(dummy, imgsz=IMAGE_SIZE, device=DEVICE, verbose=False)
+
+    sample_stats = []
+    for name, img in images_to_test:
+        bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        latencies = []
+        last_res = None
+        for _ in range(iters):
+            t0 = time.perf_counter()
+            r = model.predict(bgr, imgsz=IMAGE_SIZE, device=DEVICE, verbose=False)[0]
+            latencies.append((time.perf_counter() - t0) * 1000)
+            last_res = r
+
+        avg_lat = sum(latencies) / len(latencies)
+        min_lat = min(latencies)
+        max_lat = max(latencies)
+        fps = 1000.0 / avg_lat if avg_lat > 0 else 0
+        dets_cnt = len(last_res.boxes) if (last_res and last_res.boxes is not None) else 0
+        sample_stats.append({
+            "name": name,
+            "h": img.shape[0], "w": img.shape[1],
+            "avg_ms": avg_lat,
+            "min_ms": min_lat,
+            "max_ms": max_lat,
+            "fps": fps,
+            "dets": dets_cnt
+        })
+
+    overall_avg = sum(s["avg_ms"] for s in sample_stats) / len(sample_stats)
+    overall_fps = 1000.0 / overall_avg if overall_avg > 0 else 0
+    overall_min = min(s["min_ms"] for s in sample_stats)
+    overall_max = max(s["max_ms"] for s in sample_stats)
+    total_dets = sum(s["dets"] for s in sample_stats)
+
+    rows = "".join(
+        f"<tr style='border-bottom:1px solid var(--block-border-color);'><td style='padding:6px;'><b>{html.escape(s['name'])}</b></td>"
+        f"<td>{s['w']}×{s['h']}</td>"
+        f"<td><b>{s['avg_ms']:.1f} ms</b> ({s['fps']:.1f} FPS)</td>"
+        f"<td><span style='background:var(--color-accent);color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;'>{s['dets']}</span></td></tr>"
+        for s in sample_stats
+    )
+
+    return f"""
+    <div style="background:var(--block-background-fill);border:1px solid var(--block-border-color);border-radius:10px;padding:14px;margin-top:10px;">
+      <h3 style="margin:0 0 10px;font-size:15px;">⚡ Kết quả Benchmark: {html.escape(Path(model_path).name)} ({iters} lần lặp)</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-bottom:12px;">
+        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
+          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Độ trễ trung bình</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{overall_avg:.1f} ms</div>
+          <div style="font-size:11px;color:var(--body-text-color-subdued);">min {overall_min:.1f} | max {overall_max:.1f}</div>
+        </div>
+        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
+          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Tốc độ (FPS)</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{overall_fps:.1f} FPS</div>
+          <div style="font-size:11px;color:var(--body-text-color-subdued);">{DEVICE} · batch 1</div>
+        </div>
+        <div style="background:var(--background-fill-secondary);padding:10px;border-radius:8px;text-align:center;">
+          <div style="font-size:11px;color:var(--body-text-color-subdued);text-transform:uppercase;">Tổng phát hiện</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-accent);">{total_dets}</div>
+          <div style="font-size:11px;color:var(--body-text-color-subdued);">trên {len(sample_stats)} ảnh</div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--block-border-color);color:var(--body-text-color-subdued);">
+            <th style="padding:6px;">Ảnh</th><th>Kích thước</th><th>Độ trễ</th><th>Linh kiện</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
+    """
+
+
 def build_app(initial_model: str | None = None) -> gr.Blocks:
     models = discover_models()
     choices = [(model_label(p), str(p)) for p in models]
@@ -326,8 +444,8 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
             daemon=True).start()
 
     with gr.Blocks(title="Engine Bay Vision") as demo:
-        gr.HTML('<div id="title"><h1>Nhận diện linh kiện khoang máy</h1>'
-                "<p>Tải ảnh lên, kết quả hiện ngay. Ảnh chỉ được xử lý trên máy này.</p></div>")
+        gr.HTML('<div id="title"><h1>Nhận diện &amp; Benchmark linh kiện khoang máy</h1>'
+                "<p>Tải ảnh hoặc upload model tùy chỉnh (.pt / .onnx) để tự đánh giá benchmark ngay trên máy này.</p></div>")
         with gr.Row():
             with gr.Column(scale=2, min_width=280):
                 image_in = gr.Image(label="Ảnh", type="numpy", sources=["upload", "clipboard", "webcam"],
@@ -335,14 +453,23 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
                 if examples:
                     gr.Examples([[str(p)] for p in examples], inputs=image_in,
                                 label="Ảnh mẫu", examples_per_page=6)
-                with gr.Accordion("Tùy chọn", open=False):
-                    model = gr.Dropdown(choices, value=default, label="Model")
+                with gr.Accordion("Quản lý Model & Tùy chọn", open=True):
+                    model = gr.Dropdown(choices, value=default, label="Model đang chạy")
+                    model_file = gr.File(label="Tải lên model tùy chỉnh (.pt / .onnx)", file_types=[".pt", ".onnx"])
+                    upload_status = gr.HTML("")
                     confidence = gr.Slider(0.05, 0.9, value=DEFAULT_CONF, step=0.05, label="Ngưỡng tin cậy")
                     any_thr = any(class_thresholds(p) for p in discover_models())
                     per_class = gr.Checkbox(value=any_thr, interactive=any_thr,
                                             label="Ngưỡng riêng từng loại linh kiện (hiệu chỉnh bằng cross-validation; "
                                                   "khi bật, thanh ngưỡng chỉ áp cho loại chưa hiệu chỉnh)"
                                             if any_thr else "Ngưỡng riêng từng loại (chưa có config/class_thresholds/)")
+
+                with gr.Accordion("⚡ Đánh giá Benchmark Model", open=False):
+                    bench_scope = gr.Radio(["Bộ ảnh mẫu (Suite)", "Ảnh hiện tại"], value="Bộ ảnh mẫu (Suite)", label="Phạm vi")
+                    bench_iters = gr.Slider(5, 50, value=10, step=5, label="Số lần lặp (iterations)")
+                    bench_btn = gr.Button("⚡ Chạy Benchmark Model", variant="primary")
+                    bench_out = gr.HTML("")
+
             with gr.Column(scale=5):
                 image_out = gr.HTML(viewer_html(), padding=False)
                 summary = gr.HTML(summary_html("Tải ảnh khoang máy lên để bắt đầu.", "muted"))
@@ -353,6 +480,9 @@ def build_app(initial_model: str | None = None) -> gr.Blocks:
         model.change(analyze, inputs, outputs, api_visibility="private")
         confidence.release(analyze, inputs, outputs, api_visibility="private")
         per_class.change(analyze, inputs, outputs, api_visibility="private")
+
+        model_file.upload(on_upload_model, inputs=[model_file], outputs=[model, upload_status])
+        bench_btn.click(benchmark_model, inputs=[model, bench_iters, bench_scope, image_in], outputs=[bench_out])
     return demo
 
 

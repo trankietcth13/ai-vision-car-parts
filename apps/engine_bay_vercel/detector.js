@@ -28,11 +28,20 @@ export class Detector {
     return new Detector(config, session);
   }
 
+  static async loadFromBytes(config, bytes, onProgress) {
+    onProgress?.(0.3);
+    const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    onProgress?.(0.6);
+    const session = await ort.InferenceSession.create(u8, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+    onProgress?.(1.0);
+    return new Detector(config, session);
+  }
+
   constructor(config, session) {
-    this.cfg = config;
+    this.cfg = { ...config };
     this.session = session;
-    this.nc = config.names.length;
-    this.size = config.imgsz;
+    this.nc = config.names ? config.names.length : 21;
+    this.size = config.imgsz || 640;
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.canvas.height = this.size;
     this.threads = ort.env.wasm.numThreads;
@@ -80,13 +89,18 @@ export class Detector {
     return { tensor: new ort.Tensor("float32", t, [1, 3, S, S]), r: r * k0, left, top, nw, nh, w, h };
   }
 
-  /** conf: minimum score kept before NMS. Returns {dets, lb, proto, ms}; masks are rendered on demand. */
+  /** conf: minimum score kept before NMS. Returns {dets, lb, proto, ms, inferMs, preprocessMs, postprocessMs}; masks are rendered on demand. */
   async detect(img, conf) {
     const t0 = performance.now();
     const lb = this.letterbox(img);
+    const tInfer0 = performance.now();
     const out = await this.session.run({ [this.session.inputNames[0]]: lb.tensor });
+    const tInfer1 = performance.now();
     const pred = out[this.session.outputNames[0]], proto = out[this.session.outputNames[1]];
-    const A = pred.dims[2], d = pred.data, nc = this.nc, nm = pred.dims[1] - 4 - nc;
+    const A = pred.dims[2], d = pred.data;
+    const nm = proto && proto.dims ? proto.dims[1] : 32;
+    const detectedNc = pred.dims[1] - 4 - nm;
+    const nc = detectedNc > 0 ? detectedNc : this.nc;
     const cand = [];
     for (let a = 0; a < A; a++) {
       let best = -1, bc = 0;
@@ -103,16 +117,70 @@ export class Detector {
       if (keep.length >= this.cfg.max_det) break;
       if (!keep.some((k) => k.cls === c.cls && iou(k.box, c.box) > this.cfg.iou)) keep.push(c);
     }
-    const dets = keep.map((k) => ({
-      ...k,
-      name: this.cfg.names[k.cls],
-      name_vi: this.cfg.names_vi[k.cls],
-      name_en: this.cfg.names_en ? this.cfg.names_en[k.cls] : this.cfg.names[k.cls],
-      // box in original image pixels
-      xyxy: [(k.box[0] - lb.left) / lb.r, (k.box[1] - lb.top) / lb.r, (k.box[2] - lb.left) / lb.r, (k.box[3] - lb.top) / lb.r]
-        .map((v, i) => Math.max(0, Math.min(v, i % 2 ? lb.h : lb.w))),
-    }));
-    return { dets, lb, proto, ms: performance.now() - t0 };
+    const tNms1 = performance.now();
+    const dets = keep.map((k) => {
+      const name = (this.cfg.names && this.cfg.names[k.cls]) || `class_${k.cls}`;
+      const name_vi = (this.cfg.names_vi && this.cfg.names_vi[k.cls]) || name;
+      const name_en = (this.cfg.names_en && this.cfg.names_en[k.cls]) || name;
+      return {
+        ...k,
+        name,
+        name_vi,
+        name_en,
+        // box in original image pixels
+        xyxy: [(k.box[0] - lb.left) / lb.r, (k.box[1] - lb.top) / lb.r, (k.box[2] - lb.left) / lb.r, (k.box[3] - lb.top) / lb.r]
+          .map((v, i) => Math.max(0, Math.min(v, i % 2 ? lb.h : lb.w))),
+      };
+    });
+    return {
+      dets,
+      lb,
+      proto,
+      ms: performance.now() - t0,
+      inferMs: tInfer1 - tInfer0,
+      preprocessMs: tInfer0 - t0,
+      postprocessMs: tNms1 - tInfer1,
+    };
+  }
+
+  /** Run multi-iteration benchmark with warmup and collect statistical latency metrics. */
+  async benchmark(img, iterations = 10, conf = 0.35, onProgress = null) {
+    // 2 Warmup runs
+    for (let w = 0; w < 2; w++) {
+      await this.detect(img, conf);
+    }
+    const runs = [];
+    for (let i = 0; i < iterations; i++) {
+      onProgress?.(i / iterations);
+      const res = await this.detect(img, conf);
+      runs.push(res);
+    }
+    onProgress?.(1.0);
+    const lats = runs.map((r) => r.ms).sort((a, b) => a - b);
+    const infers = runs.map((r) => r.inferMs).sort((a, b) => a - b);
+    const sum = lats.reduce((a, b) => a + b, 0);
+    const avg = sum / lats.length;
+    const median = lats[Math.floor(lats.length / 2)];
+    const min = lats[0];
+    const max = lats[lats.length - 1];
+    const p95 = lats[Math.min(lats.length - 1, Math.floor(lats.length * 0.95))];
+    const fps = 1000 / (avg || 1);
+    const stdDev = Math.sqrt(lats.reduce((acc, v) => acc + (v - avg) ** 2, 0) / lats.length);
+    const avgInfer = infers.reduce((a, b) => a + b, 0) / infers.length;
+
+    return {
+      iterations,
+      avg: Math.round(avg * 10) / 10,
+      avgInfer: Math.round(avgInfer * 10) / 10,
+      median: Math.round(median * 10) / 10,
+      min: Math.round(min * 10) / 10,
+      max: Math.round(max * 10) / 10,
+      p95: Math.round(p95 * 10) / 10,
+      fps: Math.round(fps * 10) / 10,
+      stdDev: Math.round(stdDev * 10) / 10,
+      detsCount: runs[runs.length - 1].dets.length,
+      lastResult: runs[runs.length - 1],
+    };
   }
 
   /** Coloured mask overlay at input resolution (size x size RGBA canvas) for the given detections. */

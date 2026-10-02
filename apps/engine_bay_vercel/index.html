@@ -3,80 +3,182 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Engine Bay Vision</title>
-<meta name="description" content="In-browser engine bay component recognition and segmentation demo">
+<title>Engine Bay Vision - Benchmark & Detection</title>
+<meta name="description" content="In-browser engine bay component recognition and segmentation demo with custom model upload and benchmark evaluation">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><path d='M8 20h16M10 20v-6h12v6M13 14v-3h6v3' stroke='white' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <style>
   :root {
     --bg: #faf8f5; --panel: #ffffff; --ink: #1c1917; --muted: #78716c; --line: #e7e5e4;
-    --accent: #c2410c; --accent-soft: #ffedd5; --warn-bg: #fef3c7; --warn-ink: #78350f; --shadow: 0 1px 2px rgb(0 0 0 / .06);
+    --accent: #c2410c; --accent-soft: #ffedd5; --accent-hover: #9a3412;
+    --warn-bg: #fef3c7; --warn-ink: #78350f; --success-bg: #dcfce7; --success-ink: #166534;
+    --shadow: 0 1px 3px rgb(0 0 0 / .07), 0 1px 2px rgb(0 0 0 / .04);
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #151311; --panel: #1f1c1a; --ink: #f5f5f4; --muted: #a8a29e; --line: #34302d;
-            --accent: #fb923c; --accent-soft: #431407; --warn-bg: #3b2a10; --warn-ink: #fde68a; --shadow: none; }
+    :root {
+      --bg: #151311; --panel: #1f1c1a; --ink: #f5f5f4; --muted: #a8a29e; --line: #34302d;
+      --accent: #fb923c; --accent-soft: #431407; --accent-hover: #fdba74;
+      --warn-bg: #3b2a10; --warn-ink: #fde68a; --success-bg: #052e16; --success-ink: #86efac;
+      --shadow: none;
+    }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  header, main, footer { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
-  header { padding-top: 22px; padding-bottom: 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  header, main, footer { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 20px; padding-bottom: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
+  .header-left { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
   h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
-  .badge { font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
-  .sub { flex-basis: 100%; margin: 0; color: var(--muted); }
-  main { display: grid; grid-template-columns: minmax(250px, 320px) 1fr; gap: 16px; padding-top: 10px; padding-bottom: 16px; }
-  @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+  .badge { font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 3px 9px; border-radius: 999px; font-weight: 500; }
+  .badge-model { font-size: 12px; color: var(--ink); background: var(--line); padding: 3px 10px; border-radius: 999px; font-weight: 500; }
+  .badge-model.custom { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+  .header-controls { display: flex; align-items: center; gap: 8px; }
+  .sub { flex-basis: 100%; margin: 2px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  main { display: grid; grid-template-columns: minmax(260px, 330px) 1fr; gap: 16px; padding-top: 10px; padding-bottom: 24px; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
   .side { display: flex; flex-direction: column; gap: 14px; align-self: start; }
-  #drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 22px 12px; text-align: center; cursor: pointer; color: var(--muted); }
-  #drop:hover, #drop.over { border-color: var(--accent); color: var(--ink); }
-  #drop b { color: var(--accent); }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+  
+  /* Upload drops */
+  .drop-box { border: 1.5px dashed var(--line); border-radius: 10px; padding: 16px 12px; text-align: center; cursor: pointer; color: var(--muted); font-size: 13.5px; transition: border-color .2s, background .2s; }
+  .drop-box:hover, .drop-box.over { border-color: var(--accent); color: var(--ink); background: rgba(194, 65, 12, 0.04); }
+  .drop-box b { color: var(--accent); }
+  .hint { font-size: 12px; color: var(--muted); margin: 3px 0 0; }
+
+  /* Model section in sidebar */
+  .model-card { display: flex; flex-direction: column; gap: 8px; }
+  .model-status-pill { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+  .model-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px; }
+  .model-meta { font-size: 11.5px; color: var(--muted); }
+
+  /* Samples */
   .examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .examples button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; background: none; aspect-ratio: 4/3; }
   .examples button:hover, .examples button:focus-visible { border-color: var(--accent); outline: none; }
   .examples img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  label.row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
-  input[type=range] { flex: 1; accent-color: var(--accent); }
-  input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
-  .hint { font-size: 12.5px; color: var(--muted); margin: 2px 0 0; }
+
+  /* Controls */
+  label.row { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 13.5px; }
+  input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+  input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+  select.select-ctrl { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 4px 8px; cursor: pointer; }
+
+  /* Stage */
   .stage { position: relative; min-height: 320px; display: flex; flex-direction: column; gap: 10px; }
   #view { width: 100%; height: auto; border-radius: 8px; display: none; background: var(--bg); }
-  .empty { flex: 1; display: grid; place-items: center; color: var(--muted); text-align: center; border-radius: 8px; background: repeating-linear-gradient(45deg, transparent 0 12px, rgb(120 113 108 / .05) 12px 24px); }
+  .empty { flex: 1; display: grid; place-items: center; color: var(--muted); text-align: center; border-radius: 8px; min-height: 280px; background: repeating-linear-gradient(45deg, transparent 0 12px, rgb(120 113 108 / .05) 12px 24px); }
   .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
   #status { color: var(--muted); font-size: 13.5px; }
-  #status.err { color: #dc2626; }
-  button.btn { font: inherit; font-size: 13.5px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+  #status.err { color: #dc2626; font-weight: 500; }
+  button.btn { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; }
   button.btn:hover { border-color: var(--accent); }
+  button.btn-primary { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 600; }
+  button.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+  button.btn-sm { padding: 3px 8px; font-size: 12px; }
   button.btn[aria-pressed=true] { background: var(--accent-soft); border-color: var(--accent); }
+
   ul.parts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 4px 18px; }
-  ul.parts li { display: grid; grid-template-columns: 12px 1fr 70px 36px; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  ul.parts li { display: grid; grid-template-columns: 12px 1fr 70px 36px; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .dot { width: 12px; height: 12px; border-radius: 3px; }
   .meter { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
   .meter i { display: block; height: 100%; background: var(--accent); }
   .pct { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
-  .note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  .note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; }
   .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
   .progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
-  footer { color: var(--muted); font-size: 12.5px; padding-bottom: 28px; }
+
+  /* Benchmark Section */
+  .benchmark-panel { grid-column: 1 / -1; margin-top: 4px; display: flex; flex-direction: column; gap: 14px; }
+  .bench-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .bench-title-wrap h2 { font-size: 16px; margin: 0; text-transform: none; letter-spacing: normal; color: var(--ink); }
+  .bench-title-wrap p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .bench-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .metric-card { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+  .metric-lbl { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  .metric-num { font-size: 24px; font-weight: 700; color: var(--accent); line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .metric-sub { font-size: 11.5px; color: var(--muted); }
+
+  /* Comparison card */
+  .compare-box { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .compare-delta { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .compare-faster { background: var(--success-bg); color: var(--success-ink); }
+  .compare-slower { background: var(--warn-bg); color: var(--warn-ink); }
+
+  /* Sample table */
+  .table-wrap { overflow-x: auto; margin-top: 4px; border: 1px solid var(--line); border-radius: 8px; }
+  table.bench-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+  table.bench-table th { background: var(--bg); padding: 8px 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  table.bench-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  table.bench-table tr:last-child td { border-bottom: none; }
+  .table-thumb { width: 36px; height: 28px; border-radius: 4px; object-fit: cover; vertical-align: middle; margin-right: 8px; }
+
+  .bench-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: flex-end; }
+  .toast { font-size: 12.5px; color: var(--success-ink); background: var(--success-bg); padding: 3px 10px; border-radius: 6px; opacity: 0; transition: opacity .3s; }
+  .toast.show { opacity: 1; }
+
+  footer { color: var(--muted); font-size: 12.5px; padding-top: 6px; padding-bottom: 28px; border-top: 1px solid var(--line); margin-top: 12px; }
 </style>
 </head>
 <body>
 <header>
-  <h1 id="t-title">Engine Bay Component Vision</h1>
-  <span class="badge" id="t-badge">POC v1 Demo</span>
-  <p class="sub" id="t-sub">The model runs directly in your browser: photos are never sent to a server.</p>
+  <div class="header-left">
+    <h1 id="t-title">Engine Bay Component Vision</h1>
+    <span class="badge" id="t-badge">POC v1 Demo</span>
+    <span class="badge-model" id="active-model-badge">Model: kd_n_full (Default)</span>
+    <p class="sub" id="t-sub">The model runs directly in your browser: photos and custom models never leave your machine.</p>
+  </div>
+  <div class="header-controls">
+    <select id="lang" class="btn" style="padding:5px 8px;font-size:12.5px;" aria-label="Language / Ngôn ngữ">
+      <option value="en" selected>English</option>
+      <option value="vi">Tiếng Việt</option>
+    </select>
+    <button class="btn" id="btn-goto-bench" title="Jump to Model Benchmark">⚡ <span id="t-btn-bench-nav">Benchmark</span></button>
+    <button class="btn" id="orig" aria-pressed="false" disabled title="Shortcut: O"><span id="t-orig-btn">Original photo</span></button>
+  </div>
 </header>
 <main>
   <section class="side">
+    <!-- Model Selection & Upload Panel -->
+    <div class="panel model-card">
+      <h2><span id="t-model-hdr">Model Selection</span> <span class="hint" id="t-model-engine">onnxruntime-web WASM</span></h2>
+      <div class="model-status-pill">
+        <div>
+          <div class="model-name" id="display-model-name">kd_n_full.onnx</div>
+          <div class="model-meta" id="display-model-meta">11.6 MB · POC v1 Student</div>
+        </div>
+        <button class="btn btn-sm" id="btn-reset-model" style="display:none;" title="Restore default distilled model">
+          <span id="t-btn-reset-model">Reset</span>
+        </button>
+      </div>
+
+      <div id="drop-model" class="drop-box" role="button" tabindex="0" aria-label="Upload custom ONNX model">
+        <span id="t-drop-model-main"><b>Upload Model (.onnx)</b></span><br>
+        <span class="hint" id="t-drop-model-hint">Drop your exported YOLO-seg model here</span>
+      </div>
+      <input id="file-model" type="file" accept=".onnx" hidden>
+      <div class="progress" id="prog-model" style="display:none;"><i></i></div>
+    </div>
+
+    <!-- Photo Selection Panel -->
     <div class="panel">
-      <div id="drop" role="button" tabindex="0" aria-label="Select an engine bay photo">
-        <span id="t-drop-main"><b>Choose a photo</b> or drag &amp; drop here</span><br><span class="hint" id="t-drop-hint">Paste from clipboard (Ctrl+V) or snap with camera</span>
+      <h2><span id="t-input-hdr">Photo Input</span></h2>
+      <div id="drop" class="drop-box" role="button" tabindex="0" aria-label="Select an engine bay photo">
+        <span id="t-drop-main"><b>Choose a photo</b> or drag &amp; drop here</span><br>
+        <span class="hint" id="t-drop-hint">Paste from clipboard (Ctrl+V) or snap with camera</span>
       </div>
       <input id="file" type="file" accept="image/*" hidden>
     </div>
+
+    <!-- Samples Panel -->
     <div class="panel">
       <h2 id="t-samples">Sample Photos</h2>
       <div class="examples" id="examples"></div>
     </div>
+
+    <!-- Options Panel -->
     <div class="panel">
       <h2 id="t-options">Options</h2>
       <label class="row"><input type="checkbox" id="perclass" checked> <span id="t-perclass">Calibrated per-class thresholds</span></label>
@@ -84,22 +186,107 @@
       <label class="row"><span id="t-conf">Confidence threshold</span> <input type="range" id="conf" min="0.05" max="0.9" step="0.05"> <span id="confv"></span></label>
     </div>
   </section>
+
+  <!-- Interactive Vision Stage -->
   <section class="panel stage">
     <div class="bar">
       <span id="status">Loading model…</span>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <select id="lang" class="btn" style="padding:4px 8px;font-size:12.5px;" aria-label="Language / Ngôn ngữ">
-          <option value="en" selected>English</option>
-          <option value="vi">Tiếng Việt</option>
-        </select>
-        <button class="btn" id="orig" aria-pressed="false" disabled title="Shortcut: O">Original photo</button>
-      </div>
     </div>
     <div class="progress" id="prog"><i></i></div>
     <canvas id="view" aria-label="Detection result"></canvas>
     <div class="empty" id="empty"><div id="t-empty">Upload an engine bay photo, or pick a sample photo.</div></div>
     <ul class="parts" id="parts"></ul>
     <div class="note" id="t-note">Results are <b>suggestions</b> for technician verification. Model achieves mask mAP50-95 of ~0.38 on known vehicle types and 0.27–0.30 on unseen vehicles. Lower-performing components: alternator, radiator hose, ECU module, coolant reservoir.</div>
+  </section>
+
+  <!-- Benchmark & Self-Evaluation Section -->
+  <section class="panel benchmark-panel" id="benchmark-section">
+    <div class="bench-header">
+      <div class="bench-title-wrap">
+        <h2 id="t-bench-title">⚡ Model Benchmark &amp; Self-Evaluation</h2>
+        <p id="t-bench-sub">Measure inference latency, throughput (FPS), and evaluate detection stability directly on your hardware.</p>
+      </div>
+      <div class="bench-toolbar">
+        <label style="font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+          <span id="t-bench-scope-lbl">Scope:</span>
+          <select id="bench-scope" class="select-ctrl">
+            <option value="current" id="opt-scope-current">Current Image</option>
+            <option value="samples" id="opt-scope-samples" selected>All 6 Sample Images (Suite)</option>
+          </select>
+        </label>
+        <label style="font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+          <span id="t-bench-runs-lbl">Iterations:</span>
+          <select id="bench-iterations" class="select-ctrl">
+            <option value="5">5 runs (Quick)</option>
+            <option value="10" selected>10 runs (Standard)</option>
+            <option value="20">20 runs (Accurate)</option>
+          </select>
+        </label>
+        <button class="btn btn-primary" id="btn-run-benchmark">
+          <span>⚡</span> <span id="t-btn-run-bench">Run Benchmark</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Benchmark Progress Indicator -->
+    <div class="progress" id="bench-prog" style="display:none;"><i></i></div>
+    <div id="bench-status-text" class="hint" style="display:none;font-weight:500;"></div>
+
+    <!-- 4 KPI Metrics Cards -->
+    <div class="metric-grid">
+      <div class="metric-card">
+        <span class="metric-lbl" id="t-m-avg">Average Latency</span>
+        <span class="metric-num" id="bm-avg">-- ms</span>
+        <span class="metric-sub" id="bm-range">min: -- | max: --</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl" id="t-m-fps">Throughput</span>
+        <span class="metric-num" id="bm-fps">-- FPS</span>
+        <span class="metric-sub" id="bm-infer">pure infer: -- ms</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl" id="t-m-p95">P95 &amp; Jitter</span>
+        <span class="metric-num" id="bm-p95">-- ms</span>
+        <span class="metric-sub" id="bm-jitter">std dev: ±-- ms</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-lbl" id="t-m-dets">Detections Found</span>
+        <span class="metric-num" id="bm-dets">--</span>
+        <span class="metric-sub" id="bm-classes">-- component classes</span>
+      </div>
+    </div>
+
+    <!-- Comparison Box (Custom vs Baseline) -->
+    <div class="compare-box" id="bm-comparison" style="display:none;">
+      <div>
+        <div style="font-weight:600;font-size:13.5px;" id="t-compare-title">Comparison vs Baseline (kd_n_full)</div>
+        <div class="hint" id="bm-compare-details">Baseline: -- ms | Active Model: -- ms</div>
+      </div>
+      <span class="compare-delta" id="bm-compare-badge">--</span>
+    </div>
+
+    <!-- Detailed Sample Breakdown Table -->
+    <div class="table-wrap" id="bm-samples-wrap" style="display:none;">
+      <table class="bench-table">
+        <thead>
+          <tr>
+            <th id="th-sample">Sample Image</th>
+            <th id="th-dim">Dimensions</th>
+            <th id="th-lat">Latency</th>
+            <th id="th-dets">Components</th>
+            <th id="th-classes">Detected Classes</th>
+          </tr>
+        </thead>
+        <tbody id="bm-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Actions: Copy Markdown & Export JSON -->
+    <div class="bench-actions">
+      <span id="bm-toast" class="toast">Report copied to clipboard!</span>
+      <button class="btn btn-sm" id="btn-copy-md" disabled>📋 <span id="t-btn-copy-md">Copy Markdown Report</span></button>
+      <button class="btn btn-sm" id="btn-export-json" disabled>💾 <span id="t-btn-export-json">Download JSON</span></button>
+    </div>
   </section>
 </main>
 <footer id="foot"></footer>
@@ -111,14 +298,30 @@ const $ = (id) => document.getElementById(id);
 const cfg = await (await fetch("config.json")).json();
 const rgb = cfg.colors.map((h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
 const MAX_SIDE = 1600;
-let det = null, current = null, showOrig = false, busy = false, pending = false;
+
+let det = null;          // Currently active detector
+let baselineDet = null;  // Built-in baseline detector
+let customDet = null;    // Uploaded custom detector
+let activeModelName = cfg.model_name + ".onnx";
+let activeModelSize = "11.6 MB";
+let isCustomModel = false;
+
+let current = null, showOrig = false, busy = false, pending = false;
 let lang = $("lang") ? $("lang").value : "en";
+let lastBenchmarkResult = null;
+let baselineBenchmarkStats = null;
 
 const T = {
   en: {
     title: "Engine Bay Component Vision",
     badge: "POC v1 Demo",
-    sub: "The model runs directly in your browser: photos are never sent to a server.",
+    sub: "The model runs directly in your browser: photos and custom models never leave your machine.",
+    modelHdr: "Model Selection",
+    modelEngine: "onnxruntime-web WASM",
+    dropModelMain: "<b>Upload Model (.onnx)</b>",
+    dropModelHint: "Drop your exported YOLO-seg model here",
+    btnResetModel: "Reset to Default",
+    inputHdr: "Photo Input",
     dropMain: "<b>Choose a photo</b> or drag & drop here",
     dropHint: "Paste from clipboard (Ctrl+V) or snap with camera",
     samples: "Sample Photos",
@@ -136,15 +339,52 @@ const T = {
     noDets: (ms) => `No components detected at this threshold · ${ms} ms`,
     dets: (n, ms, th) => `${n} component${n > 1 ? "s" : ""} · ${ms} ms · ${th} thread${th > 1 ? "s" : ""}`,
     notImg: "Selected file is not an image.",
+    notOnnx: "Selected file is not an .onnx model.",
     cantRead: "Unable to read this image.",
     errAnalysis: (msg) => `Analysis error: ${msg}`,
     errLoad: (msg) => `Failed to load model: ${msg}`,
     foot: (m, r, c, md5) => `Model ${m} (${r}, yolo11n-seg, ${c} classes) · md5 ${md5} · onnxruntime-web`,
+    
+    // Benchmark strings
+    benchTitle: "⚡ Model Benchmark & Self-Evaluation",
+    benchSub: "Measure inference latency, throughput (FPS), and evaluate detection stability directly on your hardware.",
+    benchScopeLbl: "Scope:",
+    benchRunsLbl: "Iterations:",
+    optScopeCurrent: "Current Image",
+    optScopeSamples: "All 6 Sample Images (Suite)",
+    btnRunBench: "Run Benchmark",
+    btnBenchNav: "Benchmark",
+    mAvg: "Average Latency",
+    mFps: "Throughput",
+    mP95: "P95 & Jitter",
+    mDets: "Detections Found",
+    compareTitle: "Comparison vs Baseline (kd_n_full)",
+    compareFaster: (pct, ms) => `🚀 ${pct}% faster (${ms} ms speedup)`,
+    compareSlower: (pct, ms) => `⚠️ ${pct}% slower (+${ms} ms latency)`,
+    compareEqual: "Comparable latency (±1%)",
+    thSample: "Sample Image",
+    thDim: "Dimensions",
+    thLat: "Latency",
+    thDets: "Components",
+    thClasses: "Detected Classes",
+    btnCopyMd: "Copy Markdown Report",
+    btnExportJson: "Download JSON",
+    copiedToast: "Report copied to clipboard!",
+    benchRunning: (curr, tot) => `Running benchmark (${curr}/${tot})…`,
+    benchWarmup: "Warming up model execution provider…",
+    benchSuiteRunning: (idx, tot, name) => `Evaluating sample ${idx}/${tot} (${name})…`,
+    benchComplete: "Benchmark complete.",
   },
   vi: {
     title: "Nhận diện linh kiện khoang máy",
     badge: "Demo POC v1",
-    sub: "Model chạy ngay trên trình duyệt của bạn: ảnh không được gửi lên server.",
+    sub: "Model chạy ngay trên trình duyệt của bạn: ảnh và model tùy chỉnh không rời khỏi máy bạn.",
+    modelHdr: "Chọn Model",
+    modelEngine: "onnxruntime-web WASM",
+    dropModelMain: "<b>Tải lên Model (.onnx)</b>",
+    dropModelHint: "Kéo thả file model YOLO-seg của bạn vào đây",
+    btnResetModel: "Khôi phục mặc định",
+    inputHdr: "Ảnh đầu vào",
     dropMain: "<b>Chọn ảnh</b> hoặc kéo thả vào đây",
     dropHint: "Có thể dán ảnh (Ctrl+V) hoặc chụp bằng điện thoại",
     samples: "Ảnh mẫu",
@@ -162,10 +402,41 @@ const T = {
     noDets: (ms) => `Không tìm thấy linh kiện nào ở ngưỡng này · ${ms} ms`,
     dets: (n, ms, th) => `${n} linh kiện · ${ms} ms · ${th} luồng`,
     notImg: "Tệp không phải ảnh.",
+    notOnnx: "Tệp tải lên không phải model .onnx hợp lệ.",
     cantRead: "Không đọc được ảnh này.",
     errAnalysis: (msg) => `Lỗi khi phân tích: ${msg}`,
     errLoad: (msg) => `Không tải được model: ${msg}`,
     foot: (m, r, c, md5) => `Model ${m} (${r}, yolo11n-seg, ${c} loại) · md5 ${md5} · onnxruntime-web`,
+    
+    // Benchmark strings
+    benchTitle: "⚡ Đánh giá & Benchmark Model",
+    benchSub: "Đo độ trễ suy luận, tốc độ (FPS), và đánh giá độ chính xác nhận diện trực tiếp trên phần cứng của bạn.",
+    benchScopeLbl: "Phạm vi:",
+    benchRunsLbl: "Số lần lặp:",
+    optScopeCurrent: "Ảnh hiện tại",
+    optScopeSamples: "Tất cả 6 ảnh mẫu (Suite)",
+    btnRunBench: "Chạy Benchmark",
+    btnBenchNav: "Benchmark",
+    mAvg: "Độ trễ trung bình",
+    mFps: "Tốc độ (FPS)",
+    mP95: "P95 & Dao động",
+    mDets: "Linh kiện phát hiện",
+    compareTitle: "So sánh với Model chuẩn (kd_n_full)",
+    compareFaster: (pct, ms) => `🚀 Nhanh hơn ${pct}% (giảm ${ms} ms)`,
+    compareSlower: (pct, ms) => `⚠️ Chậm hơn ${pct}% (+${ms} ms)`,
+    compareEqual: "Độ trễ tương đương (±1%)",
+    thSample: "Ảnh mẫu",
+    thDim: "Kích thước",
+    thLat: "Độ trễ",
+    thDets: "Số linh kiện",
+    thClasses: "Các loại phát hiện",
+    btnCopyMd: "Sao chép báo cáo Markdown",
+    btnExportJson: "Tải về JSON",
+    copiedToast: "Đã sao chép báo cáo vào bộ nhớ tạm!",
+    benchRunning: (curr, tot) => `Đang chạy benchmark (${curr}/${tot})…`,
+    benchWarmup: "Đang khởi động (warmup) model…",
+    benchSuiteRunning: (idx, tot, name) => `Đang đánh giá ảnh mẫu ${idx}/${tot} (${name})…`,
+    benchComplete: "Đã hoàn thành benchmark.",
   }
 };
 
@@ -175,6 +446,12 @@ function applyLanguage() {
   $("t-title").textContent = t.title;
   $("t-badge").textContent = t.badge;
   $("t-sub").textContent = t.sub;
+  $("t-model-hdr").textContent = t.modelHdr;
+  $("t-model-engine").textContent = t.modelEngine;
+  $("t-drop-model-main").innerHTML = t.dropModelMain;
+  $("t-drop-model-hint").textContent = t.dropModelHint;
+  $("t-btn-reset-model").textContent = t.btnResetModel;
+  $("t-input-hdr").textContent = t.inputHdr;
   $("t-drop-main").innerHTML = t.dropMain;
   $("t-drop-hint").textContent = t.dropHint;
   $("t-samples").textContent = t.samples;
@@ -182,11 +459,35 @@ function applyLanguage() {
   $("t-perclass").textContent = t.perclass;
   $("t-perclass-hint").textContent = t.perclassHint;
   $("t-conf").textContent = t.conf;
-  $("orig").textContent = t.orig;
+  $("t-orig-btn").textContent = t.orig;
   $("orig").title = t.origTitle;
   $("t-empty").textContent = t.empty;
   $("t-note").innerHTML = t.note;
-  $("foot").textContent = t.foot(cfg.model_name, cfg.release, cfg.names.length, cfg.model_md5.slice(0, 8));
+  
+  $("t-bench-title").textContent = t.benchTitle;
+  $("t-bench-sub").textContent = t.benchSub;
+  $("t-bench-scope-lbl").textContent = t.benchScopeLbl;
+  $("t-bench-runs-lbl").textContent = t.benchRunsLbl;
+  $("opt-scope-current").textContent = t.optScopeCurrent;
+  $("opt-scope-samples").textContent = t.optScopeSamples;
+  $("t-btn-run-bench").textContent = t.btnRunBench;
+  $("t-btn-bench-nav").textContent = t.btnBenchNav;
+  $("t-m-avg").textContent = t.mAvg;
+  $("t-m-fps").textContent = t.mFps;
+  $("t-m-p95").textContent = t.mP95;
+  $("t-m-dets").textContent = t.mDets;
+  $("t-compare-title").textContent = t.compareTitle;
+  $("th-sample").textContent = t.thSample;
+  $("th-dim").textContent = t.thDim;
+  $("th-lat").textContent = t.thLat;
+  $("th-dets").textContent = t.thDets;
+  $("th-classes").textContent = t.thClasses;
+  $("t-btn-copy-md").textContent = t.btnCopyMd;
+  $("t-btn-export-json").textContent = t.btnExportJson;
+
+  $("foot").textContent = t.foot(activeModelName, cfg.release, cfg.names.length, cfg.model_md5.slice(0, 8));
+  updateModelBadge();
+
   if (current && current.result) {
     const r = current.result, n = r.dets.length;
     status(n ? t.dets(n, Math.round(r.ms), det ? det.threads : 1) : t.noDets(Math.round(r.ms)));
@@ -196,7 +497,23 @@ function applyLanguage() {
   draw();
 }
 
+function updateModelBadge() {
+  const badge = $("active-model-badge");
+  if (isCustomModel) {
+    badge.textContent = `Model: ${activeModelName} (${activeModelSize})`;
+    badge.className = "badge-model custom";
+    $("btn-reset-model").style.display = "inline-flex";
+  } else {
+    badge.textContent = `Model: ${cfg.model_name} (Default)`;
+    badge.className = "badge-model";
+    $("btn-reset-model").style.display = "none";
+  }
+}
+
 if ($("lang")) $("lang").onchange = () => { lang = $("lang").value; applyLanguage(); };
+$("btn-goto-bench").onclick = () => {
+  $("benchmark-section").scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
 $("conf").value = cfg.default_conf;
 $("confv").textContent = Number(cfg.default_conf).toFixed(2);
@@ -205,7 +522,8 @@ $("perclass").checked = hasThr; $("perclass").disabled = !hasThr;
 
 function status(text, err = false) { $("status").textContent = text; $("status").className = err ? "err" : ""; }
 
-// examples
+// Load Sample Photos
+const sampleImages = [];
 const examples = await (await fetch("examples/index.json")).json();
 for (const name of examples) {
   const b = document.createElement("button");
@@ -215,16 +533,111 @@ for (const name of examples) {
   b.append(im);
   b.onclick = () => openUrl(`examples/${name}`);
   $("examples").append(b);
+  sampleImages.push({ name, url: `examples/${name}` });
 }
 
-// input: click / keyboard / drag-drop / paste
+// Model input: click & drag-and-drop
+$("drop-model").onclick = () => $("file-model").click();
+$("drop-model").onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file-model").click(); } };
+$("file-model").onchange = () => $("file-model").files[0] && loadCustomModelFile($("file-model").files[0]);
+$("drop-model").ondragover = (e) => { e.preventDefault(); $("drop-model").classList.add("over"); };
+$("drop-model").ondragleave = () => $("drop-model").classList.remove("over");
+$("drop-model").ondrop = (e) => {
+  e.preventDefault(); $("drop-model").classList.remove("over");
+  const f = e.dataTransfer.files[0];
+  if (f) loadCustomModelFile(f);
+};
+
+// Reset to Default Model
+$("btn-reset-model").onclick = () => {
+  if (baselineDet) {
+    det = baselineDet;
+    activeModelName = cfg.model_name + ".onnx";
+    activeModelSize = "11.6 MB";
+    isCustomModel = false;
+    $("display-model-name").textContent = activeModelName;
+    $("display-model-meta").textContent = "11.6 MB · POC v1 Student";
+    updateModelBadge();
+    const t = T[lang] || T.en;
+    status(t.ready);
+    if (current) run();
+  }
+};
+
+async function loadCustomModelFile(file) {
+  const t = T[lang] || T.en;
+  if (!file.name.toLowerCase().endsWith(".onnx")) {
+    alert(t.notOnnx);
+    return;
+  }
+  const sizeMb = (file.size / (1024 * 1024)).toFixed(1) + " MB";
+  $("display-model-name").textContent = file.name;
+  $("display-model-meta").textContent = `${sizeMb} · Loading…`;
+  $("prog-model").style.display = "block";
+  $("prog-model").firstElementChild.style.width = "20%";
+
+  try {
+    status(t.loading(20));
+    const buffer = await file.arrayBuffer();
+    $("prog-model").firstElementChild.style.width = "50%";
+    status(t.loading(50));
+    
+    const loadedDet = await Detector.loadFromBytes(cfg, new Uint8Array(buffer), (pct) => {
+      const p = Math.round(50 + pct * 50);
+      $("prog-model").firstElementChild.style.width = `${p}%`;
+      status(t.loading(p));
+    });
+
+    customDet = loadedDet;
+    det = customDet;
+    activeModelName = file.name;
+    activeModelSize = sizeMb;
+    isCustomModel = true;
+
+    $("display-model-meta").textContent = `${sizeMb} · ${det.threads} threads active`;
+    $("prog-model").style.display = "none";
+    updateModelBadge();
+    status(t.ready);
+    if (current) run();
+  } catch (err) {
+    console.error(err);
+    $("prog-model").style.display = "none";
+    $("display-model-meta").textContent = `Error loading model`;
+    status(t.errLoad(err.message), true);
+  }
+}
+
+// Photo input: click / keyboard / drag-drop / paste
 $("drop").onclick = () => $("file").click();
 $("drop").onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
 $("file").onchange = () => $("file").files[0] && openFile($("file").files[0]);
 $("drop").ondragover = (e) => { e.preventDefault(); $("drop").classList.add("over"); };
 $("drop").ondragleave = () => $("drop").classList.remove("over");
-$("drop").ondrop = (e) => { e.preventDefault(); $("drop").classList.remove("over"); const f = e.dataTransfer.files[0]; f && openFile(f); };
-window.addEventListener("paste", (e) => { const f = [...e.clipboardData.files].find((x) => x.type.startsWith("image/")); f && openFile(f); });
+$("drop").ondrop = (e) => {
+  e.preventDefault(); $("drop").classList.remove("over");
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  if (f.name.toLowerCase().endsWith(".onnx")) {
+    loadCustomModelFile(f);
+  } else {
+    openFile(f);
+  }
+};
+window.addEventListener("paste", (e) => {
+  const f = [...e.clipboardData.files].find((x) => x.type.startsWith("image/"));
+  if (f) openFile(f);
+});
+
+// Global drag-drop detection for convenience
+window.addEventListener("dragover", (e) => e.preventDefault());
+window.addEventListener("drop", (e) => {
+  const f = e.dataTransfer && e.dataTransfer.files[0];
+  if (f && f.name.toLowerCase().endsWith(".onnx")) {
+    e.preventDefault();
+    loadCustomModelFile(f);
+  }
+});
+
 $("conf").oninput = () => ($("confv").textContent = Number($("conf").value).toFixed(2));
 $("conf").onchange = () => run();
 $("perclass").onchange = () => run();
@@ -234,17 +647,20 @@ window.addEventListener("keydown", (e) => { if ((e.key === "o" || e.key === "O")
 function toggleOrig() { showOrig = !showOrig; $("orig").setAttribute("aria-pressed", showOrig); draw(); }
 
 async function loadImage(src) {
-  const img = new Image();  // <img> decoding applies the EXIF orientation, like the Python app
+  const img = new Image();
   img.src = src;
   await img.decode();
   return img;
 }
+
 async function openFile(f) {
   const t = T[lang] || T.en;
   if (!f.type.startsWith("image/")) return status(t.notImg, true);
   try { await setImage(await loadImage(URL.createObjectURL(f))); } catch { status(t.cantRead, true); }
 }
+
 async function openUrl(u) { await setImage(await loadImage(u)); }
+
 async function setImage(img) {
   current = { img, result: null }; showOrig = false; $("orig").setAttribute("aria-pressed", false);
   await run();
@@ -263,12 +679,12 @@ async function run() {
   busy = true;
   const t = T[lang] || T.en;
   status(t.analyzing);
-  await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));  // let the status paint
+  await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
   try {
     const s = settings();
     const r = await det.detect(current.img, s.predConf);
     r.dets = r.dets.filter((d) => d.score >= (s.perClass ? cfg.thresholds[d.name] ?? s.conf : s.conf));
-    r.overlay = det.renderMasks(r.dets, r.proto, (c) => rgb[c]);
+    r.overlay = det.renderMasks(r.dets, r.proto, (c) => rgb[c % rgb.length]);
     current.result = r;
     draw();
     const n = r.dets.length;
@@ -297,13 +713,13 @@ function draw() {
   const lw = Math.max(2, Math.round(Math.max(W, H) / 400)), fs = Math.max(12, Math.round(Math.max(W, H) / 70));
   ctx.font = `600 ${fs}px system-ui, sans-serif`; ctx.textBaseline = "top";
   for (const d of [...r.dets].reverse()) {
-    const [x1, y1, x2, y2] = d.xyxy.map((v) => v * k), col = cfg.colors[d.cls];
+    const [x1, y1, x2, y2] = d.xyxy.map((v) => v * k), col = cfg.colors[d.cls % cfg.colors.length] || "#ff6f00";
     ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
     const nameStr = (lang === "vi" ? d.name_vi : (d.name_en || (cfg.names_en && cfg.names_en[d.cls]) || d.name_vi));
     const label = `${nameStr} ${Math.round(d.score * 100)}%`, tw = ctx.measureText(label).width + 8, th = fs + 6;
     const ty = y1 - th >= 0 ? y1 - th : y1;
     ctx.fillStyle = col; ctx.fillRect(x1 - lw / 2, ty, tw, th);
-    const [cr, cg, cb] = rgb[d.cls];
+    const [cr, cg, cb] = rgb[d.cls % rgb.length] || [255, 111, 0];
     ctx.fillStyle = cr * 0.299 + cg * 0.587 + cb * 0.114 > 150 ? "#111" : "#fff";
     ctx.fillText(label, x1 + 4 - lw / 2, ty + 3);
   }
@@ -315,22 +731,285 @@ function renderParts(dets) {
   $("parts").innerHTML = "";
   for (const [c, e] of [...by].sort((a, b) => b[1].best - a[1].best)) {
     const li = document.createElement("li"), pct = Math.round(e.best * 100);
-    li.innerHTML = `<span class="dot" style="background:${cfg.colors[c]}"></span><span></span>`
-      + `<span class="meter"><i style="width:${pct}%"></i></span><span class="pct">${pct}%</span>`;
-    const nameStr = (lang === "vi" ? cfg.names_vi[c] : (cfg.names_en && cfg.names_en[c] ? cfg.names_en[c] : cfg.names_vi[c])) || cfg.names[c];
+    const color = cfg.colors[c % cfg.colors.length] || "#ff6f00";
+    li.innerHTML = `<span class="dot" style="background:${color}"></span><span></span>`
+      + `<span class="meter"><i style="width:${pct}%;background:${color}"></i></span><span class="pct">${pct}%</span>`;
+    const nameStr = (lang === "vi" ? (cfg.names_vi && cfg.names_vi[c]) : (cfg.names_en && cfg.names_en[c] ? cfg.names_en[c] : (cfg.names_vi && cfg.names_vi[c]))) || (cfg.names && cfg.names[c]) || `Class ${c}`;
     li.children[1].textContent = nameStr + (e.n > 1 ? ` ×${e.n}` : "");
     $("parts").append(li);
   }
 }
 
+// -------------------------------------------------------------
+// Benchmark Runner & Statistical Evaluation Engine
+// -------------------------------------------------------------
+$("btn-run-benchmark").onclick = () => runBenchmarkSuite();
+
+async function runBenchmarkSuite() {
+  if (!det) return;
+  const t = T[lang] || T.en;
+  const scope = $("bench-scope").value;
+  const iterations = parseInt($("bench-iterations").value, 10) || 10;
+  const s = settings();
+
+  const benchBtn = $("btn-run-benchmark");
+  benchBtn.disabled = true;
+  $("bench-prog").style.display = "block";
+  $("bench-prog").firstElementChild.style.width = "5%";
+  $("bench-status-text").style.display = "block";
+  $("bench-status-text").textContent = t.benchWarmup;
+
+  await new Promise((r) => setTimeout(r, 50)); // let UI paint
+
+  try {
+    let imagesToTest = [];
+    if (scope === "current" && current) {
+      imagesToTest = [{ name: "Current Image", img: current.img }];
+    } else {
+      // Load all 6 samples if not already loaded
+      $("bench-status-text").textContent = "Loading sample test suite…";
+      for (let i = 0; i < sampleImages.length; i++) {
+        const item = sampleImages[i];
+        if (!item.img) {
+          item.img = await loadImage(item.url);
+        }
+        imagesToTest.push({ name: item.name, img: item.img });
+      }
+    }
+
+    // Benchmark Active Detector
+    const sampleResults = [];
+    let totalRuns = [];
+
+    for (let idx = 0; idx < imagesToTest.length; idx++) {
+      const testItem = imagesToTest[idx];
+      $("bench-status-text").textContent = t.benchSuiteRunning(idx + 1, imagesToTest.length, testItem.name);
+      const startPct = 10 + (idx / imagesToTest.length) * 80;
+      $("bench-prog").firstElementChild.style.width = `${Math.round(startPct)}%`;
+
+      const benchRes = await det.benchmark(testItem.img, iterations, s.predConf, (step) => {
+        const p = Math.round(startPct + (step / imagesToTest.length) * 80);
+        $("bench-prog").firstElementChild.style.width = `${p}%`;
+      });
+
+      // Filter detections by threshold settings
+      const finalDets = benchRes.lastResult.dets.filter((d) => d.score >= (s.perClass ? cfg.thresholds[d.name] ?? s.conf : s.conf));
+      
+      sampleResults.push({
+        name: testItem.name,
+        width: testItem.img.naturalWidth,
+        height: testItem.img.naturalHeight,
+        avgMs: benchRes.avg,
+        minMs: benchRes.min,
+        maxMs: benchRes.max,
+        p95Ms: benchRes.p95,
+        inferMs: benchRes.avgInfer,
+        fps: benchRes.fps,
+        detsCount: finalDets.length,
+        classesCount: new Set(finalDets.map(d => d.cls)).size,
+        classesList: [...new Set(finalDets.map(d => (lang === "vi" ? d.name_vi : d.name_en)))].slice(0, 5),
+      });
+
+      totalRuns.push(benchRes);
+    }
+
+    $("bench-prog").firstElementChild.style.width = "95%";
+
+    // Aggregate statistics across samples
+    const overallAvg = Math.round((sampleResults.reduce((a, b) => a + b.avgMs, 0) / sampleResults.length) * 10) / 10;
+    const overallInfer = Math.round((sampleResults.reduce((a, b) => a + b.inferMs, 0) / sampleResults.length) * 10) / 10;
+    const overallMin = Math.min(...sampleResults.map(r => r.minMs));
+    const overallMax = Math.max(...sampleResults.map(r => r.maxMs));
+    const overallP95 = Math.round((sampleResults.reduce((a, b) => a + b.p95Ms, 0) / sampleResults.length) * 10) / 10;
+    const overallFps = Math.round((1000 / (overallAvg || 1)) * 10) / 10;
+    const overallDets = sampleResults.reduce((a, b) => a + b.detsCount, 0);
+    const overallClasses = new Set(sampleResults.flatMap(r => r.classesList)).size;
+
+    // Latency variance / jitter
+    const latencies = sampleResults.map(r => r.avgMs);
+    const stdDev = Math.round(Math.sqrt(latencies.reduce((acc, v) => acc + (v - overallAvg) ** 2, 0) / latencies.length) * 10) / 10;
+
+    // Display KPI Metrics
+    $("bm-avg").textContent = `${overallAvg} ms`;
+    $("bm-range").textContent = `min: ${overallMin} ms | max: ${overallMax} ms`;
+    $("bm-fps").textContent = `${overallFps} FPS`;
+    $("bm-infer").textContent = `inference: ${overallInfer} ms`;
+    $("bm-p95").textContent = `${overallP95} ms`;
+    $("bm-jitter").textContent = `std dev: ±${stdDev} ms`;
+    $("bm-dets").textContent = `${overallDets}`;
+    $("bm-classes").textContent = `${overallClasses} distinct classes`;
+
+    // Populate Detailed Samples Table
+    if (imagesToTest.length > 1) {
+      $("bm-samples-wrap").style.display = "block";
+      const tbody = $("bm-table-body");
+      tbody.innerHTML = "";
+      for (const item of sampleResults) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><img src="examples/${encodeURIComponent(item.name)}" class="table-thumb" alt=""><b>${item.name}</b></td>
+          <td>${item.width} × ${item.height}</td>
+          <td><b>${item.avgMs} ms</b> <span class="hint">(${item.fps} FPS)</span></td>
+          <td><span class="badge">${item.detsCount} parts</span></td>
+          <td style="color:var(--muted);">${item.classesList.join(", ") || "None"}</td>
+        `;
+        tbody.append(tr);
+      }
+    } else {
+      $("bm-samples-wrap").style.display = "none";
+    }
+
+    // Baseline Comparison logic
+    if (isCustomModel && baselineDet) {
+      $("bm-comparison").style.display = "flex";
+      // If we don't have baseline stats, run quick benchmark for baseline
+      if (!baselineBenchmarkStats) {
+        $("bench-status-text").textContent = "Running baseline comparison…";
+        const testImg = imagesToTest[0].img;
+        const bRes = await baselineDet.benchmark(testImg, 5, s.predConf);
+        baselineBenchmarkStats = bRes;
+      }
+
+      const baseAvg = baselineBenchmarkStats.avg;
+      const speedDiff = Math.round(((baseAvg - overallAvg) / baseAvg) * 100);
+      const msDiff = Math.round(Math.abs(baseAvg - overallAvg) * 10) / 10;
+
+      $("bm-compare-details").textContent = `Baseline (${cfg.model_name}): ${baseAvg} ms (${baselineBenchmarkStats.fps} FPS) | Active (${activeModelName}): ${overallAvg} ms (${overallFps} FPS)`;
+
+      const badge = $("bm-compare-badge");
+      if (speedDiff > 1) {
+        badge.className = "compare-delta compare-faster";
+        badge.textContent = t.compareFaster(speedDiff, msDiff);
+      } else if (speedDiff < -1) {
+        badge.className = "compare-delta compare-slower";
+        badge.textContent = t.compareSlower(Math.abs(speedDiff), msDiff);
+      } else {
+        badge.className = "compare-delta";
+        badge.textContent = t.compareEqual;
+      }
+    } else {
+      $("bm-comparison").style.display = "none";
+    }
+
+    // Save benchmark report object
+    lastBenchmarkResult = {
+      timestamp: new Date().toISOString(),
+      model: activeModelName,
+      modelSize: activeModelSize,
+      isCustom: isCustomModel,
+      threads: det.threads,
+      scope,
+      iterations,
+      samplesTested: imagesToTest.length,
+      metrics: {
+        avgLatencyMs: overallAvg,
+        pureInferMs: overallInfer,
+        minMs: overallMin,
+        maxMs: overallMax,
+        p95Ms: overallP95,
+        fps: overallFps,
+        stdDevMs: stdDev,
+        totalDetections: overallDets,
+        uniqueClasses: overallClasses,
+      },
+      samples: sampleResults,
+    };
+
+    $("btn-copy-md").disabled = false;
+    $("btn-export-json").disabled = false;
+
+    $("bench-prog").firstElementChild.style.width = "100%";
+    setTimeout(() => { $("bench-prog").style.display = "none"; }, 400);
+    $("bench-status-text").textContent = t.benchComplete;
+  } catch (err) {
+    console.error(err);
+    $("bench-prog").style.display = "none";
+    $("bench-status-text").textContent = `Benchmark failed: ${err.message}`;
+  } finally {
+    benchBtn.disabled = false;
+  }
+}
+
+// Copy Markdown Report
+$("btn-copy-md").onclick = async () => {
+  if (!lastBenchmarkResult) return;
+  const res = lastBenchmarkResult;
+  const m = res.metrics;
+  const t = T[lang] || T.en;
+  
+  let md = `# Engine Bay Vision - Model Benchmark Report\n\n`;
+  md += `- **Date**: ${new Date().toLocaleString()}\n`;
+  md += `- **Model**: \`${res.model}\` (${res.modelSize}${res.isCustom ? " - Custom ONNX" : " - Default Student"})\n`;
+  md += `- **Runtime**: onnxruntime-web WASM (${res.threads} CPU threads)\n`;
+  md += `- **Evaluation Scope**: ${res.scope} (${res.samplesTested} images, ${res.iterations} iterations/image)\n\n`;
+  
+  md += `### Summary Metrics\n\n`;
+  md += `| Metric | Value |\n`;
+  md += `|---|---|\n`;
+  md += `| **Average Latency** | **${m.avgLatencyMs} ms** |\n`;
+  md += `| **Throughput (FPS)** | **${m.fps} FPS** |\n`;
+  md += `| **Pure Inference Latency** | ${m.pureInferMs} ms |\n`;
+  md += `| **Latency Range** | ${m.minMs} ms – ${m.maxMs} ms (P95: ${m.p95Ms} ms) |\n`;
+  md += `| **Stability (Std Dev)** | ±${m.stdDevMs} ms |\n`;
+  md += `| **Total Detections** | ${m.totalDetections} components (${m.uniqueClasses} distinct classes) |\n\n`;
+
+  if (res.samples && res.samples.length > 1) {
+    md += `### Sample Image Breakdown\n\n`;
+    md += `| Image | Resolution | Latency (ms) | FPS | Components | Detected Classes |\n`;
+    md += `|---|---|---|---|---|---|\n`;
+    for (const s of res.samples) {
+      md += `| ${s.name} | ${s.width}×${s.height} | ${s.avgMs} ms | ${s.fps} | ${s.detsCount} | ${s.classesList.join(", ") || "-"} |\n`;
+    }
+  }
+
+  const doCopy = async (txt) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(txt);
+        return true;
+      }
+    } catch (e) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    } catch (e) {}
+    return false;
+  };
+
+  await doCopy(md);
+  const toast = $("bm-toast");
+  toast.textContent = t.copiedToast;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+};
+
+// Export JSON
+$("btn-export-json").onclick = () => {
+  if (!lastBenchmarkResult) return;
+  const blob = new Blob([JSON.stringify(lastBenchmarkResult, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `benchmark_${activeModelName.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`;
+  a.click();
+};
+
 applyLanguage();
 
+// Initial Load of Default Model
 try {
   const t = T[lang] || T.en;
-  det = await Detector.load(cfg, (p) => {
+  baselineDet = await Detector.load(cfg, (p) => {
     $("prog").firstElementChild.style.width = `${Math.round(p * 100)}%`;
     status(t.loading(Math.round(p * 100)));
   });
+  det = baselineDet;
   $("prog").style.display = "none";
   status(current ? "" : t.ready);
   if (current) run();
@@ -340,15 +1019,20 @@ try {
   status(t.errLoad(e.message), true);
 }
 
-// test hook: detections for an image URL, in original-image pixels
+// Window test hook
 window.__engineBay = {
   ready: () => !!det,
+  isCustom: () => isCustomModel,
   async detectUrl(url, conf, perClass) {
     $("conf").value = conf; $("perclass").checked = perClass;
     await openUrl(url);
     while (busy) await new Promise((r) => setTimeout(r, 20));
     return current.result.dets.map((d) => ({ cls: d.name, score: d.score, xyxy: d.xyxy }));
   },
+  runBenchmark: (runs = 5) => {
+    $("bench-iterations").value = runs;
+    return runBenchmarkSuite();
+  }
 };
 </script>
 </body>
